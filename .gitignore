@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Large fio test files
+fio_testfile
+*.tmp
+
+# Optional: keep raw JSON results for portfolio
+# If raw JSON becomes too large later, uncomment below:
+# results/*.json
+
+# fio generated test files
+E
+fio_testfile
+*.fio_testfile
+testfile
+*.bin
+*.dat

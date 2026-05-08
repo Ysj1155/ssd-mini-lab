@@ -1,0 +1,354 @@
+"""
+parse_fio_result.py
+
+Purpose:
+    Parse fio JSON result files and summarize key validation-oriented metrics into CSV.
+
+Default input:
+    D:\\ssd_lab\\results\\*.json
+
+Default output:
+    D:\\ssd_lab\\results\\fio_summary.csv
+
+Usage:
+    PowerShell:
+        cd D:\\ssd_lab
+        python .\\parse_fio_result.py
+
+    Optional:
+        python .\\parse_fio_result.py --input-dir D:\\ssd_lab\\results --output D:\\ssd_lab\\results\\fio_summary.csv
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import re
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+def safe_get(data: Dict[str, Any], keys: List[str], default: Any = None) -> Any:
+    """
+    Safely access nested dictionary values.
+
+    Example:
+        safe_get(job, ["read", "iops"], 0)
+    """
+    current: Any = data
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return default
+        current = current[key]
+    return current
+
+
+def ns_to_us(value_ns: Optional[float]) -> Optional[float]:
+    """
+    Convert nanoseconds to microseconds.
+    fio clat_ns values are usually stored in ns.
+    """
+    if value_ns is None:
+        return None
+    try:
+        return float(value_ns) / 1000.0
+    except (TypeError, ValueError):
+        return None
+
+
+def bytes_per_sec_to_mib_per_sec(value_bps: Optional[float]) -> Optional[float]:
+    """
+    Convert bytes/s to MiB/s.
+    fio JSON generally stores bw_bytes in bytes/s.
+    """
+    if value_bps is None:
+        return None
+    try:
+        return float(value_bps) / (1024 * 1024)
+    except (TypeError, ValueError):
+        return None
+
+
+def extract_run_number(filename: str) -> Optional[int]:
+    """
+    Extract run number from filenames like:
+        seq_read_run1.json
+        rand_write_run3.json
+
+    Returns None if no run number is found.
+    """
+    match = re.search(r"run[_-]?(\d+)", filename, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+    return None
+
+
+def infer_workload_from_filename(filename: str) -> str:
+    """
+    Infer workload name from filename.
+
+    Examples:
+        seq_read_run1.json -> seq_read
+        rand_write_run2.json -> rand_write
+    """
+    name = Path(filename).stem
+    name = re.sub(r"[_-]?run[_-]?\d+", "", name, flags=re.IGNORECASE)
+    return name
+
+
+def choose_active_direction(job: Dict[str, Any]) -> str:
+    """
+    Decide whether this job is read or write focused.
+
+    fio JSON has both 'read' and 'write' sections.
+    The inactive side usually has zero IOPS / bandwidth.
+    """
+    read_iops = safe_get(job, ["read", "iops"], 0) or 0
+    write_iops = safe_get(job, ["write", "iops"], 0) or 0
+
+    try:
+        read_iops = float(read_iops)
+        write_iops = float(write_iops)
+    except (TypeError, ValueError):
+        return "unknown"
+
+    if read_iops > 0 and write_iops == 0:
+        return "read"
+    if write_iops > 0 and read_iops == 0:
+        return "write"
+    if read_iops > 0 and write_iops > 0:
+        return "mixed"
+    return "unknown"
+
+
+def get_percentile(percentile_dict: Dict[str, Any], target: str) -> Optional[float]:
+    """
+    fio percentile keys may be strings like:
+        "95.000000"
+        "99.000000"
+
+    This function finds the matching percentile robustly.
+    """
+    if not isinstance(percentile_dict, dict):
+        return None
+
+    target_float = float(target)
+
+    for key, value in percentile_dict.items():
+        try:
+            if abs(float(key) - target_float) < 0.0001:
+                return value
+        except (TypeError, ValueError):
+            continue
+
+    return None
+
+
+def parse_one_json(json_path: Path) -> List[Dict[str, Any]]:
+    """
+    Parse one fio JSON file.
+
+    Returns a list because fio JSON can contain multiple jobs.
+    In this mini-lab, normally each file has one job.
+    """
+    with json_path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    jobs = data.get("jobs", [])
+    if not jobs:
+        raise ValueError(f"No jobs found in {json_path}")
+
+    rows: List[Dict[str, Any]] = []
+
+    for job in jobs:
+        direction = choose_active_direction(job)
+
+        if direction == "read":
+            active = job.get("read", {})
+        elif direction == "write":
+            active = job.get("write", {})
+        elif direction == "mixed":
+            # For mixed workload, this parser records both read and write as separate rows.
+            for mixed_direction in ["read", "write"]:
+                active_mixed = job.get(mixed_direction, {})
+                rows.append(build_row(json_path, data, job, active_mixed, mixed_direction))
+            continue
+        else:
+            active = {}
+
+        rows.append(build_row(json_path, data, job, active, direction))
+
+    return rows
+
+
+def build_row(
+    json_path: Path,
+    fio_root: Dict[str, Any],
+    job: Dict[str, Any],
+    active: Dict[str, Any],
+    direction: str,
+) -> Dict[str, Any]:
+    """
+    Build one CSV row from one fio job result.
+    """
+    job_options = job.get("job options", {})
+
+    clat_ns = active.get("clat_ns", {})
+    clat_mean_ns = clat_ns.get("mean")
+    clat_percentiles = clat_ns.get("percentile", {})
+
+    p95_ns = get_percentile(clat_percentiles, "95.000000")
+    p99_ns = get_percentile(clat_percentiles, "99.000000")
+
+    bw_bytes = active.get("bw_bytes")
+    iops = active.get("iops")
+
+    runtime_ms = active.get("runtime")
+    runtime_sec = None
+    if runtime_ms is not None:
+        try:
+            runtime_sec = float(runtime_ms) / 1000.0
+        except (TypeError, ValueError):
+            runtime_sec = None
+
+    filename = json_path.name
+
+    return {
+        "file": filename,
+        "workload": infer_workload_from_filename(filename),
+        "run": extract_run_number(filename),
+        "job_name": job.get("jobname"),
+        "rw": job_options.get("rw", direction),
+        "active_direction": direction,
+        "bs": job_options.get("bs"),
+        "iodepth": job_options.get("iodepth"),
+        "numjobs": job_options.get("numjobs"),
+        "size": job_options.get("size"),
+        "runtime_sec": runtime_sec,
+        "bandwidth_mib_s": bytes_per_sec_to_mib_per_sec(bw_bytes),
+        "iops": iops,
+        "clat_mean_us": ns_to_us(clat_mean_ns),
+        "clat_p95_us": ns_to_us(p95_ns),
+        "clat_p99_us": ns_to_us(p99_ns),
+        "fio_version": fio_root.get("fio version"),
+        "timestamp": fio_root.get("timestamp"),
+        "timestamp_ms": fio_root.get("timestamp_ms"),
+    }
+
+
+def parse_all(input_dir: Path) -> List[Dict[str, Any]]:
+    """
+    Parse all JSON files in input_dir.
+    """
+    json_files = sorted(input_dir.glob("*.json"))
+
+    if not json_files:
+        raise FileNotFoundError(f"No JSON files found in {input_dir}")
+
+    all_rows: List[Dict[str, Any]] = []
+
+    for json_path in json_files:
+        try:
+            rows = parse_one_json(json_path)
+            all_rows.extend(rows)
+        except Exception as exc:
+            print(f"[WARN] Failed to parse {json_path.name}: {exc}")
+
+    return all_rows
+
+
+def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
+    """
+    Write parsed rows to CSV.
+    """
+    if not rows:
+        raise ValueError("No rows to write.")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    fieldnames = [
+        "file",
+        "workload",
+        "run",
+        "job_name",
+        "rw",
+        "active_direction",
+        "bs",
+        "iodepth",
+        "numjobs",
+        "size",
+        "runtime_sec",
+        "bandwidth_mib_s",
+        "iops",
+        "clat_mean_us",
+        "clat_p95_us",
+        "clat_p99_us",
+        "fio_version",
+        "timestamp",
+        "timestamp_ms",
+    ]
+
+    with output_path.open("w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def print_summary(rows: List[Dict[str, Any]], output_path: Path) -> None:
+    """
+    Print simple parsing summary.
+    """
+    print()
+    print("=== fio JSON parse summary ===")
+    print(f"Parsed rows : {len(rows)}")
+    print(f"Output CSV  : {output_path}")
+
+    workloads = sorted(set(str(row.get("workload")) for row in rows))
+    print(f"Workloads   : {', '.join(workloads)}")
+
+    print()
+    print("Rows:")
+    for row in rows:
+        print(
+            f"- {row['file']} | "
+            f"workload={row['workload']} | "
+            f"run={row['run']} | "
+            f"rw={row['rw']} | "
+            f"bw={row['bandwidth_mib_s']:.2f} MiB/s | "
+            f"iops={float(row['iops']):.2f} | "
+            f"p99={row['clat_p99_us']:.2f} us"
+        )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Parse fio JSON results into a validation-oriented CSV summary."
+    )
+
+    parser.add_argument(
+        "--input-dir",
+        type=str,
+        default=r"D:\ssd_lab\results",
+        help=r"Directory containing fio JSON files. Default: D:\ssd_lab\results",
+    )
+
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=r"D:\ssd_lab\results\fio_summary.csv",
+        help=r"Output CSV path. Default: D:\ssd_lab\results\fio_summary.csv",
+    )
+
+    args = parser.parse_args()
+
+    input_dir = Path(args.input_dir)
+    output_path = Path(args.output)
+
+    rows = parse_all(input_dir)
+    write_csv(rows, output_path)
+    print_summary(rows, output_path)
+
+
+if __name__ == "__main__":
+    main()
