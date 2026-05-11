@@ -1,8 +1,21 @@
 """
-parse_fio_result.py
+parse_fio_results.py
 
 Purpose:
     Parse fio JSON result files and summarize key validation-oriented metrics into CSV.
+
+Supported filename patterns:
+    Baseline:
+        seq_read_run1.json
+        seq_write_run2.json
+        rand_read_run3.json
+        rand_write_run1.json
+
+    QD sweep:
+        rand_read_qd1_run1.json
+        rand_read_qd4_run2.json
+        rand_write_qd16_run3.json
+        rand_write_qd32_run1.json
 
 Default input:
     D:\\ssd_lab\\results\\*.json
@@ -11,12 +24,14 @@ Default output:
     D:\\ssd_lab\\results\\fio_summary.csv
 
 Usage:
-    PowerShell:
+    Baseline:
         cd D:\\ssd_lab
-        python .\\parse_fio_result.py
+        python .\\parse_fio_results.py
 
-    Optional:
-        python .\\parse_fio_result.py --input-dir D:\\ssd_lab\\results --output D:\\ssd_lab\\results\\fio_summary.csv
+    QD sweep:
+        python .\\parse_fio_results.py `
+          --input-dir D:\\ssd_lab\\results\\qd_sweep `
+          --output D:\\ssd_lab\\results\\qd_sweep_summary.csv
 """
 
 from __future__ import annotations
@@ -29,6 +44,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+# -----------------------------
+# Small conversion/helper funcs
+# -----------------------------
+
 def safe_get(data: Dict[str, Any], keys: List[str], default: Any = None) -> Any:
     """
     Safely access nested dictionary values.
@@ -37,20 +56,24 @@ def safe_get(data: Dict[str, Any], keys: List[str], default: Any = None) -> Any:
         safe_get(job, ["read", "iops"], 0)
     """
     current: Any = data
+
     for key in keys:
         if not isinstance(current, dict) or key not in current:
             return default
         current = current[key]
+
     return current
 
 
 def ns_to_us(value_ns: Optional[float]) -> Optional[float]:
     """
     Convert nanoseconds to microseconds.
+
     fio clat_ns values are usually stored in ns.
     """
     if value_ns is None:
         return None
+
     try:
         return float(value_ns) / 1000.0
     except (TypeError, ValueError):
@@ -60,66 +83,16 @@ def ns_to_us(value_ns: Optional[float]) -> Optional[float]:
 def bytes_per_sec_to_mib_per_sec(value_bps: Optional[float]) -> Optional[float]:
     """
     Convert bytes/s to MiB/s.
+
     fio JSON generally stores bw_bytes in bytes/s.
     """
     if value_bps is None:
         return None
+
     try:
         return float(value_bps) / (1024 * 1024)
     except (TypeError, ValueError):
         return None
-
-
-def extract_run_number(filename: str) -> Optional[int]:
-    """
-    Extract run number from filenames like:
-        seq_read_run1.json
-        rand_write_run3.json
-
-    Returns None if no run number is found.
-    """
-    match = re.search(r"run[_-]?(\d+)", filename, re.IGNORECASE)
-    if match:
-        return int(match.group(1))
-    return None
-
-
-def infer_workload_from_filename(filename: str) -> str:
-    """
-    Infer workload name from filename.
-
-    Examples:
-        seq_read_run1.json -> seq_read
-        rand_write_run2.json -> rand_write
-    """
-    name = Path(filename).stem
-    name = re.sub(r"[_-]?run[_-]?\d+", "", name, flags=re.IGNORECASE)
-    return name
-
-
-def choose_active_direction(job: Dict[str, Any]) -> str:
-    """
-    Decide whether this job is read or write focused.
-
-    fio JSON has both 'read' and 'write' sections.
-    The inactive side usually has zero IOPS / bandwidth.
-    """
-    read_iops = safe_get(job, ["read", "iops"], 0) or 0
-    write_iops = safe_get(job, ["write", "iops"], 0) or 0
-
-    try:
-        read_iops = float(read_iops)
-        write_iops = float(write_iops)
-    except (TypeError, ValueError):
-        return "unknown"
-
-    if read_iops > 0 and write_iops == 0:
-        return "read"
-    if write_iops > 0 and read_iops == 0:
-        return "write"
-    if read_iops > 0 and write_iops > 0:
-        return "mixed"
-    return "unknown"
 
 
 def get_percentile(percentile_dict: Dict[str, Any], target: str) -> Optional[float]:
@@ -145,6 +118,106 @@ def get_percentile(percentile_dict: Dict[str, Any], target: str) -> Optional[flo
     return None
 
 
+# -----------------------------
+# Filename metadata extraction
+# -----------------------------
+
+def extract_run_number(filename: str) -> Optional[int]:
+    """
+    Extract run number from filenames like:
+        seq_read_run1.json
+        rand_write_qd32_run3.json
+
+    Returns None if no run number is found.
+    """
+    match = re.search(r"(?:^|[_-])run[_-]?(\d+)(?:$|[_-])", Path(filename).stem, re.IGNORECASE)
+
+    if match:
+        return int(match.group(1))
+
+    # Fallback for simple patterns like "...run1"
+    match = re.search(r"run[_-]?(\d+)", filename, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+def extract_qd_from_filename(filename: str) -> Optional[int]:
+    """
+    Extract queue depth from filenames like:
+        rand_read_qd1_run1.json
+        rand_write_qd32_run3.json
+
+    Returns None for baseline files without qd metadata.
+    """
+    stem = Path(filename).stem
+
+    match = re.search(r"(?:^|[_-])qd[_-]?(\d+)(?:$|[_-])", stem, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+def infer_workload_from_filename(filename: str) -> str:
+    """
+    Infer workload name from filename.
+
+    Examples:
+        seq_read_run1.json -> seq_read
+        rand_write_run2.json -> rand_write
+        rand_read_qd16_run3.json -> rand_read
+        rand_write_qd32_run1.json -> rand_write
+    """
+    stem = Path(filename).stem
+
+    # Remove run metadata.
+    name = re.sub(r"[_-]?run[_-]?\d+", "", stem, flags=re.IGNORECASE)
+
+    # Remove qd metadata.
+    name = re.sub(r"[_-]?qd[_-]?\d+", "", name, flags=re.IGNORECASE)
+
+    # Normalize leftover separators.
+    name = re.sub(r"[-]+", "_", name)
+    name = re.sub(r"__+", "_", name)
+    name = name.strip("_")
+
+    return name
+
+
+# -----------------------------
+# fio JSON parsing
+# -----------------------------
+
+def choose_active_direction(job: Dict[str, Any]) -> str:
+    """
+    Decide whether this job is read or write focused.
+
+    fio JSON has both 'read' and 'write' sections.
+    The inactive side usually has zero IOPS / bandwidth.
+    """
+    read_iops = safe_get(job, ["read", "iops"], 0) or 0
+    write_iops = safe_get(job, ["write", "iops"], 0) or 0
+
+    try:
+        read_iops = float(read_iops)
+        write_iops = float(write_iops)
+    except (TypeError, ValueError):
+        return "unknown"
+
+    if read_iops > 0 and write_iops == 0:
+        return "read"
+
+    if write_iops > 0 and read_iops == 0:
+        return "write"
+
+    if read_iops > 0 and write_iops > 0:
+        return "mixed"
+
+    return "unknown"
+
+
 def parse_one_json(json_path: Path) -> List[Dict[str, Any]]:
     """
     Parse one fio JSON file.
@@ -156,6 +229,7 @@ def parse_one_json(json_path: Path) -> List[Dict[str, Any]]:
         data = json.load(f)
 
     jobs = data.get("jobs", [])
+
     if not jobs:
         raise ValueError(f"No jobs found in {json_path}")
 
@@ -166,18 +240,20 @@ def parse_one_json(json_path: Path) -> List[Dict[str, Any]]:
 
         if direction == "read":
             active = job.get("read", {})
+            rows.append(build_row(json_path, data, job, active, direction))
+
         elif direction == "write":
             active = job.get("write", {})
+            rows.append(build_row(json_path, data, job, active, direction))
+
         elif direction == "mixed":
-            # For mixed workload, this parser records both read and write as separate rows.
+            # For mixed workload, record read and write as separate rows.
             for mixed_direction in ["read", "write"]:
                 active_mixed = job.get(mixed_direction, {})
                 rows.append(build_row(json_path, data, job, active_mixed, mixed_direction))
-            continue
-        else:
-            active = {}
 
-        rows.append(build_row(json_path, data, job, active, direction))
+        else:
+            rows.append(build_row(json_path, data, job, {}, direction))
 
     return rows
 
@@ -200,12 +276,14 @@ def build_row(
 
     p95_ns = get_percentile(clat_percentiles, "95.000000")
     p99_ns = get_percentile(clat_percentiles, "99.000000")
+    p999_ns = get_percentile(clat_percentiles, "99.900000")
 
     bw_bytes = active.get("bw_bytes")
     iops = active.get("iops")
 
     runtime_ms = active.get("runtime")
     runtime_sec = None
+
     if runtime_ms is not None:
         try:
             runtime_sec = float(runtime_ms) / 1000.0
@@ -213,24 +291,33 @@ def build_row(
             runtime_sec = None
 
     filename = json_path.name
+    filename_qd = extract_qd_from_filename(filename)
+
+    # Prefer fio job option iodepth for the actual runtime setting.
+    # The filename qd is kept separately as metadata.
+    iodepth = job_options.get("iodepth")
 
     return {
         "file": filename,
+        "source_dir": str(json_path.parent),
         "workload": infer_workload_from_filename(filename),
         "run": extract_run_number(filename),
+        "qd_from_filename": filename_qd,
         "job_name": job.get("jobname"),
         "rw": job_options.get("rw", direction),
         "active_direction": direction,
         "bs": job_options.get("bs"),
-        "iodepth": job_options.get("iodepth"),
+        "iodepth": iodepth,
         "numjobs": job_options.get("numjobs"),
         "size": job_options.get("size"),
+        "direct": job_options.get("direct"),
         "runtime_sec": runtime_sec,
         "bandwidth_mib_s": bytes_per_sec_to_mib_per_sec(bw_bytes),
         "iops": iops,
         "clat_mean_us": ns_to_us(clat_mean_ns),
         "clat_p95_us": ns_to_us(p95_ns),
         "clat_p99_us": ns_to_us(p99_ns),
+        "clat_p999_us": ns_to_us(p999_ns),
         "fio_version": fio_root.get("fio version"),
         "timestamp": fio_root.get("timestamp"),
         "timestamp_ms": fio_root.get("timestamp_ms"),
@@ -258,6 +345,10 @@ def parse_all(input_dir: Path) -> List[Dict[str, Any]]:
     return all_rows
 
 
+# -----------------------------
+# CSV output / terminal summary
+# -----------------------------
+
 def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
     """
     Write parsed rows to CSV.
@@ -269,8 +360,10 @@ def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
 
     fieldnames = [
         "file",
+        "source_dir",
         "workload",
         "run",
+        "qd_from_filename",
         "job_name",
         "rw",
         "active_direction",
@@ -278,12 +371,14 @@ def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
         "iodepth",
         "numjobs",
         "size",
+        "direct",
         "runtime_sec",
         "bandwidth_mib_s",
         "iops",
         "clat_mean_us",
         "clat_p95_us",
         "clat_p99_us",
+        "clat_p999_us",
         "fio_version",
         "timestamp",
         "timestamp_ms",
@@ -293,6 +388,19 @@ def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+
+
+def fmt_num(value: Any, digits: int = 2) -> str:
+    """
+    Format numeric value for terminal printing.
+    """
+    if value is None:
+        return "NA"
+
+    try:
+        return f"{float(value):.{digits}f}"
+    except (TypeError, ValueError):
+        return str(value)
 
 
 def print_summary(rows: List[Dict[str, Any]], output_path: Path) -> None:
@@ -305,21 +413,41 @@ def print_summary(rows: List[Dict[str, Any]], output_path: Path) -> None:
     print(f"Output CSV  : {output_path}")
 
     workloads = sorted(set(str(row.get("workload")) for row in rows))
+    qds = sorted(
+        {
+            int(row["qd_from_filename"])
+            for row in rows
+            if row.get("qd_from_filename") is not None
+        }
+    )
+
     print(f"Workloads   : {', '.join(workloads)}")
+
+    if qds:
+        print(f"QD values   : {', '.join(str(qd) for qd in qds)}")
+    else:
+        print("QD values   : none in filename")
 
     print()
     print("Rows:")
+
     for row in rows:
         print(
             f"- {row['file']} | "
             f"workload={row['workload']} | "
             f"run={row['run']} | "
+            f"qd_file={row['qd_from_filename']} | "
+            f"iodepth={row['iodepth']} | "
             f"rw={row['rw']} | "
-            f"bw={row['bandwidth_mib_s']:.2f} MiB/s | "
-            f"iops={float(row['iops']):.2f} | "
-            f"p99={row['clat_p99_us']:.2f} us"
+            f"bw={fmt_num(row['bandwidth_mib_s'])} MiB/s | "
+            f"iops={fmt_num(row['iops'])} | "
+            f"p99={fmt_num(row['clat_p99_us'])} us"
         )
 
+
+# -----------------------------
+# Main
+# -----------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(
