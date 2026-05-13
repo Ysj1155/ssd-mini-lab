@@ -19,9 +19,10 @@ fio_testfile
 # results/*.json
 
 # fio generated test files
-E
-fio_testfile
-*.fio_testfile
-testfile
+fio_testfile*
+*fio_testfile*
+testfile*
+*.tmp
 *.bin
 *.dat
+E
