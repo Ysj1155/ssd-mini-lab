@@ -17,6 +17,12 @@ Supported filename patterns:
         rand_write_qd16_run3.json
         rand_write_qd32_run1.json
 
+    Direct vs buffered:
+        rand_read_direct1_run1.json
+        rand_read_direct0_run2.json
+        rand_write_direct1_run3.json
+        rand_write_direct0_run1.json
+
 Default input:
     D:\\ssd_lab\\results\\*.json
 
@@ -160,6 +166,23 @@ def extract_qd_from_filename(filename: str) -> Optional[int]:
     return None
 
 
+def extract_direct_from_filename(filename: str) -> Optional[int]:
+    """
+    Extract direct I/O flag from filenames like:
+        rand_read_direct1_run1.json
+        rand_write_direct0_run3.json
+
+    Returns None for files without direct metadata.
+    """
+    stem = Path(filename).stem
+
+    match = re.search(r"(?:^|[_-])direct[_-]?([01])(?:$|[_-])", stem, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
 def infer_workload_from_filename(filename: str) -> str:
     """
     Infer workload name from filename.
@@ -169,6 +192,8 @@ def infer_workload_from_filename(filename: str) -> str:
         rand_write_run2.json -> rand_write
         rand_read_qd16_run3.json -> rand_read
         rand_write_qd32_run1.json -> rand_write
+        rand_read_direct1_run1.json -> rand_read
+        rand_write_direct0_run2.json -> rand_write
     """
     stem = Path(filename).stem
 
@@ -177,6 +202,9 @@ def infer_workload_from_filename(filename: str) -> str:
 
     # Remove qd metadata.
     name = re.sub(r"[_-]?qd[_-]?\d+", "", name, flags=re.IGNORECASE)
+
+    # Remove direct/buffered metadata.
+    name = re.sub(r"[_-]?direct[_-]?[01]", "", name, flags=re.IGNORECASE)
 
     # Normalize leftover separators.
     name = re.sub(r"[-]+", "_", name)
@@ -225,8 +253,13 @@ def parse_one_json(json_path: Path) -> List[Dict[str, Any]]:
     Returns a list because fio JSON can contain multiple jobs.
     In this mini-lab, normally each file has one job.
     """
-    with json_path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
+    text = json_path.read_text(encoding="utf-8-sig")
+    json_start = text.find("{")
+
+    if json_start == -1:
+        raise ValueError("No JSON object found in fio output")
+
+    data = json.loads(text[json_start:])
 
     jobs = data.get("jobs", [])
 
@@ -292,6 +325,7 @@ def build_row(
 
     filename = json_path.name
     filename_qd = extract_qd_from_filename(filename)
+    filename_direct = extract_direct_from_filename(filename)
 
     # Prefer fio job option iodepth for the actual runtime setting.
     # The filename qd is kept separately as metadata.
@@ -303,6 +337,7 @@ def build_row(
         "workload": infer_workload_from_filename(filename),
         "run": extract_run_number(filename),
         "qd_from_filename": filename_qd,
+        "direct_from_filename": filename_direct,
         "job_name": job.get("jobname"),
         "rw": job_options.get("rw", direction),
         "active_direction": direction,
@@ -364,6 +399,7 @@ def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
         "workload",
         "run",
         "qd_from_filename",
+        "direct_from_filename",
         "job_name",
         "rw",
         "active_direction",
@@ -437,6 +473,7 @@ def print_summary(rows: List[Dict[str, Any]], output_path: Path) -> None:
             f"workload={row['workload']} | "
             f"run={row['run']} | "
             f"qd_file={row['qd_from_filename']} | "
+            f"direct_file={row['direct_from_filename']} | "
             f"iodepth={row['iodepth']} | "
             f"rw={row['rw']} | "
             f"bw={fmt_num(row['bandwidth_mib_s'])} MiB/s | "
