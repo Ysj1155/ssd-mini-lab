@@ -27,3 +27,4 @@ testfile*
 *.dat
 E
 D
+results/env/

@@ -23,6 +23,10 @@ Supported filename patterns:
         rand_write_direct1_run3.json
         rand_write_direct0_run1.json
 
+    WSL path comparison:
+        rand_read_path_wsl_ext4_run1.json
+        rand_write_path_mnt_d_run2.json
+
 Default input:
     D:\\ssd_lab\\results\\*.json
 
@@ -183,6 +187,23 @@ def extract_direct_from_filename(filename: str) -> Optional[int]:
     return None
 
 
+def extract_path_mode_from_filename(filename: str) -> Optional[str]:
+    """
+    Extract path mode from filenames like:
+        rand_read_path_wsl_ext4_run1.json
+        rand_write_path_mnt_d_run3.json
+
+    Returns None for files without path metadata.
+    """
+    stem = Path(filename).stem
+
+    match = re.search(r"(?:^|[_-])path[_-](.*?)(?:[_-]run[_-]?\d+|$)", stem, re.IGNORECASE)
+    if match:
+        return match.group(1).replace("-", "_").lower()
+
+    return None
+
+
 def infer_workload_from_filename(filename: str) -> str:
     """
     Infer workload name from filename.
@@ -194,6 +215,8 @@ def infer_workload_from_filename(filename: str) -> str:
         rand_write_qd32_run1.json -> rand_write
         rand_read_direct1_run1.json -> rand_read
         rand_write_direct0_run2.json -> rand_write
+        rand_read_path_wsl_ext4_run1.json -> rand_read
+        rand_write_path_mnt_d_run2.json -> rand_write
     """
     stem = Path(filename).stem
 
@@ -205,6 +228,14 @@ def infer_workload_from_filename(filename: str) -> str:
 
     # Remove direct/buffered metadata.
     name = re.sub(r"[_-]?direct[_-]?[01]", "", name, flags=re.IGNORECASE)
+
+    # Remove path metadata.
+    name = re.sub(
+        r"[_-]?path[_-][a-z0-9]+(?:[_-][a-z0-9]+)*",
+        "",
+        name,
+        flags=re.IGNORECASE,
+    )
 
     # Normalize leftover separators.
     name = re.sub(r"[-]+", "_", name)
@@ -326,6 +357,7 @@ def build_row(
     filename = json_path.name
     filename_qd = extract_qd_from_filename(filename)
     filename_direct = extract_direct_from_filename(filename)
+    filename_path_mode = extract_path_mode_from_filename(filename)
 
     # Prefer fio job option iodepth for the actual runtime setting.
     # The filename qd is kept separately as metadata.
@@ -338,6 +370,7 @@ def build_row(
         "run": extract_run_number(filename),
         "qd_from_filename": filename_qd,
         "direct_from_filename": filename_direct,
+        "path_mode_from_filename": filename_path_mode,
         "job_name": job.get("jobname"),
         "rw": job_options.get("rw", direction),
         "active_direction": direction,
@@ -400,6 +433,7 @@ def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
         "run",
         "qd_from_filename",
         "direct_from_filename",
+        "path_mode_from_filename",
         "job_name",
         "rw",
         "active_direction",
@@ -474,6 +508,7 @@ def print_summary(rows: List[Dict[str, Any]], output_path: Path) -> None:
             f"run={row['run']} | "
             f"qd_file={row['qd_from_filename']} | "
             f"direct_file={row['direct_from_filename']} | "
+            f"path_mode={row['path_mode_from_filename']} | "
             f"iodepth={row['iodepth']} | "
             f"rw={row['rw']} | "
             f"bw={fmt_num(row['bandwidth_mib_s'])} MiB/s | "

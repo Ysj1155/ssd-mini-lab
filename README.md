@@ -20,6 +20,9 @@ The goal is not to chase the highest benchmark number. The goal is to build a re
 | Queue-depth sweep | Done | `analyze_qd_sweep.py`, `results/qd_sweep_grouped.csv`, `results/qd_sweep_plots/` |
 | QD reproducibility | Done | `analyze_qd_reproducibility.py`, `results/qd_sweep_reproducibility.csv` |
 | Week 7 direct vs buffered | Done | `analyze_direct_buffered.py`, `results/direct_buffered_*`, `results/direct_buffered_plots/` |
+| Stage 1 review | Done | `docs/reports/stage1_review.md` |
+| Week 8 environment collection | Done | `scripts/collect_env_windows.ps1`, `docs/reports/environment_collection_week8.md` |
+| Week 9 WSL path comparison | Done | `run_wsl_path_compare.ps1`, `analyze_wsl_path_compare.py`, `results/wsl_path_compare_*` |
 
 ## Repository Layout
 
@@ -262,6 +265,67 @@ This mini-lab is meant to practice validation thinking:
 4. Buffered I/O can make results look better, but cache effects must be called out.
 5. Current results cannot directly prove internal SSD causes such as GC, SLC cache behavior, FTL behavior, or thermal throttling.
 
+## Stage 1 Review
+
+Stage 1 is summarized in:
+
+```text
+docs/reports/stage1_review.md
+```
+
+This review connects the baseline, QD sweep, reproducibility, and direct/buffered experiments into one portfolio-oriented story.
+
+## Week 8 Environment Collection
+
+Stage 2 begins with environment collection:
+
+```powershell
+cd D:\ssd_lab
+powershell -ExecutionPolicy Bypass -File .\scripts\collect_env_windows.ps1
+```
+
+The script writes machine-specific snapshots to:
+
+```text
+results/env/<timestamp>/
+results/env/latest/
+```
+
+These environment snapshots are intentionally ignored by Git. The lab write-up is kept in:
+
+```text
+docs/reports/environment_collection_week8.md
+```
+
+## Week 9 WSL Path Comparison
+
+Week 9 compares safe file-based fio behavior between WSL native ext4 and the Windows-mounted `/mnt/d` path.
+
+Run:
+
+```powershell
+cd D:\ssd_lab
+.\run_wsl_path_compare.ps1
+
+python .\parse_fio_results.py `
+  --input-dir D:\ssd_lab\results\wsl_path_compare `
+  --output D:\ssd_lab\results\wsl_path_compare_summary.csv
+
+python .\analyze_wsl_path_compare.py
+```
+
+Write-up:
+
+```text
+docs/reports/wsl_path_compare_week9.md
+```
+
+Key observation:
+
+- WSL ext4 and `/mnt/d` behaved very differently, especially for random write.
+- This is a path-level result, not raw SSD media performance.
+- Future WSL fio results must label whether they came from WSL ext4 or `/mnt/d`.
+
 ## Current Limitations
 
 - Tests are file-based, not raw block-device validation.
@@ -272,8 +336,7 @@ This mini-lab is meant to practice validation thinking:
 
 ## Next Steps
 
-- Stage 1 review report for Weeks 1-7
-- WSL/Linux environment collection and path comparison
+- WSL/Linux path comparison
 - Longer sustained workload experiment
 - More explicit QoS/tail-latency report
 - Obsidian TIL notes connected to this project
