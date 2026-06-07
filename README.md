@@ -11,10 +11,38 @@ The goal is not to chase the highest benchmark number. The goal is to build a re
 - compare repeated runs
 - document interpretation and limitations
 
+For portfolio review, the project is mapped to SSD validation competencies in:
+
+```text
+docs/reports/ssd_validation_competency_map.md
+```
+
+Korean interview talking points are summarized in:
+
+```text
+docs/reports/korean_interview_brief.md
+```
+
+Reusable validation run checklist:
+
+```text
+docs/reports/validation_run_checklist.md
+```
+
+Stage 2 next experiment plan:
+
+```text
+docs/reports/stage2_next_experiment_plan.md
+```
+
 ## Current Status
 
 | Area | Status | Main outputs |
 |---|---|---|
+| SSD validation competency map | Done | `docs/reports/ssd_validation_competency_map.md` |
+| Korean interview brief | Done | `docs/reports/korean_interview_brief.md` |
+| Validation run checklist | Done | `docs/reports/validation_run_checklist.md` |
+| Stage 2 next experiment plan | Ready | `docs/reports/stage2_next_experiment_plan.md` |
 | Baseline fio parsing | Done | `parse_fio_results.py`, `results/fio_summary.csv` |
 | Baseline plots | Done | `plot_fio_summary.py`, `results/plots/` |
 | Queue-depth sweep | Done | `analyze_qd_sweep.py`, `results/qd_sweep_grouped.csv`, `results/qd_sweep_plots/` |
@@ -24,7 +52,7 @@ The goal is not to chase the highest benchmark number. The goal is to build a re
 | Week 8 environment collection | Done | `scripts/collect_env_windows.ps1`, `docs/reports/environment_collection_week8.md` |
 | Week 9 WSL path comparison | Done | `run_wsl_path_compare.ps1`, `analyze_wsl_path_compare.py`, `results/wsl_path_compare_*` |
 | QoS/tail latency review | Done | `analyze_qos_tail_latency.py`, `docs/reports/qos_tail_latency_review.md` |
-| Week 10 sustained smoke | Ready to run | `run_sustained_smoke.ps1`, `docs/reports/sustained_workload_week10.md` |
+| Week 10 sustained smoke | Done (repeat smoke) | `run_sustained_smoke.ps1`, `analyze_sustained_smoke.py`, `docs/reports/sustained_workload_week10.md` |
 
 ## Repository Layout
 
@@ -267,6 +295,38 @@ This mini-lab is meant to practice validation thinking:
 4. Buffered I/O can make results look better, but cache effects must be called out.
 5. Current results cannot directly prove internal SSD causes such as GC, SLC cache behavior, FTL behavior, or thermal throttling.
 
+The portfolio-oriented competency map is kept in:
+
+```text
+docs/reports/ssd_validation_competency_map.md
+```
+
+It connects each experiment to practical validation skills such as test-condition definition, result parsing, QoS review, reproducibility review, path/cache awareness, environment control, and sustained-workload thinking.
+
+Korean interview notes are kept in:
+
+```text
+docs/reports/korean_interview_brief.md
+```
+
+This document turns the technical work into concise speaking points, expected Q&A, resume bullet candidates, and an Obsidian TIL draft.
+
+The repeatable run checklist is kept in:
+
+```text
+docs/reports/validation_run_checklist.md
+```
+
+It defines pre-run safety checks, test-condition fields, environment snapshot expectations, post-run output checks, metric review, and interpretation red flags.
+
+The next experiment plan is kept in:
+
+```text
+docs/reports/stage2_next_experiment_plan.md
+```
+
+It defines the safe order for repeated 120s sustained runs, longer 300s sustained runs, read-side sustained comparison, and read-only telemetry reconnaissance.
+
 ## Stage 1 Review
 
 Stage 1 is summarized in:
@@ -353,11 +413,14 @@ Key observation:
 
 ## Week 10 Sustained Workload Smoke Test
 
-The next lab is a conservative sustained workload smoke test:
+Week 10 adds a conservative sustained workload smoke test:
 
 ```powershell
 cd D:\ssd_lab
+$env:SSD_LAB_SUSTAINED_LABEL = "rand_write_120s_smoke"
 .\run_sustained_smoke.ps1
+
+python .\analyze_sustained_smoke.py
 ```
 
 Defaults:
@@ -372,18 +435,58 @@ Write-up:
 docs/reports/sustained_workload_week10.md
 ```
 
+Outputs:
+
+```text
+results/sustained_smoke/
+results/sustained_smoke_summary.csv
+results/sustained_smoke_timeseries.csv
+results/sustained_smoke_window_summary.csv
+results/sustained_smoke_latency_spikes.csv
+results/sustained_smoke_repeatability.csv
+results/sustained_smoke_result_set_comparison.csv
+results/sustained_smoke_workload_comparison.csv
+results/sustained_smoke_plots/
+```
+
+New sustained runs are stored under labeled subdirectories such as:
+
+```text
+results/sustained_smoke/rand_write_120s_smoke/
+```
+
+The analyzer preserves a `result_set` column so repeated runs and longer runtime experiments can be compared without losing their source labels.
+
+Smoke-run observation:
+
+- Full-run throughput was 86.41 MiB/s and 22,120.82 IOPS.
+- p99 completion latency was 1.58 ms, and p99.9 was 5.14 ms.
+- Last-third IOPS was about 95.4% of first-third IOPS.
+- Last-third average completion latency was about 4.9% higher than first-third latency.
+- One max-latency outlier reached about 1.04 seconds, so future sustained runs should track outliers explicitly.
+- The highest average-latency interval was 876.37 us at 11.007 seconds; this is a time-window signal, not the exact max-latency I/O.
+- The 3-run repeat set had stable bandwidth/IOPS CV around 0.028, but p99.9 CV was 0.393 and max-latency CV was 1.564.
+- Run 2 of the repeat set showed the largest max-latency outlier at about 4.94 seconds.
+- Compared with the legacy smoke run, the 3-run repeat set had 1.339x average IOPS, 0.457x mean p99 latency, 0.305x mean p99.9 latency, and 1.695x mean max latency.
+- The 300s repeat set had 77.47 MiB/s, 19,831.08 IOPS, 2.48 ms mean p99, and 9.01 ms mean p99.9.
+- Compared with the 120s repeat set, the 300s repeat set had 0.670x average IOPS, 3.437x mean p99 latency, and 5.749x mean p99.9 latency.
+- The 120s read repeat set had 95.88 MiB/s, 24,545.59 IOPS, 2.48 ms mean p99, and 9.85 ms mean p99.9.
+- In the 120s read/write comparison, write had 1.207x average IOPS and lower p99/p99.9, but 17.316x higher mean max latency because of a rare write outlier.
+
 ## Current Limitations
 
 - Tests are file-based, not raw block-device validation.
 - The current hardware path includes Windows filesystem and, for the external SSD, USB/enclosure effects.
-- Most experiments use 30 second runs, so long sustained behavior is not covered yet.
+- Most experiments use 30 second runs; Week 10 now has write-side 120s/300s repeat sets and a read-side 120s repeat set.
 - Each condition currently has only three repeated runs.
 - SMART/NVMe telemetry is not collected yet.
 
 ## Next Steps
 
-- WSL/Linux path comparison
-- Sustained workload results are prepared but not collected yet
+- Run read-only telemetry reconnaissance
+- Compare telemetry/environment context against sustained write/read behavior
+- Use the validation run checklist before each new experiment
+- Refine the Korean interview brief into a public-facing portfolio README
 - Obsidian TIL notes connected to this project
 
 ## Commit History Checkpoints

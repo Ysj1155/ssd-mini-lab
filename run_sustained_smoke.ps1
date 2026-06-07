@@ -22,11 +22,12 @@
 #   $env:SSD_LAB_SUSTAINED_RUNTIME = "300"
 #   $env:SSD_LAB_SUSTAINED_SIZE = "2G"
 #   $env:SSD_LAB_SUSTAINED_RUNS = "3"
+#   $env:SSD_LAB_SUSTAINED_LABEL = "rand_write_300s_repeat3"
 
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
-$ResultDir = Join-Path $BaseDir "results\sustained_smoke"
+$ResultRoot = Join-Path $BaseDir "results\sustained_smoke"
 $TestFile = Join-Path $BaseDir "fio_testfile_sustained_smoke"
 
 $Runtime = if ($env:SSD_LAB_SUSTAINED_RUNTIME) { $env:SSD_LAB_SUSTAINED_RUNTIME } else { "120" }
@@ -38,12 +39,18 @@ $Bs = if ($env:SSD_LAB_SUSTAINED_BS) { $env:SSD_LAB_SUSTAINED_BS } else { "4k" }
 $Iodepth = if ($env:SSD_LAB_SUSTAINED_IODEPTH) { $env:SSD_LAB_SUSTAINED_IODEPTH } else { "16" }
 $Direct = if ($env:SSD_LAB_SUSTAINED_DIRECT) { $env:SSD_LAB_SUSTAINED_DIRECT } else { "1" }
 $LogAvgMsec = if ($env:SSD_LAB_SUSTAINED_LOG_AVG_MSEC) { $env:SSD_LAB_SUSTAINED_LOG_AVG_MSEC } else { "1000" }
+$DefaultLabel = "${Workload}_${Runtime}s_${Size}_${Bs}_qd${Iodepth}_direct${Direct}"
+$RunLabel = if ($env:SSD_LAB_SUSTAINED_LABEL) { $env:SSD_LAB_SUSTAINED_LABEL } else { $DefaultLabel }
+$SafeLabel = $RunLabel -replace '[^A-Za-z0-9_.-]', '_'
+$ResultDir = Join-Path $ResultRoot $SafeLabel
 
 New-Item -ItemType Directory -Force $ResultDir | Out-Null
 
 Write-Host "=== Sustained fio smoke test ==="
 Write-Host "BaseDir     : $BaseDir"
+Write-Host "ResultRoot  : $ResultRoot"
 Write-Host "ResultDir   : $ResultDir"
+Write-Host "Run label   : $SafeLabel"
 Write-Host "TestFile    : $TestFile"
 Write-Host "Workload    : $Workload"
 Write-Host "rw          : $Rw"
@@ -57,8 +64,8 @@ Write-Host "log avg ms  : $LogAvgMsec"
 Write-Host ""
 
 for ($run = 1; $run -le $Runs; $run++) {
-    $OutFile = Join-Path $ResultDir "${Workload}_sustained_run${run}.json"
-    $LogPrefix = Join-Path $ResultDir "${Workload}_sustained_run${run}"
+    $OutFile = Join-Path $ResultDir "${SafeLabel}_sustained_run${run}.json"
+    $LogPrefix = Join-Path $ResultDir "${SafeLabel}_sustained_run${run}"
 
     Write-Host "Running sustained smoke: run=$run"
     Write-Host "Output: $OutFile"
