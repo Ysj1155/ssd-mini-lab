@@ -23,6 +23,8 @@ The goal is not to chase the highest benchmark number. The goal is to build a re
 | Stage 1 review | Done | `docs/reports/stage1_review.md` |
 | Week 8 environment collection | Done | `scripts/collect_env_windows.ps1`, `docs/reports/environment_collection_week8.md` |
 | Week 9 WSL path comparison | Done | `run_wsl_path_compare.ps1`, `analyze_wsl_path_compare.py`, `results/wsl_path_compare_*` |
+| QoS/tail latency review | Done | `analyze_qos_tail_latency.py`, `docs/reports/qos_tail_latency_review.md` |
+| Week 10 sustained smoke | Ready to run | `run_sustained_smoke.ps1`, `docs/reports/sustained_workload_week10.md` |
 
 ## Repository Layout
 
@@ -326,6 +328,50 @@ Key observation:
 - This is a path-level result, not raw SSD media performance.
 - Future WSL fio results must label whether they came from WSL ext4 or `/mnt/d`.
 
+## QoS and Tail Latency Review
+
+QoS-focused summary:
+
+```powershell
+cd D:\ssd_lab
+python .\analyze_qos_tail_latency.py
+```
+
+Outputs:
+
+```text
+results/qos_tail_latency_summary.csv
+results/qos_tail_latency_plots/
+docs/reports/qos_tail_latency_review.md
+```
+
+Key observation:
+
+- Average IOPS is not enough for validation.
+- p99, p99.9, and CV help identify unstable or path-sensitive conditions.
+- Conditions with good-looking throughput may still be poor QoS candidates.
+
+## Week 10 Sustained Workload Smoke Test
+
+The next lab is a conservative sustained workload smoke test:
+
+```powershell
+cd D:\ssd_lab
+.\run_sustained_smoke.ps1
+```
+
+Defaults:
+
+```text
+rand_write, 4k, iodepth=16, direct=1, size=1G, runtime=120s, repeats=1
+```
+
+Write-up:
+
+```text
+docs/reports/sustained_workload_week10.md
+```
+
 ## Current Limitations
 
 - Tests are file-based, not raw block-device validation.
@@ -337,8 +383,7 @@ Key observation:
 ## Next Steps
 
 - WSL/Linux path comparison
-- Longer sustained workload experiment
-- More explicit QoS/tail-latency report
+- Sustained workload results are prepared but not collected yet
 - Obsidian TIL notes connected to this project
 
 ## Commit History Checkpoints
