@@ -281,6 +281,8 @@ The 300 second set did not have a larger mean max latency than the 120 second se
 
 The 120 second read/write comparison showed another useful validation pattern. The write set had about 1.21x higher average IOPS than the read set and much lower mean p99/p99.9 latency. However, write-side mean max latency was about 17.3x higher because of the large write outlier. This again separates steady/tail percentile behavior from rare worst-case behavior.
 
+The read-only telemetry recon added path-level context, not device-level causality. The collector confirmed that the test path was on `D:\`, reported as a fixed NTFS drive with about 1412.86 GiB available, and that the sustained fio test file existed at 1 GiB. However, Windows disk and storage-reliability queries were blocked by access-denied errors in the current Codex sandbox context, and `smartctl` was not available. Therefore, the sustained workload interpretation should remain file-path and OS-path based unless the collector is rerun with suitable permissions or SMART/NVMe tooling.
+
 ## Interpretation Rules
 
 Do not over-interpret the first smoke run.
@@ -296,6 +298,6 @@ The first run proves that the sustained test structure works. Stronger conclusio
 
 ## Current Status
 
-First sustained smoke run, three-run 120 second write repeat set, three-run 300 second write repeat set, and three-run 120 second read repeat set completed.
+First sustained smoke run, three-run 120 second write repeat set, three-run 300 second write repeat set, three-run 120 second read repeat set, and read-only storage telemetry recon completed.
 
-Next analysis step: add read-only telemetry to explain path-level changes more carefully, or run a longer read-side sustained set if a symmetric read/write duration comparison is needed.
+Next analysis step: rerun storage telemetry from a normal or elevated PowerShell session if device-level counters are needed, or run a longer read-side sustained set if a symmetric read/write duration comparison is needed.

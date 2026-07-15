@@ -44,6 +44,28 @@ results/env/latest/
 
 `results/env/` is ignored by Git because the files are machine-specific and change on every run.
 
+Stage 2 also adds a storage telemetry collector:
+
+```text
+scripts/collect_storage_telemetry_windows.ps1
+```
+
+Run:
+
+```powershell
+cd D:\ssd_lab
+powershell -ExecutionPolicy Bypass -File .\scripts\collect_storage_telemetry_windows.ps1
+```
+
+Output:
+
+```text
+results/telemetry/<timestamp>/
+results/telemetry/latest/
+```
+
+`results/telemetry/` is ignored by Git for the same reason as `results/env/`.
+
 ## Collected Files
 
 | File | Purpose |
@@ -65,6 +87,24 @@ results/env/latest/
 | `wsl_list.txt` | Installed WSL distributions, if any |
 | `wsl_linux_env.txt` | Linux-side environment output, if a WSL distro is available |
 | `wsl_tool_versions.txt` | fio, Python, Git, and sysstat tool versions inside WSL |
+
+## Storage Telemetry Files
+
+| File | Purpose |
+|---|---|
+| `manifest.json` | Collection timestamp, output path, and read-only safety note |
+| `disk_info.csv` | Windows disk metadata, if permission allows |
+| `physical_disk.csv` | Physical disk metadata, if permission allows |
+| `storage_reliability_counters.csv` | Read-only reliability counters, if permission allows |
+| `volume_info.csv` | Volume metadata, if permission allows |
+| `partition_info.csv` | Partition metadata, if permission allows |
+| `logical_disk_info.csv` | Logical disk metadata, if permission allows |
+| `win32_diskdrive.csv` | Win32 disk-drive fallback metadata, if permission allows |
+| `driveinfo_D.txt` | Low-permission .NET DriveInfo fallback for D: |
+| `fsutil_volume_diskfree_D.txt` | fsutil D: free-space output, if permission allows |
+| `testfile_info.txt` | Current sustained fio test-file path and size |
+| `smartctl_availability.txt` | Whether `smartctl` is available |
+| `smartctl_scan.txt` | Optional smartctl scan note or output |
 
 ## Current Run Notes
 
@@ -98,6 +138,16 @@ This means future experiments can distinguish at least two safe file-based paths
 
 Neither path should be treated as raw block-device validation. Both are still safe file-based tests.
 
+Observed from the storage telemetry recon on June 8, 2026:
+
+- The collector ran successfully and wrote `results/telemetry/latest/`.
+- `.NET DriveInfo` reported `D:\` as a fixed NTFS drive with about 1.41 TB available.
+- The sustained fio test file existed at `D:\ssd_lab\fio_testfile_sustained_smoke` and was 1 GiB at the time of collection.
+- `Get-Disk`, `Get-PhysicalDisk`, `Get-StorageReliabilityCounter`, `Get-Volume`, and related disk queries were blocked by access-denied errors under the Codex sandbox account.
+- `smartctl` was not available in the current command environment, and the optional smartctl scan was not run.
+
+This means the current telemetry recon proves the run path, free-space fallback, test-file state, and permission boundary. It does not yet provide device-level SMART/NVMe health evidence.
+
 ## Interpretation
 
 This lab does not add a new performance benchmark. It adds a reproducibility layer.
@@ -123,7 +173,7 @@ Before comparing future Windows, WSL, or sustained workload results, each run sh
 ## Limitations
 
 - The script is Windows-first.
-- It does not collect SMART/NVMe telemetry yet.
+- SMART/NVMe telemetry is only available if the host has suitable tools and permissions.
 - It does not run fio.
 - Some disk and volume commands may require permissions not available in restricted environments.
 - WSL output requires the configured distro name to exist. The default is `Ubuntu`.

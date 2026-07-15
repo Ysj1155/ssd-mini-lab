@@ -268,6 +268,35 @@ Telemetry is useful only if:
 - output is stored separately from benchmark CSVs
 - interpretation stays within what the telemetry can prove
 
+### Result - 2026-06-08
+
+Experiment 4 was completed with permission-limited evidence.
+
+Collector:
+
+```text
+scripts/collect_storage_telemetry_windows.ps1
+```
+
+Output location:
+
+```text
+results/telemetry/latest/
+```
+
+Observed evidence:
+
+- `.NET DriveInfo` identified `D:\` as a fixed NTFS drive.
+- Available free space was about 1412.86 GiB, with total drive capacity reported as about 1863 GiB.
+- The sustained fio test file existed at `D:\ssd_lab\fio_testfile_sustained_smoke`.
+- The sustained fio test file size was 1 GiB.
+- Windows disk, physical-disk, volume, partition, and storage-reliability queries were blocked by access-denied errors in the current Codex sandbox context.
+- `smartctl` was not available, and `smartctl --scan-open` was not run by default.
+
+Decision:
+
+The telemetry recon is complete at the path/free-space/test-file/permission-boundary level. It does not yet provide device-level SMART/NVMe health evidence. If deeper telemetry is needed, rerun the collector from a normal or elevated user PowerShell session, and optionally enable `smartctl` scan only after confirming the tool is installed and the command remains read-only.
+
 ## Decision Gates
 
 | Gate | Move forward if... |
@@ -275,7 +304,7 @@ Telemetry is useful only if:
 | Repeat 120s smoke | done; three runs completed and variation is documented |
 | Longer 300s smoke | done; longer runtime reduced average IOPS and worsened p99/p99.9 latency |
 | Read-side sustained smoke | done; 120s read/write behavior is documented |
-| Telemetry recon | next; commands must be confirmed read-only and safe |
+| Telemetry recon | done with permission-limited evidence; device-level SMART/NVMe evidence still requires suitable permissions/tools |
 
 ## Result Labeling
 
@@ -325,14 +354,22 @@ Useful interview sentence:
 
 ## Immediate Next Action
 
-Run Experiment 4:
+If device-level telemetry is needed, rerun the storage telemetry collector from a normal or elevated PowerShell session:
 
 ```powershell
 cd D:\ssd_lab
-powershell -ExecutionPolicy Bypass -File .\scripts\collect_env_windows.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\collect_storage_telemetry_windows.ps1
 ```
 
-Then update:
+Optional read-only smartctl scan, only if `smartctl` is installed:
+
+```powershell
+cd D:\ssd_lab
+$env:SSD_LAB_SMARTCTL_SCAN = "1"
+powershell -ExecutionPolicy Bypass -File .\scripts\collect_storage_telemetry_windows.ps1
+```
+
+Then review:
 
 - `docs/reports/environment_collection_week8.md`
 - `docs/reports/sustained_workload_week10.md`

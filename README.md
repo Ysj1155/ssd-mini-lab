@@ -2,6 +2,32 @@
 
 fio-based SSD validation mini-lab for learning, portfolio building, and interview preparation.
 
+## Project Direction
+
+This project treats an SSD as a black-box DUT (Device Under Test) and focuses on product-like performance validation.
+
+The target role alignment is SSD Validation Engineer work:
+
+- performance test-case design
+- fio-based workload execution
+- Python and shell-script automation
+- JSON-to-CSV result processing
+- p99 / p99.9 latency and QoS review
+- sustained workload behavior review
+- environment and telemetry collection
+- result analysis, anomaly review, and interpretation boundaries
+
+This project does not attempt to inspect, simulate, or prove internal FTL/GC behavior. That topic belongs to the separate FTL white-box project.
+
+The two projects are intended to run in parallel:
+
+| Project | Viewpoint | Main question |
+|---|---|---|
+| FTL white-box project | Internal model | How do mapping, GC, WAF, and wear behavior work inside an SSD-like system? |
+| SSD Mini Lab | External product validation | How does a real SSD behave as a black-box DUT under controlled fio workloads? |
+
+Future work in this repo should stay on the black-box validation side: DUT profile, requirement matrix, automated test suite, telemetry snapshot, sustained workload analysis, and validation verdict reporting.
+
 The goal is not to chase the highest benchmark number. The goal is to build a repeatable validation flow:
 
 - define test conditions
@@ -42,6 +68,7 @@ docs/reports/stage2_next_experiment_plan.md
 | SSD validation competency map | Done | `docs/reports/ssd_validation_competency_map.md` |
 | Korean interview brief | Done | `docs/reports/korean_interview_brief.md` |
 | Validation run checklist | Done | `docs/reports/validation_run_checklist.md` |
+| Portfolio evidence view | Done | `docs/reports/portfolio_evidence.md` |
 | Stage 2 next experiment plan | Ready | `docs/reports/stage2_next_experiment_plan.md` |
 | Baseline fio parsing | Done | `parse_fio_results.py`, `results/fio_summary.csv` |
 | Baseline plots | Done | `plot_fio_summary.py`, `results/plots/` |
@@ -53,6 +80,7 @@ docs/reports/stage2_next_experiment_plan.md
 | Week 9 WSL path comparison | Done | `run_wsl_path_compare.ps1`, `analyze_wsl_path_compare.py`, `results/wsl_path_compare_*` |
 | QoS/tail latency review | Done | `analyze_qos_tail_latency.py`, `docs/reports/qos_tail_latency_review.md` |
 | Week 10 sustained smoke | Done (repeat smoke) | `run_sustained_smoke.ps1`, `analyze_sustained_smoke.py`, `docs/reports/sustained_workload_week10.md` |
+| Stage 2 storage telemetry recon | Done (permission-limited) | `scripts/collect_storage_telemetry_windows.ps1`, `docs/reports/environment_collection_week8.md` |
 
 ## Repository Layout
 
@@ -473,18 +501,42 @@ Smoke-run observation:
 - The 120s read repeat set had 95.88 MiB/s, 24,545.59 IOPS, 2.48 ms mean p99, and 9.85 ms mean p99.9.
 - In the 120s read/write comparison, write had 1.207x average IOPS and lower p99/p99.9, but 17.316x higher mean max latency because of a rare write outlier.
 
+## Stage 2 Storage Telemetry Recon
+
+Week 10 also adds a read-only storage telemetry collector:
+
+```powershell
+cd D:\ssd_lab
+powershell -ExecutionPolicy Bypass -File .\scripts\collect_storage_telemetry_windows.ps1
+```
+
+Outputs are written under:
+
+```text
+results/telemetry/
+results/telemetry/latest/
+```
+
+Current telemetry observation:
+
+- `D:\` was reported through `.NET DriveInfo` as a fixed NTFS drive.
+- Available free space was about 1412.86 GiB, with total drive capacity reported as about 1863 GiB.
+- The sustained fio test file existed and was 1 GiB.
+- Device-level Windows disk and storage-reliability queries were blocked by access-denied errors in the current Codex sandbox context.
+- `smartctl` was not available, and `smartctl --scan-open` is not run by default.
+
 ## Current Limitations
 
 - Tests are file-based, not raw block-device validation.
 - The current hardware path includes Windows filesystem and, for the external SSD, USB/enclosure effects.
 - Most experiments use 30 second runs; Week 10 now has write-side 120s/300s repeat sets and a read-side 120s repeat set.
 - Each condition currently has only three repeated runs.
-- SMART/NVMe telemetry is not collected yet.
+- SMART/NVMe telemetry has not been collected from the current sandbox context; the telemetry recon currently proves path/free-space/test-file state and the permission boundary.
 
 ## Next Steps
 
-- Run read-only telemetry reconnaissance
-- Compare telemetry/environment context against sustained write/read behavior
+- Rerun read-only storage telemetry from normal or elevated PowerShell if device-level counters are needed
+- Compare telemetry/environment context against sustained write/read behavior without over-claiming device-level causality
 - Use the validation run checklist before each new experiment
 - Refine the Korean interview brief into a public-facing portfolio README
 - Obsidian TIL notes connected to this project
@@ -496,3 +548,4 @@ Smoke-run observation:
 - `Add QD sweep reproducibility analysis`
 - `Add project README`
 - `Add direct buffered analysis`
+
