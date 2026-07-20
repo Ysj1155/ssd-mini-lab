@@ -1,0 +1,91 @@
+# External SSD black-box validation matrix
+#
+# Purpose:
+#   Prepare product-like fio test conditions for an external SSD DUT.
+#
+# Safety:
+#   Use a file target on the intended external SSD path.
+#   Do not use raw physical drives.
+#   Keep the test file path explicit before running fio.
+
+dut:
+  label: external_ssd_dut_01
+  target_file: "E:\\validation\\ssd_lab_fio_testfile"
+  notes:
+    - "Target path is the dedicated validation folder on the external SSD."
+    - "This is black-box file-based validation, not raw NAND/FTL evidence."
+
+common:
+  fio_output_format: json
+  ioengine: windowsaio
+  direct: 1
+  numjobs: 1
+  group_reporting: 1
+  time_based: 1
+
+test_cases:
+  - id: EXT-PERF-RR-QD-SWEEP
+    purpose: "Observe random-read scaling and p99 latency across queue depth."
+    rw: randread
+    bs: 4k
+    size: 512M
+    runtime_sec: 30
+    repeats: 3
+    iodepth: [1, 4, 16, 32]
+    requirement_links:
+      - REQ-PERF-001
+      - REQ-QOS-001
+      - REQ-REPRO-001
+
+  - id: EXT-PERF-RW-QD-SWEEP
+    purpose: "Observe random-write scaling and p99 latency across queue depth."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 30
+    repeats: 3
+    iodepth: [1, 4, 16, 32]
+    requirement_links:
+      - REQ-PERF-002
+      - REQ-QOS-001
+      - REQ-REPRO-001
+
+  - id: EXT-SUST-WRITE-120S
+    purpose: "Check short sustained random-write behavior and tail latency."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 3
+    iodepth: [16]
+    requirement_links:
+      - REQ-SUST-001
+      - REQ-QOS-001
+      - REQ-REPRO-001
+
+  - id: EXT-SUST-WRITE-300S
+    purpose: "Check whether longer random-write runtime exposes worse tail behavior."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 300
+    repeats: 3
+    iodepth: [16]
+    requirement_links:
+      - REQ-SUST-001
+      - REQ-SUST-002
+      - REQ-QOS-001
+      - REQ-REPRO-001
+
+  - id: EXT-SUST-READ-120S
+    purpose: "Compare sustained read behavior against sustained write behavior."
+    rw: randread
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 3
+    iodepth: [16]
+    requirement_links:
+      - REQ-SUST-003
+      - REQ-QOS-001
+      - REQ-REPRO-001

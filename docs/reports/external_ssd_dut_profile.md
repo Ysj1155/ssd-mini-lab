@@ -1,0 +1,71 @@
+# External SSD DUT Profile
+
+This document defines the external SSD as a black-box DUT (Device Under Test).
+
+The purpose is to make each fio run traceable to a concrete product path and environment. This is not an internal FTL/GC model.
+
+## DUT Identity
+
+| Field | Value |
+|---|---|
+| DUT label | `external_ssd_dut_01` |
+| Vendor / model | SanDisk Extreme Portable SSD, exact model to confirm |
+| Capacity | About 1 TB as currently reported by Windows; earlier notes should be rechecked before public wording |
+| Serial number | Optional / do not publish if sensitive |
+| Connection | External SSD over USB path |
+| Enclosure / adapter | TBD |
+| Host port | TBD |
+| File system | exFAT |
+| Test file path | `E:\validation\ssd_lab_fio_testfile` |
+
+## Host Environment
+
+| Field | Value |
+|---|---|
+| Host OS | Windows |
+| fio version | TBD |
+| Python version | TBD |
+| Shell | PowerShell |
+| Repo path | `D:\ssd_lab` |
+| Environment snapshot | `results/env/latest/` after collection |
+| Telemetry snapshot | `results/telemetry/latest/` after collection |
+
+## Validation Scope
+
+In scope:
+
+- fio-based file target testing
+- throughput, IOPS, p99, p99.9, and max latency review
+- repeated-run variation
+- sustained workload behavior
+- environment and telemetry snapshots
+- black-box interpretation of observable behavior
+
+Out of scope:
+
+- raw physical-drive destructive tests
+- firmware modification
+- direct NAND/FTL/GC tracing
+- power-rail measurement unless external measurement equipment is added
+
+## Interpretation Boundary
+
+This DUT is tested through an external path. Results may include effects from:
+
+- USB bridge or enclosure
+- host controller
+- Windows filesystem
+- OS cache and scheduler behavior
+- fio file allocation and test-file reuse
+
+Therefore, this project can support product-like black-box validation observations, but it should not claim direct NAND, FTL, or GC root cause without additional evidence.
+
+## Pre-Run Checklist
+
+- Confirm the external SSD drive letter.
+- Confirm the target file path is `E:\validation\ssd_lab_fio_testfile`.
+- Confirm free space is sufficient for the selected test size.
+- Close unrelated heavy background applications.
+- Collect environment snapshot.
+- Collect storage telemetry snapshot if permissions allow.
+- Record any device temperature / SMART data available before the run.

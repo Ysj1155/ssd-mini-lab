@@ -69,6 +69,7 @@ docs/reports/stage2_next_experiment_plan.md
 | Korean interview brief | Done | `docs/reports/korean_interview_brief.md` |
 | Validation run checklist | Done | `docs/reports/validation_run_checklist.md` |
 | Portfolio evidence view | Done | `docs/reports/portfolio_evidence.md` |
+| External SSD product validation prep | Ready | `docs/reports/external_ssd_dut_profile.md`, `docs/reports/external_ssd_requirement_matrix.md`, `docs/reports/external_ssd_execution_runbook.md` |
 | Stage 2 next experiment plan | Ready | `docs/reports/stage2_next_experiment_plan.md` |
 | Baseline fio parsing | Done | `parse_fio_results.py`, `results/fio_summary.csv` |
 | Baseline plots | Done | `plot_fio_summary.py`, `results/plots/` |
@@ -94,6 +95,8 @@ ssd-mini-lab/
   run_baseline.ps1
   run_qd_sweep.ps1
   run_direct_buffered.ps1
+  configs/
+    external_ssd_validation_matrix.yaml
   docs/
     notes/
     reports/
@@ -535,6 +538,9 @@ Current telemetry observation:
 
 ## Next Steps
 
+- Fill the external SSD DUT profile before running product-like validation tests
+- Run the external SSD smoke test locally after confirming the target file path
+- Use `configs/external_ssd_validation_matrix.yaml` as the planned test matrix
 - Rerun read-only storage telemetry from normal or elevated PowerShell if device-level counters are needed
 - Compare telemetry/environment context against sustained write/read behavior without over-claiming device-level causality
 - Use the validation run checklist before each new experiment
