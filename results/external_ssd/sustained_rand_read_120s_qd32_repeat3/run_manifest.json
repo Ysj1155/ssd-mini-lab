@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-20T07:40:44.079188+00:00",
+  "generator": "scripts/analysis/build_external_ssd_run_manifest.py",
+  "run_id": "sustained_rand_read_120s_qd32_repeat3",
+  "result_set": "sustained_rand_read_120s_qd32_repeat3",
+  "test_case_id": "EXT-SUST-READ-QD32-120S",
+  "requirement_ids": [
+    "REQ-SUST-003",
+    "REQ-QOS-001",
+    "REQ-REPRO-001",
+    "REQ-OBS-001"
+  ],
+  "dut_id": "external_ssd_dut_01",
+  "status": "limited",
+  "result": "observation",
+  "tool_versions": {
+    "fio": [
+      "fio-3.42"
+    ],
+    "python": "3.12.1"
+  },
+  "conditions": {
+    "operation": "read",
+    "rw": "randread",
+    "bs": "4k",
+    "iodepth": 32,
+    "runtime_sec": 120,
+    "size": "512M",
+    "direct": 1,
+    "numjobs": 1
+  },
+  "evidence_links": {
+    "dut_profile": "docs/reports/external_ssd_dut_profile.md",
+    "requirement_matrix": "docs/reports/external_ssd_requirement_matrix.md",
+    "validation_matrix": "configs/external_ssd_validation_matrix.yaml",
+    "product_report": "docs/reports/external_ssd_product_validation.md",
+    "env_snapshot": "results/env/latest/manifest.json",
+    "telemetry_snapshot": "results/telemetry/latest/manifest.json",
+    "runner_manifest": null,
+    "observer_manifests": []
+  },
+  "execution_model": {
+    "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",
+    "runner_status": "missing",
+    "observer_status": "incomplete"
+  },
+  "artifacts": {
+    "raw_dir": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3",
+    "summary_csv": "results/external_ssd_sustained_summary.csv",
+    "timeseries_csv": "results/external_ssd_sustained_timeseries.csv",
+    "window_summary_csv": "results/external_ssd_sustained_window_summary.csv",
+    "repeatability_csv": "results/external_ssd_sustained_repeatability.csv"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "fio_json": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run1.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run1_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run1_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run1_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run1_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run1_slat.1.log"
+      }
+    },
+    {
+      "run": 2,
+      "fio_json": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run2.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run2_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run2_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run2_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run2_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run2_slat.1.log"
+      }
+    },
+    {
+      "run": 3,
+      "fio_json": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run3.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run3_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run3_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run3_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run3_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/sustained_rand_read_120s_qd32_repeat3_run3_slat.1.log"
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "type": "missing_execution_evidence",
+      "details": [
+        {
+          "type": "missing_runner_manifest",
+          "expected": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/runner_manifest.json"
+        },
+        {
+          "type": "missing_observer_manifest",
+          "phase": "pre",
+          "expected": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/observer_manifest_pre.json"
+        },
+        {
+          "type": "missing_observer_manifest",
+          "phase": "post",
+          "expected": "results/external_ssd/sustained_rand_read_120s_qd32_repeat3/observer_manifest_post.json"
+        }
+      ]
+    }
+  ],
+  "interpretation_boundary": "USB, Windows, exFAT file-target result; not internal FTL/GC proof"
+}

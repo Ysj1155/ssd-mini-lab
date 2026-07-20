@@ -1,0 +1,14 @@
+{
+  "fio version": "fio-3.42",
+  "timestamp": 1784525227,
+  "timestamp_ms": 1784525227836,
+  "jobs": [
+    {
+      "jobname": "rand_read",
+      "error": 0,
+      "job options": {"rw": "randread", "bs": "4k", "iodepth": "16", "numjobs": "1", "size": "512M", "direct": "1"},
+      "read": {"runtime": 120001, "bw_bytes": 187191296, "iops": 45649.7, "clat_ns": {"mean": 304743.0, "max": 24747868, "percentile": {"95.000000": 512000, "99.000000": 692224, "99.900000": 995328}}},
+      "write": {"runtime": 0, "bw_bytes": 0, "iops": 0, "clat_ns": {}}
+    }
+  ]
+}

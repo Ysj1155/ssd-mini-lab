@@ -2,133 +2,79 @@
 
 Black-box SSD validation mini-lab using fio, Python, and PowerShell.
 
-This repository treats a real SSD as a DUT (Device Under Test) and builds portfolio evidence around product-style validation: test condition design, controlled fio execution, JSON-to-CSV parsing, repeatability review, p99/p99.9 latency analysis, sustained workload observation, and clear interpretation limits.
+This repository treats a real SSD as a DUT (Device Under Test) and preserves a traceable validation flow:
 
-This is intentionally separate from my FTL/GC white-box study project. This repo focuses on what can be observed from the outside of a real storage device.
+```text
+requirement -> condition -> runner / observer -> raw evidence -> analysis -> verdict
+```
 
-## Portfolio Snapshot
+The goal is not to chase the highest benchmark number. The goal is to show controlled execution, reproducible evidence, tail-latency review, and honest interpretation limits.
 
-| Validation question | Evidence |
+This project is intentionally separate from the FTL/GC white-box study project. This repository measures externally observable device behavior; it does not claim internal NAND, FTL, or GC root cause.
+
+## Current Track: External SSD DUT
+
+The active track uses a SanDisk external SSD and a file target at `E:\validation\ssd_lab_fio_testfile`.
+
+Interpretation boundary: results include the USB path, Windows, exFAT, and fio file-target effects.
+
+| Validation question | Current evidence |
 |---|---|
-| How does queue depth affect throughput and tail latency? | `results/qd_sweep_grouped.csv`, `docs/reports/reproducibility_qd_sweep.md` |
-| How much do repeated runs vary? | `results/qd_sweep_reproducibility.csv` |
-| How does direct I/O differ from buffered I/O? | `docs/reports/direct_buffered_week7.md`, `results/direct_buffered_comparison.csv` |
-| Does path/runtime context change fio behavior? | `docs/reports/wsl_path_compare_week9.md`, `docs/reports/sustained_workload_week10.md` |
-| Can an external SSD be handled as a black-box DUT? | `docs/reports/external_ssd_product_validation.md` |
+| How does QD affect 4K random performance and tail latency? | QD 1/4/16/32, read/write, 30s, repeat=3 |
+| Are results repeatable? | Per-condition mean, standard deviation, and CV |
+| Does sustained behavior differ from the short sweep? | Read/write QD16/QD32, 120s, repeat=3 |
+| Does longer runtime expose write-side QoS risk? | Random write QD32, 120s vs 300s, repeat=3 |
+| Can every result be traced to its conditions and evidence? | Run manifest plus separate runner/observer manifests |
 
-## Current Highlight: External SSD DUT Validation
+Latest finding: the 300s QD32 random-write result averaged 138.74 MiB/s and 35,517 IOPS. Compared with the matching 120s result, p99.9 increased from 2,124 us to 3,249 us, last-third IOPS averaged 0.91x the first third, and last-third average completion latency reached 1.12x. This is a black-box QoS observation, not proof of internal GC.
 
-The current product-validation track uses an external SanDisk SSD through a file target under `E:\validation`.
+Historical sustained runs predate the runner/observer evidence model. Their integrated manifests are therefore marked `limited` when those execution artifacts are absent.
 
-Core artifacts:
+## Start Here
 
-| Artifact | Path |
+| Purpose | Path |
 |---|---|
-| DUT profile | `docs/reports/external_ssd_dut_profile.md` |
-| Requirement matrix | `docs/reports/external_ssd_requirement_matrix.md` |
-| Execution runbook | `docs/reports/external_ssd_execution_runbook.md` |
-| Product validation report | `docs/reports/external_ssd_product_validation.md` |
-| Test matrix | `configs/external_ssd_validation_matrix.yaml` |
-| Raw fio JSON/logs | `results/external_ssd/` |
-| Parsed CSV summaries | `results/external_ssd_*.csv` |
+| DUT definition | `docs/reports/external_ssd_dut_profile.md` |
+| Requirements and verdict rules | `docs/reports/external_ssd_requirement_matrix.md` |
+| Next execution procedure | `docs/reports/external_ssd_execution_runbook.md` |
+| Current result interpretation | `docs/reports/external_ssd_product_validation.md` |
+| Machine-readable test matrix | `configs/external_ssd_validation_matrix.yaml` |
+| Raw fio JSON and logs | `results/external_ssd/` |
+| Parsed sustained CSVs | `results/external_ssd_sustained_*.csv` |
 
-Latest completed external SSD result:
+## Evidence Model
 
-| Workload | Runtime | QD | Repeats | Avg BW MiB/s | Avg IOPS | Avg p99 us | Avg p99.9 us |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| randwrite 4k | 120s | 16 | 3 | 162.96 | 41,716.65 | 516.10 | 735.91 |
+- Runner: executes fio and writes raw JSON/logs plus `runner_manifest.json`.
+- Observer: collects read-only environment and telemetry evidence before and after fio.
+- Analyzer: converts fio JSON/logs into comparable CSV summaries.
+- Integrated manifest: links the DUT, requirements, conditions, artifacts, and evidence gaps under one `run_id`.
+- Report: records observations, verdicts, anomalies, and interpretation boundaries.
 
-Interpretation boundary: these are black-box file-target results through USB, Windows, and exFAT. They are useful for validation workflow evidence, but they do not prove internal SSD FTL or GC behavior.
+Missing telemetry or execution evidence is recorded as `limited`; it is not silently treated as complete.
 
 ## Repository Layout
 
 ```text
 ssd-mini-lab/
-  README.md
-  configs/                 # validation matrices
-  docs/
-    reports/               # portfolio reports and experiment writeups
-    notes/                 # working notes
-  fio/                     # small baseline fio JSON samples
-  results/                 # documented raw results, summaries, and plots
-  scripts/
-    analysis/              # Python parsers/analyzers/plot builders
-    runners/               # PowerShell fio runners
+  configs/                 # machine-readable validation conditions
+  docs/reports/            # runbook, requirements, and result reports
+  fio/                     # small baseline fio samples
+  results/                 # raw evidence and derived CSVs
+  scripts/analysis/        # parsers, analyzers, manifest builder
+  scripts/observers/       # read-only environment/telemetry collection
+  scripts/runners/         # fio execution
+  tests/                   # parser compatibility fixtures and tests
 ```
 
-Large local fio test files are ignored by Git. Documented raw JSON/CSV/plot outputs are kept when they support an experiment report.
+Large local fio test files are ignored by Git. Raw JSON/logs and derived CSVs are retained when they support a documented validation result.
 
-## Runbook Entry Points
-
-Use PowerShell from the repository root unless a report says otherwise.
-
-Baseline parsing:
+## Verification
 
 ```powershell
 cd D:\ssd_lab
-python .\scripts\analysis\parse_fio_results.py
+python -m unittest discover -s tests -p "test_*.py"
+python .\scripts\analysis\analyze_external_ssd_sustained.py
+python .\scripts\analysis\build_external_ssd_run_manifest.py --all
 ```
 
-Queue-depth analysis:
-
-```powershell
-cd D:\ssd_lab
-python .\scripts\analysis\analyze_qd_sweep.py
-python .\scripts\analysis\analyze_qd_reproducibility.py
-```
-
-External SSD QD sweep:
-
-```powershell
-cd D:\ssd_lab
-$env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_qd_smoke.ps1
-```
-
-External SSD sustained run:
-
-```powershell
-cd D:\ssd_lab
-$env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL = "sustained_rand_write_120s_qd16_repeat3"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_WORKLOAD = "rand_write"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RW = "randwrite"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RUNTIME = "120"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_SIZE = "512M"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH = "16"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RUNS = "3"
-powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_sustained.ps1
-```
-
-## Main Reports
-
-| Report | Purpose |
-|---|---|
-| `docs/reports/portfolio_evidence.md` | Evidence map for portfolio review |
-| `docs/reports/ssd_validation_competency_map.md` | Mapping to SSD Validation Engineer competencies |
-| `docs/reports/korean_interview_brief.md` | Korean interview talking points |
-| `docs/reports/validation_run_checklist.md` | Reusable pre-run/post-run checklist |
-| `docs/reports/external_ssd_product_validation.md` | Current external SSD DUT validation report |
-| `docs/reports/stage2_next_experiment_plan.md` | Next experiment plan |
-
-## Tooling
-
-- fio
-- Python
-- pandas
-- matplotlib
-- PowerShell
-- Git / GitHub
-
-## Project Direction
-
-Future work should stay on the black-box validation side:
-
-- define DUT profile and test requirements
-- run controlled fio workloads
-- preserve raw JSON/log evidence
-- parse results into comparable CSVs
-- review p99/p99.9 latency and repeatability
-- document limitations before making claims
-
-The goal is not to chase the highest benchmark number. The goal is to show a repeatable validation workflow: condition -> execution -> result -> interpretation.
+Codex does not run fio for the external SSD track unless explicitly asked. The user confirms the target path and runs fio locally.

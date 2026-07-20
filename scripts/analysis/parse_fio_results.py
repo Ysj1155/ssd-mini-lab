@@ -53,6 +53,23 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+SUPPORTED_FIO_VERSION_PREFIXES = ("fio-3.",)
+
+
+# -----------------------------
+# Compatibility helpers
+# -----------------------------
+
+def is_supported_fio_version(version: Optional[str]) -> bool:
+    """
+    Return whether the fio version is in the parser's supported compatibility range.
+
+    This parser is currently validated against fio 3.x JSON output, including fio-3.42.
+    Unknown or future major versions are still parsed best-effort but marked unsupported.
+    """
+    if not version:
+        return False
+    return any(str(version).startswith(prefix) for prefix in SUPPORTED_FIO_VERSION_PREFIXES)
 
 # -----------------------------
 # Small conversion/helper funcs
@@ -387,6 +404,8 @@ def build_row(
         "clat_p99_us": ns_to_us(p99_ns),
         "clat_p999_us": ns_to_us(p999_ns),
         "fio_version": fio_root.get("fio version"),
+        "fio_version_supported": is_supported_fio_version(fio_root.get("fio version")),
+        "job_error": job.get("error"),
         "timestamp": fio_root.get("timestamp"),
         "timestamp_ms": fio_root.get("timestamp_ms"),
     }
@@ -450,6 +469,8 @@ def write_csv(rows: List[Dict[str, Any]], output_path: Path) -> None:
         "clat_p99_us",
         "clat_p999_us",
         "fio_version",
+        "fio_version_supported",
+        "job_error",
         "timestamp",
         "timestamp_ms",
     ]

@@ -24,6 +24,7 @@ common:
   time_based: 1
 
 test_cases:
+
   - id: EXT-PERF-RR-QD-SWEEP
     purpose: "Observe random-read scaling and p99 latency across queue depth."
     rw: randread
@@ -62,6 +63,7 @@ test_cases:
       - REQ-SUST-001
       - REQ-QOS-001
       - REQ-REPRO-001
+      - REQ-OBS-001
 
   - id: EXT-SUST-WRITE-300S
     purpose: "Check whether longer random-write runtime exposes worse tail behavior."
@@ -76,6 +78,7 @@ test_cases:
       - REQ-SUST-002
       - REQ-QOS-001
       - REQ-REPRO-001
+      - REQ-OBS-001
 
   - id: EXT-SUST-READ-120S
     purpose: "Compare sustained read behavior against sustained write behavior."
@@ -89,3 +92,47 @@ test_cases:
       - REQ-SUST-003
       - REQ-QOS-001
       - REQ-REPRO-001
+      - REQ-OBS-001
+
+  - id: EXT-SUST-READ-QD32-120S
+    purpose: "Check whether the higher-throughput QD32 random-read condition exposes worse sustained tail latency."
+    rw: randread
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 3
+    iodepth: [32]
+    requirement_links:
+      - REQ-SUST-003
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-OBS-001
+
+  - id: EXT-SUST-WRITE-QD32-120S
+    purpose: "Check whether the QD32 random-write condition repeats the short-sweep QoS instability under sustained runtime."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 3
+    iodepth: [32]
+    requirement_links:
+      - REQ-SUST-001
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-OBS-001
+
+  - id: EXT-SUST-WRITE-QD32-300S
+    purpose: "Escalate the QD32 random-write QoS risk candidate from 120s to 300s sustained runtime."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 300
+    repeats: 3
+    iodepth: [32]
+    requirement_links:
+      - REQ-SUST-001
+      - REQ-SUST-002
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-OBS-001

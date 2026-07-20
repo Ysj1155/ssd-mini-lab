@@ -13,6 +13,20 @@ Common entry points:
 - `analysis/analyze_qd_reproducibility.py`
 - `analysis/analyze_qos_tail_latency.py`
 - `analysis/analyze_sustained_smoke.py`
+- `analysis/analyze_external_ssd_sustained.py`
+- `analysis/build_external_ssd_run_manifest.py`
+
+Parser compatibility tests:
+
+```powershell
+python -m unittest discover -s tests -p "test_*.py"
+```
+
+## `observers/`
+
+Read-only evidence collectors that do not run fio.
+
+- `observers/collect_external_ssd_observer.ps1`
 
 ## `runners/`
 

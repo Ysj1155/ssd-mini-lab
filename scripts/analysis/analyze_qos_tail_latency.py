@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[2]
 OUTPUT_CSV = BASE_DIR / "results" / "qos_tail_latency_summary.csv"
 PLOT_DIR = BASE_DIR / "results" / "qos_tail_latency_plots"
 

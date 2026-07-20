@@ -1,186 +1,125 @@
 # External SSD Execution Runbook
 
-This runbook prepares fio execution for the external SSD DUT.
+This is the fixed execution procedure for the next external SSD sustained run.
 
-Codex should not run fio for this track unless explicitly asked. The user runs fio locally after confirming the target path.
+Codex prepares and reviews the workflow but does not run fio unless explicitly asked. The user confirms the external SSD path and executes fio locally.
 
-## 1. Confirm DUT Path
+## 1. Safety Boundary
 
-Choose a test file path on the external SSD.
+- Use only the existing file target `E:\validation\ssd_lab_fio_testfile`.
+- Do not use a raw physical-drive path.
+- Do not substitute an internal OS-drive file.
+- Keep new product-validation runs under `results/external_ssd/<run_id>/`.
+- Read workloads use fio's `--readonly` flag through the runner.
 
-Example:
-
-```powershell
-$env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-```
-
-This path is intentionally under `E:\validation` so the new product-validation run does not mix with older `E:\labs` experiments.
-
-Do not use:
-
-- raw physical drive paths
-- the internal OS drive by accident
-- ambiguous filenames such as `testfile` without a full path
-- older folders such as `E:\labs\fio_test` or `E:\labs\ssd-mini-lab` for new product-validation output
-
-## 2. Collect Environment Context
-
-Run before fio:
-
-```powershell
-cd D:\ssd_lab
-powershell -ExecutionPolicy Bypass -File .\scripts\collect_env_windows.ps1
-powershell -ExecutionPolicy Bypass -File .\scripts\collect_storage_telemetry_windows.ps1
-```
-
-If `smartctl` is installed and a read-only scan is desired:
-
-```powershell
-cd D:\ssd_lab
-$env:SSD_LAB_SMARTCTL_SCAN = "1"
-powershell -ExecutionPolicy Bypass -File .\scripts\collect_storage_telemetry_windows.ps1
-```
-
-## 3. Start with a Small Smoke Run
-
-Use a small single run first to verify the target path.
-
-Example fio command shape:
-
-```powershell
-fio --name=external_smoke `
-  --filename="$env:SSD_LAB_EXTERNAL_TESTFILE" `
-  --rw=randread `
-  --bs=4k `
-  --iodepth=1 `
-  --size=512M `
-  --runtime=30 `
-  --time_based=1 `
-  --direct=1 `
-  --ioengine=windowsaio `
-  --numjobs=1 `
-  --group_reporting=1 `
-  --output-format=json `
-  --output=results\external_ssd\external_smoke.json
-```
-
-Check the JSON `filename` field after the smoke run. It must point to the external SSD path.
-
-Expected path:
-
-```text
-E:\validation\ssd_lab_fio_testfile
-```
-
-## 4. Run Planned Test Cases
-
-Use the matrix:
-
-```text
-configs/external_ssd_validation_matrix.yaml
-```
-
-Recommended first execution order:
-
-1. `EXT-PERF-RR-QD-SWEEP`
-2. `EXT-PERF-RW-QD-SWEEP`
-3. `EXT-SUST-WRITE-120S`
-4. `EXT-SUST-READ-120S`
-5. `EXT-SUST-WRITE-300S`
-
-Run the longer write test only after the smaller tests complete without path or space issues.
-
-For the first product-validation pass, run the lightweight QD sweep smoke:
+Confirm the target before every run:
 
 ```powershell
 cd D:\ssd_lab
 $env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_qd_smoke.ps1
+Get-Item -LiteralPath $env:SSD_LAB_EXTERNAL_TESTFILE | Select-Object FullName, Length, LastWriteTime
+Get-Volume -DriveLetter E
 ```
 
-Default smoke scope:
+Stop if the file is missing, the drive letter changed, or the path does not begin with `E:\validation\`.
 
-```text
-randread/randwrite, 4k, QD 1/4/16/32, 512M, 30s, repeat=1
-```
+## 2. Define One Run ID and Its Conditions
 
-
-After the smoke pass is confirmed, run the same conditions with three repeats:
+Set every condition explicitly in the same PowerShell session. For the next evidence-complete confirmation run:
 
 ```powershell
 cd D:\ssd_lab
 $env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-$env:SSD_LAB_EXTERNAL_LABEL = "qd_sweep_repeat3"
-$env:SSD_LAB_EXTERNAL_REPEATS = "3"
-$env:SSD_LAB_EXTERNAL_RUNTIME = "30"
-$env:SSD_LAB_EXTERNAL_SIZE = "512M"
-powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_qd_smoke.ps1
-```
-
-Expected repeat output:
-
-```text
-results/external_ssd/qd_sweep_repeat3/
-2 workloads x 4 QD x 3 repeats = 24 JSON files
-```
-
-For the next raw-data pass, run sustained random write at QD16:
-
-```powershell
-cd D:\ssd_lab
-$env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL = "sustained_rand_write_120s_qd16_repeat3"
+$env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL = "sustained_rand_write_300s_qd32_trace_repeat3"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_WORKLOAD = "rand_write"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_RW = "randwrite"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RUNTIME = "120"
+$env:SSD_LAB_EXTERNAL_SUSTAINED_RUNTIME = "300"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_SIZE = "512M"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH = "16"
+$env:SSD_LAB_EXTERNAL_SUSTAINED_BS = "4k"
+$env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH = "32"
+$env:SSD_LAB_EXTERNAL_SUSTAINED_DIRECT = "1"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_RUNS = "3"
-powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_sustained.ps1
 ```
 
-Expected sustained output:
+This repeats the current QoS risk candidate under the new evidence model. The distinct run ID preserves the earlier result set and allows a cross-session confirmation without overwriting raw data.
 
-```text
-results/external_ssd/sustained_rand_write_120s_qd16_repeat3/
-3 JSON files plus fio time-series logs
-```
+## 3. Fixed Execution Sequence
 
-## 5. After fio
-
-Collect:
-
-- fio JSON outputs
-- environment snapshot
-- telemetry snapshot
-- drive free-space state
-- any observed temperature or device-status data
-
-Then analyze:
+Run these commands in order:
 
 ```powershell
-python .\scripts\analysis\parse_fio_results.py --input-dir results\external_ssd --output results\external_ssd_summary.csv
+powershell -ExecutionPolicy Bypass -File .\scripts\observers\collect_external_ssd_observer.ps1 -Phase pre
+powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_sustained.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\observers\collect_external_ssd_observer.ps1 -Phase post
 ```
 
-If the output layout differs, add a dedicated analyzer instead of forcing unrelated scripts to parse incompatible filenames.
+Evidence ownership is intentionally separated:
 
-## 6. Report
+| Producer | Responsibility | Expected artifact |
+|---|---|---|
+| Observer, pre | Read-only host/path/telemetry context before fio | `observer_manifest_pre.json` |
+| Runner | fio execution, exit codes, raw JSON, time-series logs | `runner_manifest.json` and fio artifacts |
+| Observer, post | Read-only host/path/telemetry context after fio | `observer_manifest_post.json` |
 
-Use:
+All three manifests must share the same run ID from `SSD_LAB_EXTERNAL_SUSTAINED_LABEL`.
 
-```text
-docs/reports/external_ssd_product_validation.md
+## 4. Post-Run Validation
+
+First verify file count, fio status, and target path:
+
+```powershell
+$runDir = Join-Path ".\results\external_ssd" $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL
+Get-ChildItem -LiteralPath $runDir | Select-Object Name, Length, LastWriteTime
+Select-String -Path (Join-Path $runDir "*_run*.json") -Pattern '"error"|"filename"'
 ```
 
-The report should include:
+Expected minimum evidence:
 
-- DUT profile
-- requirement matrix
-- test matrix
-- execution evidence
-- p99 / p99.9 review
-- sustained workload review
-- telemetry observations
-- anomaly review
-- verdict
-- limitations
+- 3 fio run JSON files with `error: 0`
+- fio time-series logs for each run
+- `runner_manifest.json`
+- `observer_manifest_pre.json`
+- `observer_manifest_post.json`
+- JSON `filename` values resolving to `E:\validation\ssd_lab_fio_testfile`
+
+Then rebuild the derived evidence:
+
+```powershell
+python .\scripts\analysis\analyze_external_ssd_sustained.py
+python .\scripts\analysis\build_external_ssd_run_manifest.py --result-set $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL
+```
+
+Inspect the integrated manifest:
+
+```powershell
+Get-Content -Raw (Join-Path $runDir "run_manifest.json")
+```
+
+The expected integrated status is `complete`. A `limited` status is acceptable only when its anomaly list explicitly identifies the missing or restricted evidence.
+
+## 5. Interpretation and Reporting
+
+Review these outputs before changing the report:
+
+- `results/external_ssd_sustained_summary.csv`
+- `results/external_ssd_sustained_repeatability.csv`
+- `results/external_ssd_sustained_window_summary.csv`
+- `results/external_ssd/<run_id>/run_manifest.json`
+
+Compare the confirmation run against `sustained_rand_write_300s_qd32_repeat3` using:
+
+- average bandwidth and IOPS
+- p99 and p99.9 completion latency
+- run-to-run CV
+- last-third IOPS / first-third IOPS
+- last-third average completion latency / first-third average completion latency
+- observer limitations and available telemetry
+
+Do not infer internal FTL or GC behavior from these black-box file-target results.
+
+## 6. Failure Handling
+
+- Wrong or missing target path: stop before fio and correct the path.
+- fio nonzero exit: preserve the raw output and runner manifest; do not merge it into a successful result.
+- Observer limitation: continue only if fio safety is unaffected, then retain the explicit `limited` status.
+- Missing logs or manifests: do not fabricate or backfill execution evidence; rerun with a new run ID if complete traceability is required.

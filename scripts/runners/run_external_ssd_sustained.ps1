@@ -12,6 +12,9 @@
 #   It refuses to run unless the test file already exists under E:\validation.
 #   Read workloads use fio's readonly flag.
 #
+# Runner evidence:
+#   Writes runner_manifest.json beside fio JSON/log artifacts.
+#
 # Default:
 #   workload=rand_write
 #   runtime=120s
@@ -40,8 +43,20 @@ $DefaultLabel = "sustained_${Workload}_${Runtime}s_${Size}_${Bs}_qd${Iodepth}_di
 $RunLabel = if ($env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL) { $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL } else { $DefaultLabel }
 $SafeLabel = $RunLabel -replace '[^A-Za-z0-9_.-]', '_'
 $ResultDir = Join-Path $ResultRoot $SafeLabel
+$RunnerManifestPath = Join-Path $ResultDir "runner_manifest.json"
 
 New-Item -ItemType Directory -Force $ResultDir | Out-Null
+
+function Save-RunnerManifest {
+    param(
+        [object]$Manifest,
+        [string]$Path
+    )
+
+    $Manifest |
+        ConvertTo-Json -Depth 8 |
+        Out-File -FilePath $Path -Encoding utf8
+}
 
 Write-Host "=== External SSD sustained raw-data run ==="
 Write-Host "BaseDir     : $BaseDir"
@@ -83,9 +98,48 @@ if ($null -eq $fioCommand) {
 Write-Host "fio found   : $($fioCommand.Source)"
 Write-Host ""
 
+$RunnerManifest = [ordered]@{
+    schema_version = "1.0"
+    role = "runner"
+    run_id = $SafeLabel
+    started_at = (Get-Date).ToString("o")
+    completed_at = $null
+    status = "started"
+    runner = "scripts/runners/run_external_ssd_sustained.ps1"
+    safety = "fio file-target runner; refuses targets outside E:\validation; no raw physical-drive target"
+    fio_command = $fioCommand.Source
+    result_dir = $ResultDir
+    test_file = $TestFile
+    conditions = [ordered]@{
+        workload = $Workload
+        rw = $Rw
+        bs = $Bs
+        iodepth = $Iodepth
+        size = $Size
+        runtime_sec = $Runtime
+        direct = $Direct
+        numjobs = "1"
+        log_avg_msec = $LogAvgMsec
+        readonly = $ReadOnly
+        planned_runs = $Runs
+    }
+    runs = @()
+}
+
+Save-RunnerManifest -Manifest $RunnerManifest -Path $RunnerManifestPath
+
 for ($Run = 1; $Run -le $Runs; $Run++) {
     $OutFile = Join-Path $ResultDir "${SafeLabel}_run${Run}.json"
     $LogPrefix = Join-Path $ResultDir "${SafeLabel}_run${Run}"
+    $RunRecord = [ordered]@{
+        run = $Run
+        started_at = (Get-Date).ToString("o")
+        completed_at = $null
+        status = "started"
+        exit_code = $null
+        fio_json = $OutFile
+        log_prefix = $LogPrefix
+    }
 
     Write-Host "----------------------------------------"
     Write-Host "Running sustained: run=$Run / $Runs"
@@ -121,17 +175,36 @@ for ($Run = 1; $Run -le $Runs; $Run++) {
     & fio @fioArgs
 
     if ($LASTEXITCODE -ne 0) {
+        $RunRecord.completed_at = (Get-Date).ToString("o")
+        $RunRecord.status = "failed"
+        $RunRecord.exit_code = $LASTEXITCODE
+        $RunnerManifest.runs += $RunRecord
+        $RunnerManifest.completed_at = (Get-Date).ToString("o")
+        $RunnerManifest.status = "failed"
+        Save-RunnerManifest -Manifest $RunnerManifest -Path $RunnerManifestPath
+
         Write-Host "[ERROR] fio failed."
         Write-Host "Run      : $Run"
         Write-Host "Workload : $Workload"
         exit $LASTEXITCODE
     }
 
+    $RunRecord.completed_at = (Get-Date).ToString("o")
+    $RunRecord.status = "complete"
+    $RunRecord.exit_code = 0
+    $RunnerManifest.runs += $RunRecord
+    Save-RunnerManifest -Manifest $RunnerManifest -Path $RunnerManifestPath
+
     Write-Host "[OK] Saved: $OutFile"
     Write-Host ""
 }
+
+$RunnerManifest.completed_at = (Get-Date).ToString("o")
+$RunnerManifest.status = "complete"
+Save-RunnerManifest -Manifest $RunnerManifest -Path $RunnerManifestPath
 
 Write-Host "=== External SSD sustained run completed ==="
 Write-Host "Expected JSON files: $Runs"
 Write-Host "Actual JSON files  : $((Get-ChildItem -Path $ResultDir -Filter *.json).Count)"
 Write-Host "Result directory   : $ResultDir"
+Write-Host "Runner manifest    : $RunnerManifestPath"

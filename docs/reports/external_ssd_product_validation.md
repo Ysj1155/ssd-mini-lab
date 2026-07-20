@@ -1,206 +1,147 @@
 # External SSD Product Validation Report
 
-Status: QD sweep repeat=3 and sustained write 120s repeat=3 completed.
+Status: QD sweep repeat=3 and sustained read/write QD16/QD32 120s repeat=3 completed. Sustained random write QD32 300s repeat=3 also completed and analyzed. Historical sustained runs have integrated manifests but are `limited` because they predate runner/observer evidence collection.
 
 ## 1. Scope
 
-This report treats the external SSD as a black-box DUT and evaluates observable product behavior through fio-based file-target testing.
+This report treats the external SSD as a black-box DUT and evaluates observable product behavior through fio file-target testing.
 
-It does not attempt to inspect or prove internal FTL/GC behavior.
+It covers condition control, repeated execution, p99/p99.9 latency, sustained time-window behavior, evidence traceability, and interpretation limits. It does not inspect or prove internal FTL/GC behavior.
 
-Related setup documents:
+Related evidence:
 
 - `docs/reports/external_ssd_dut_profile.md`
 - `docs/reports/external_ssd_requirement_matrix.md`
 - `docs/reports/external_ssd_execution_runbook.md`
 - `configs/external_ssd_validation_matrix.yaml`
+- `results/external_ssd/`
+- `results/external_ssd_sustained_*.csv`
 
-## 2. DUT Summary
+## 2. DUT and Environment
 
 | Field | Value |
 |---|---|
 | DUT label | `external_ssd_dut_01` |
-| Model | TBD |
+| Vendor / family | SanDisk Extreme Portable SSD; exact model pending confirmation |
 | Connection | External SSD over USB path |
 | File system | exFAT |
-| Test path | `E:\validation\ssd_lab_fio_testfile` |
-| Environment snapshot | TBD |
-| Telemetry snapshot | TBD |
+| Test target | `E:\validation\ssd_lab_fio_testfile` |
+| fio version in sustained JSON | `fio-3.42` |
+| Environment snapshot | `results/env/latest/manifest.json`, collected 2026-06-08 |
+| Telemetry snapshot | `results/telemetry/latest/manifest.json`, collected 2026-06-08 |
 
-## 3. Test Matrix Summary
+The available environment and telemetry snapshots are older than the July sustained runs. They document tooling capability but are not contemporaneous pre/post evidence for those runs.
 
-| Test case | Workload | Runtime | Repeats | Status |
-|---|---|---:|---:|---|
-| `EXT-QD-SMOKE` | randread/randwrite 4k QD 1/4/16/32 | 30s | 1 | Done |
-| `EXT-PERF-RR-QD-SWEEP` | randread 4k QD 1/4/16/32 | 30s | 3 | Done |
-| `EXT-PERF-RW-QD-SWEEP` | randwrite 4k QD 1/4/16/32 | 30s | 3 | Done |
-| `EXT-SUST-WRITE-120S` | randwrite 4k QD16 | 120s | 3 | Done |
-| `EXT-SUST-WRITE-300S` | randwrite 4k QD16 | 300s | 3 | TBD |
-| `EXT-SUST-READ-120S` | randread 4k QD16 | 120s | 3 | TBD |
+## 3. Execution Coverage
 
-## 4. Result Summary
+| Test case | Condition | Repeats | Status |
+|---|---|---:|---|
+| `EXT-QD-SMOKE` | 4K randread/randwrite, QD 1/4/16/32, 30s | 1 | Complete |
+| `EXT-PERF-RR-QD-SWEEP` | 4K randread, QD 1/4/16/32, 30s | 3 | Complete |
+| `EXT-PERF-RW-QD-SWEEP` | 4K randwrite, QD 1/4/16/32, 30s | 3 | Complete |
+| `EXT-SUST-WRITE-120S` | 4K randwrite, QD16, 120s | 3 | Complete |
+| `EXT-SUST-READ-120S` | 4K randread, QD16, 120s | 3 | Complete |
+| `EXT-SUST-READ-QD32-120S` | 4K randread, QD32, 120s | 3 | Complete |
+| `EXT-SUST-WRITE-QD32-120S` | 4K randwrite, QD32, 120s | 3 | Complete |
+| `EXT-SUST-WRITE-QD32-300S` | 4K randwrite, QD32, 300s | 3 | Complete, traceability limited |
+| `EXT-SUST-WRITE-300S` | 4K randwrite, QD16, 300s | 3 | Deferred; not needed for the current QD32 runtime comparison |
 
-The first external SSD QD sweep smoke ran successfully against `E:\validation\ssd_lab_fio_testfile` and produced 8 JSON files.
+All 15 sustained fio JSON jobs included in the current analyzer output report `error: 0`. The completed sustained result sets contain matching time-series logs.
 
-Evidence:
+## 4. QD Sweep Observation
 
-- `results/external_ssd/qd_sweep_smoke/`
-- `results/external_ssd_qd_smoke_summary.csv`
-- `results/external_ssd_qd_smoke_grouped.csv`
+The repeat=3 QD sweep produced 24 JSON files. The checked results targeted `E:\validation\ssd_lab_fio_testfile`.
 
-| Workload | QD | BW MiB/s | IOPS | p99 us | p99.9 us | Note |
-|---|---:|---:|---:|---:|---:|---|
-| rand_read | 1 | 17.24 | 4,414.39 | 337.92 | 708.61 | Smoke only |
-| rand_read | 4 | 69.23 | 17,722.44 | 374.78 | 514.05 | Smoke only |
-| rand_read | 16 | 205.12 | 52,509.65 | 667.65 | 921.60 | Smoke only |
-| rand_read | 32 | 255.86 | 65,500.95 | 1,019.90 | 1,400.83 | Smoke only |
-| rand_write | 1 | 63.41 | 16,232.26 | 92.67 | 156.67 | Smoke only |
-| rand_write | 4 | 177.19 | 45,360.22 | 110.08 | 203.78 | Smoke only |
-| rand_write | 16 | 195.30 | 49,996.87 | 692.22 | 1,138.69 | Smoke only |
-| rand_write | 32 | 186.79 | 47,818.94 | 1,011.71 | 1,581.06 | Smoke only |
+| Workload | QD | Avg BW MiB/s | IOPS CV | Avg p99 us | p99 CV | Avg p99.9 us | p99.9 CV |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| rand_read | 1 | 15.46 | 0.016 | 350.21 | 0.031 | 547.50 | 0.023 |
+| rand_read | 4 | 64.00 | 0.004 | 389.80 | 0.006 | 531.80 | 0.022 |
+| rand_read | 16 | 197.00 | 0.006 | 703.15 | 0.007 | 976.21 | 0.005 |
+| rand_read | 32 | 257.65 | 0.002 | 1,144.15 | 0.008 | 1,591.98 | 0.006 |
+| rand_write | 1 | 62.71 | 0.008 | 92.33 | 0.034 | 142.34 | 0.025 |
+| rand_write | 4 | 187.98 | 0.052 | 129.02 | 0.187 | 242.35 | 0.166 |
+| rand_write | 16 | 192.23 | 0.014 | 398.00 | 0.016 | 583.00 | 0.032 |
+| rand_write | 32 | 193.01 | 0.021 | 1,067.69 | 0.431 | 1,600.17 | 0.456 |
 
+Random read scaled with QD and remained repeatable. Random write throughput saturated around QD16, while QD32 added no meaningful average throughput and showed the weakest short-run tail-latency repeatability. That made QD32 random write the sustained QoS risk candidate.
 
-### Repeat=3 QD Sweep Result
+## 5. Sustained Result Summary
 
-The repeat=3 run produced 24 JSON files under `results/external_ssd/qd_sweep_repeat3/`. All checked jobs reported `error: 0` and targeted `E:\validation\ssd_lab_fio_testfile`.
+| Result set | Avg BW MiB/s | BW CV | Avg IOPS | Avg p99 us | Avg p99.9 us | Last/first IOPS | Last/first avg clat |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| randread 120s QD16 | 170.19 | 0.058 | 43,570 | 749.57 | 1,798.14 | 1.038 | 1.003 |
+| randread 120s QD32 | 235.12 | 0.078 | 60,192 | 1,095.00 | 1,591.98 | 0.979 | 1.026 |
+| randwrite 120s QD16 | 162.96 | 0.044 | 41,717 | 516.10 | 735.91 | 1.059 | 0.950 |
+| randwrite 120s QD32 | 141.73 | 0.051 | 36,283 | 1,226.07 | 2,124.46 | 0.974 | 1.016 |
+| randwrite 300s QD32 | 138.74 | 0.065 | 35,517 | 1,329.83 | 3,249.49 | 0.910 | 1.116 |
 
-Evidence:
+The 120s QD16 write condition was the strongest sustained write condition in this set: it delivered higher throughput than QD32 and had lower tail latency. QD32 therefore represents queueing and QoS stress rather than a useful performance gain.
 
-- `results/external_ssd/qd_sweep_repeat3/`
-- `results/external_ssd_qd_repeat3_summary.csv`
-- `results/external_ssd_qd_repeat3_grouped.csv`
+## 6. QD32 Write Runtime Comparison
 
-| Workload | QD | Runs | Avg BW MiB/s | BW CV | Avg IOPS | IOPS CV | Avg p99 us | p99 CV | Avg p99.9 us | p99.9 CV |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| rand_read | 1 | 3 | 15.46 | 0.016 | 3,959.11 | 0.016 | 350.21 | 0.031 | 547.50 | 0.023 |
-| rand_read | 4 | 3 | 64.00 | 0.004 | 16,382.92 | 0.004 | 389.80 | 0.006 | 531.80 | 0.022 |
-| rand_read | 16 | 3 | 197.00 | 0.006 | 50,430.60 | 0.006 | 703.15 | 0.007 | 976.21 | 0.005 |
-| rand_read | 32 | 3 | 257.65 | 0.002 | 65,959.01 | 0.002 | 1,144.15 | 0.008 | 1,591.98 | 0.006 |
-| rand_write | 1 | 3 | 62.71 | 0.008 | 16,053.86 | 0.008 | 92.33 | 0.034 | 142.34 | 0.025 |
-| rand_write | 4 | 3 | 187.98 | 0.052 | 48,123.72 | 0.052 | 129.02 | 0.187 | 242.35 | 0.166 |
-| rand_write | 16 | 3 | 192.23 | 0.014 | 49,210.83 | 0.014 | 398.00 | 0.016 | 583.00 | 0.032 |
-| rand_write | 32 | 3 | 193.01 | 0.021 | 49,410.50 | 0.021 | 1,067.69 | 0.431 | 1,600.17 | 0.456 |
+| Metric | 120s | 300s | Observation |
+|---|---:|---:|---|
+| Avg BW MiB/s | 141.73 | 138.74 | 2.1% lower at 300s |
+| Avg IOPS | 36,283 | 35,517 | 2.1% lower at 300s |
+| Avg p99 us | 1,226.07 | 1,329.83 | 8.5% higher at 300s |
+| Avg p99.9 us | 2,124.46 | 3,249.49 | 53.0% higher at 300s |
+| Last/first IOPS | 0.974 | 0.910 | Larger late-run decline at 300s |
+| Last/first avg clat | 1.016 | 1.116 | Larger late-run latency increase at 300s |
 
-Repeat=3 interpretation:
+The 300s run strengthens the black-box observation that longer QD32 write stress worsens tail behavior even though average bandwidth changes only modestly. The three 300s runs were not identical: run 1 averaged 128.43 MiB/s, while runs 2 and 3 averaged 142.50 and 145.29 MiB/s. Run-level and time-window evidence should therefore remain visible beside the aggregate.
 
-- Random read scaled clearly with QD and stayed stable across repeats. IOPS CV stayed at or below 0.016, and p99 CV stayed at or below 0.031.
-- Random write throughput improved from QD1 to QD16/QD32, but QD32 did not materially improve average IOPS over QD16.
-- Random write QD32 showed the weakest QoS stability: p99 CV was 0.431 and p99.9 CV was 0.456.
-- This supports the validation point that a high-throughput condition can still be a risky QoS candidate.
+This pattern is compatible with a device/path reaching a less stable sustained state, but the current evidence cannot isolate SSD firmware, USB transport, host scheduling, filesystem behavior, or thermal effects as the cause.
 
-## 5. QoS Review
+## 7. Traceability and Telemetry Status
 
-Questions:
+Each sustained result directory now has an integrated `run_manifest.json` linking observed fio conditions, raw JSON/logs, requirements, DUT documentation, and parsed CSVs.
 
-- Which condition has the highest p99 latency?
-- Which condition has the highest p99.9 latency?
-- Does the highest-throughput condition also have acceptable tail latency?
-- Which condition has the largest run-to-run variation?
+The existing sustained runs were executed before separate runner/observer manifests were introduced. Their current manifests correctly report:
 
-Evidence:
+- `status: limited`
+- missing `runner_manifest.json`
+- missing `observer_manifest_pre.json` and `observer_manifest_post.json`
+- an explicit `missing_execution_evidence` anomaly
 
-- `results/external_ssd_qd_smoke_grouped.csv`
-- `results/external_ssd_qd_repeat3_grouped.csv`
+This limitation does not invalidate the fio measurements. It limits claims about execution provenance and contemporaneous environment/telemetry correlation.
 
-## 6. Sustained Workload Review
+The next runbook procedure fixes this gap by requiring observer pre, runner, observer post, analysis, and integrated manifest generation under one run ID.
 
-The first external SSD sustained run used the QD16 random-write condition selected from the QD sweep as a reasonable high-throughput condition with better tail stability than QD32.
+Direct power validation remains out of scope without external measurement equipment. SMART and temperature are reported only when the USB path and available tools expose them.
 
-Evidence:
+## 8. Requirement Verdict
 
-- `results/external_ssd/sustained_rand_write_120s_qd16_repeat3/`
-- `results/external_ssd_sustained_summary.csv`
-- `results/external_ssd_sustained_timeseries.csv`
-- `results/external_ssd_sustained_window_summary.csv`
-- `results/external_ssd_sustained_repeatability.csv`
-
-Aggregate repeat=3 result:
-
-| Workload | Runtime | QD | Runs | Avg BW MiB/s | BW CV | Avg IOPS | IOPS CV | Avg p99 us | p99 CV | Avg p99.9 us | p99.9 CV | Max latency CV |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| randwrite 4k | 120s | 16 | 3 | 162.96 | 0.044 | 41,716.65 | 0.044 | 516.10 | 0.062 | 735.91 | 0.084 | 0.770 |
-
-Per-run aggregate result:
-
-| Run | BW MiB/s | IOPS | p99 us | p99.9 us | Max us |
-|---:|---:|---:|---:|---:|---:|
-| 1 | 154.83 | 39,636.53 | 552.96 | 806.91 | 34,681.69 |
-| 2 | 166.14 | 42,532.98 | 497.66 | 692.22 | 2,981.83 |
-| 3 | 167.89 | 42,980.43 | 497.66 | 708.61 | 26,461.35 |
-
-Window-level observation:
-
-| Metric | Mean ratio |
-|---|---:|
-| Last-third IOPS / first-third IOPS | 1.058 |
-| Last-third avg clat / first-third avg clat | 0.949 |
-
-Interpretation:
-
-- The 120s QD16 sustained write run did not show a throughput drop across the run. The last-third IOPS was slightly higher than the first-third average.
-- Average completion latency also did not worsen across the run; last-third average clat was about 0.95x of first-third average clat.
-- Compared with the short QD16 repeat=3 sweep, sustained write average IOPS was lower, so runtime and logging context matter.
-- Max latency remained outlier-sensitive. Runs 1 and 3 had much larger max-latency values than run 2, so max latency should be reviewed separately from p99/p99.9.
-- This is still black-box file-target behavior through USB/exFAT/Windows, not direct evidence of internal SSD GC or FTL behavior.
-
-## 7. Telemetry Observation
-
-Record what was collected:
-
-| Source | Status | Note |
+| Requirement | Verdict | Evidence / boundary |
 |---|---|---|
-| Environment snapshot | TBD | TBD |
-| Storage telemetry snapshot | TBD | TBD |
-| SMART / device health | TBD | TBD |
-| Temperature | TBD | TBD |
-| Power measurement | Not available unless external measurement is added | Do not claim direct power validation without measurement equipment |
+| `REQ-PERF-001` | Observation | Random-read QD sweep repeat=3 is present; no external specification threshold is defined |
+| `REQ-PERF-002` | Observation | Random-write QD sweep repeat=3 is present; no external specification threshold is defined |
+| `REQ-QOS-001` | Pass | p99 and p99.9 are reported for QD sweep and sustained runs |
+| `REQ-REPRO-001` | Pass | Three repeats and CV are reported for major conditions |
+| `REQ-SUST-001` | Pass | First/middle/last window evidence exists for sustained writes |
+| `REQ-SUST-002` | Pass | Matching QD32 write conditions were compared at 120s and 300s |
+| `REQ-SUST-003` | Pass | Matching sustained read/write conditions are available at QD16 and QD32 |
+| `REQ-ENV-001` | Limited | Environment snapshot exists but is not contemporaneous with the sustained runs |
+| `REQ-TEL-001` | Limited | Read-only telemetry snapshot exists but is not linked as pre/post run evidence |
+| `REQ-OBS-001` | Limited | Historical runs lack separate runner and observer manifests |
+| `REQ-TRACE-001` | Limited | Integrated manifests exist and explicitly identify execution-evidence gaps |
+| `REQ-LIMIT-001` | Pass | USB, Windows, exFAT, file-target, and internal-root-cause limits are explicit |
 
-## 8. Anomaly Review
+## 9. Limitations
 
-Use this structure for any p99.9 spike, max-latency outlier, or throughput drop.
+- The test file is 512 MiB, so results do not establish full-drive or steady-state enterprise behavior.
+- The USB bridge, enclosure, port, host controller, Windows, exFAT, and fio file-target path all contribute to the observed result.
+- Historical runs lack contemporaneous pre/post observer evidence.
+- Exact DUT model, enclosure/adapter, and host port remain to be confirmed before public portfolio wording.
+- No direct power measurement is available.
+- No internal firmware, NAND, FTL, or GC trace is available.
+- Hard pass/fail performance thresholds require an external requirement or a deliberately established baseline.
 
-```text
-Symptom:
+## 10. Current Verdict and Next Step
 
-Reproduction condition:
+The lab has demonstrated a repeatable black-box validation workflow and identified QD32 random write as a QoS stress condition: longer runtime produced modestly lower average performance, materially higher p99.9 latency, and worse late-run window ratios.
 
-Compared against:
+The next experiment is an evidence-complete confirmation of the 300s QD32 random-write condition using a new run ID and the fixed runner/observer sequence. Its purpose is to confirm the observation across sessions while proving that DUT, conditions, execution, telemetry limitations, raw data, and analysis can be traced as one run.
 
-Evidence available:
+Portfolio statement:
 
-Possible causes:
-
-Evidence not available:
-
-Next debug step:
-```
-
-## 9. Requirement Verdict
-
-| Requirement | Verdict | Evidence |
-|---|---|---|
-| REQ-PERF-001 | Pass | randread QD 1/4/16/32 repeat=3 completed |
-| REQ-PERF-002 | Pass | randwrite QD 1/4/16/32 repeat=3 completed |
-| REQ-QOS-001 | Pass | p99 and p99.9 reported for QD sweep and sustained runs |
-| REQ-REPRO-001 | Pass | Each QD condition ran 3 repeats and CV was reported |
-| REQ-SUST-001 | Pass | 120s randwrite QD16 repeat=3 window summary generated |
-| REQ-SUST-002 | TBD | TBD |
-| REQ-SUST-003 | TBD | TBD |
-| REQ-ENV-001 | TBD | TBD |
-| REQ-TEL-001 | TBD | TBD |
-| REQ-LIMIT-001 | Pass for smoke | Report states black-box and USB/filesystem limitations |
-
-## 10. Limitations
-
-- External SSD results include USB bridge, enclosure, port, host controller, OS, filesystem, and fio file-target effects.
-- This report is black-box validation evidence, not internal FTL/GC proof.
-- Direct power validation requires measurement equipment. Without it, only power-aware or thermal/telemetry observations should be claimed.
-- Hard pass/fail thresholds should be added only after a baseline is established or a requirement source is defined.
-
-## 11. Portfolio Summary
-
-TBD after results are available.
-
-Suggested shape:
-
-> I treated an external SSD as a black-box DUT, defined product-like performance requirements, executed fio-based workloads, parsed JSON results into CSV, reviewed p99/p99.9 and sustained behavior, and documented verdicts with clear interpretation limits.
+> I treated an external SSD as a black-box DUT, translated validation questions into controlled fio conditions, preserved raw JSON and time-series evidence, analyzed repeatability and p99/p99.9 behavior, and connected requirements, execution roles, artifacts, verdicts, and limitations through run manifests.

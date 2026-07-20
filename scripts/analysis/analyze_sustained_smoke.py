@@ -41,7 +41,7 @@ import pandas as pd
 from parse_fio_results import get_percentile, ns_to_us
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[2]
 INPUT_DIR = BASE_DIR / "results" / "sustained_smoke"
 SUMMARY_CSV = BASE_DIR / "results" / "sustained_smoke_summary.csv"
 TIMESERIES_CSV = BASE_DIR / "results" / "sustained_smoke_timeseries.csv"

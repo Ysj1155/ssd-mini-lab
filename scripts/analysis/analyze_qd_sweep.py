@@ -33,7 +33,7 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------
 # Fixed project paths
 # ---------------------------------------------------------------------
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[2]
 INPUT_CSV = BASE_DIR / "results" / "qd_sweep_summary.csv"
 OUTPUT_CSV = BASE_DIR / "results" / "qd_sweep_grouped.csv"
 PLOT_DIR = BASE_DIR / "results" / "qd_sweep_plots"

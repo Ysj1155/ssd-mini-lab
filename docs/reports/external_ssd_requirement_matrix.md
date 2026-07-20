@@ -17,6 +17,8 @@ The values below are intentionally framed as tracking and review requirements fi
 | REQ-SUST-003 | Sustained read behavior shall be compared against matching sustained write behavior. | workload comparison CSV | Pass if matching read/write conditions are compared |
 | REQ-ENV-001 | Each validation run shall include environment and path context. | env snapshot, DUT profile | Pass if snapshot and DUT profile are linked |
 | REQ-TEL-001 | Telemetry shall be collected when available without destructive access. | telemetry snapshot | Pass if collected, Limited if permissions/tooling block device-level data |
+| REQ-OBS-001 | fio execution and read-only observation shall be recorded as separate evidence producers. | `runner_manifest.json`, `observer_manifest_<phase>.json` | Pass if both are linked, Limited if one side is missing with an explicit anomaly |
+| REQ-TRACE-001 | Each sustained validation result set shall link DUT, requirements, test conditions, raw artifacts, parsed CSVs, and environment evidence. | `run_manifest.json` | Pass if manifest exists and status is complete or limited with explicit anomalies |
 | REQ-LIMIT-001 | The report shall state what the evidence cannot prove. | final report limitation section | Pass if interpretation boundary is explicit |
 
 ## Requirement-to-Test Mapping
@@ -25,9 +27,9 @@ The values below are intentionally framed as tracking and review requirements fi
 |---|---|
 | `EXT-PERF-RR-QD-SWEEP` | REQ-PERF-001, REQ-QOS-001, REQ-REPRO-001 |
 | `EXT-PERF-RW-QD-SWEEP` | REQ-PERF-002, REQ-QOS-001, REQ-REPRO-001 |
-| `EXT-SUST-WRITE-120S` | REQ-SUST-001, REQ-QOS-001, REQ-REPRO-001 |
-| `EXT-SUST-WRITE-300S` | REQ-SUST-001, REQ-SUST-002, REQ-QOS-001, REQ-REPRO-001 |
-| `EXT-SUST-READ-120S` | REQ-SUST-003, REQ-QOS-001, REQ-REPRO-001 |
+| `EXT-SUST-WRITE-120S` | REQ-SUST-001, REQ-QOS-001, REQ-REPRO-001, REQ-OBS-001 |
+| `EXT-SUST-WRITE-300S` | REQ-SUST-001, REQ-SUST-002, REQ-QOS-001, REQ-REPRO-001, REQ-OBS-001 |
+| `EXT-SUST-READ-120S` | REQ-SUST-003, REQ-QOS-001, REQ-REPRO-001, REQ-OBS-001 |
 
 ## Verdict Vocabulary
 
