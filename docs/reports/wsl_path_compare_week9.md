@@ -38,10 +38,10 @@ The default runtime is short:
 
 | Script | Role |
 |---|---|
-| `run_wsl_path_compare.ps1` | Windows launcher |
+| `scripts/runners/run_wsl_path_compare.ps1` | Windows launcher |
 | `scripts/run_wsl_path_compare.sh` | WSL-side fio runner |
-| `parse_fio_results.py` | Parses fio JSON into CSV |
-| `analyze_wsl_path_compare.py` | Groups results, computes ratios, and creates plots |
+| `scripts/analysis/parse_fio_results.py` | Parses fio JSON into CSV |
+| `scripts/analysis/analyze_wsl_path_compare.py` | Groups results, computes ratios, and creates plots |
 
 ## Run
 
@@ -49,17 +49,17 @@ From Windows PowerShell:
 
 ```powershell
 cd D:\ssd_lab
-.\run_wsl_path_compare.ps1
+.\scripts\runners\run_wsl_path_compare.ps1
 ```
 
 Then parse and analyze:
 
 ```powershell
-python .\parse_fio_results.py `
+python .\scripts\analysis\parse_fio_results.py `
   --input-dir D:\ssd_lab\results\wsl_path_compare `
   --output D:\ssd_lab\results\wsl_path_compare_summary.csv
 
-python .\analyze_wsl_path_compare.py
+python .\scripts\analysis\analyze_wsl_path_compare.py
 ```
 
 ## Configurable Parameters
@@ -81,7 +81,7 @@ Example:
 ```powershell
 $env:SSD_LAB_WSL_TEST_SIZE = "256M"
 $env:SSD_LAB_WSL_RUNTIME = "10"
-.\run_wsl_path_compare.ps1
+.\scripts\runners\run_wsl_path_compare.ps1
 ```
 
 ## Expected Outputs

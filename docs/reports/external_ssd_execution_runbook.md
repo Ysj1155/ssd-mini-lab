@@ -95,7 +95,7 @@ For the first product-validation pass, run the lightweight QD sweep smoke:
 ```powershell
 cd D:\ssd_lab
 $env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-.\run_external_ssd_qd_smoke.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_qd_smoke.ps1
 ```
 
 Default smoke scope:
@@ -114,7 +114,7 @@ $env:SSD_LAB_EXTERNAL_LABEL = "qd_sweep_repeat3"
 $env:SSD_LAB_EXTERNAL_REPEATS = "3"
 $env:SSD_LAB_EXTERNAL_RUNTIME = "30"
 $env:SSD_LAB_EXTERNAL_SIZE = "512M"
-powershell -ExecutionPolicy Bypass -File .\run_external_ssd_qd_smoke.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_qd_smoke.ps1
 ```
 
 Expected repeat output:
@@ -136,7 +136,7 @@ $env:SSD_LAB_EXTERNAL_SUSTAINED_RUNTIME = "120"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_SIZE = "512M"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH = "16"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_RUNS = "3"
-powershell -ExecutionPolicy Bypass -File .\run_external_ssd_sustained.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_sustained.ps1
 ```
 
 Expected sustained output:
@@ -145,6 +145,7 @@ Expected sustained output:
 results/external_ssd/sustained_rand_write_120s_qd16_repeat3/
 3 JSON files plus fio time-series logs
 ```
+
 ## 5. After fio
 
 Collect:
@@ -158,7 +159,7 @@ Collect:
 Then analyze:
 
 ```powershell
-python .\parse_fio_results.py --input-dir results\external_ssd --output results\external_ssd_summary.csv
+python .\scripts\analysis\parse_fio_results.py --input-dir results\external_ssd --output results\external_ssd_summary.csv
 ```
 
 If the output layout differs, add a dedicated analyzer instead of forcing unrelated scripts to parse incompatible filenames.

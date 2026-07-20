@@ -1,5 +1,5 @@
 """
-analyze_qos_tail_latency.py
+scripts/analysis/analyze_qos_tail_latency.py
 
 Purpose:
     Combine Stage 1 and WSL path comparison results into one QoS/tail-latency
@@ -13,7 +13,7 @@ Outputs:
 
 Usage:
     cd D:\\ssd_lab
-    python .\\analyze_qos_tail_latency.py
+    python .\\scripts/analysis/analyze_qos_tail_latency.py
 """
 
 from __future__ import annotations

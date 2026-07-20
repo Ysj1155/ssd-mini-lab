@@ -72,8 +72,8 @@ $env:SSD_LAB_SUSTAINED_DIRECT = "1"
 $env:SSD_LAB_SUSTAINED_LABEL = "rand_write_120s_repeat3"
 
 powershell -ExecutionPolicy Bypass -File .\scripts\collect_env_windows.ps1
-.\run_sustained_smoke.ps1
-python .\analyze_sustained_smoke.py
+.\scripts\runners\run_sustained_smoke.ps1
+python .\scripts\analysis\analyze_sustained_smoke.py
 ```
 
 ### Review Metrics
@@ -138,8 +138,8 @@ $env:SSD_LAB_SUSTAINED_DIRECT = "1"
 $env:SSD_LAB_SUSTAINED_LABEL = "rand_write_300s_repeat3"
 
 powershell -ExecutionPolicy Bypass -File .\scripts\collect_env_windows.ps1
-.\run_sustained_smoke.ps1
-python .\analyze_sustained_smoke.py
+.\scripts\runners\run_sustained_smoke.ps1
+python .\scripts\analysis\analyze_sustained_smoke.py
 ```
 
 ### Review Metrics
@@ -205,8 +205,8 @@ $env:SSD_LAB_SUSTAINED_DIRECT = "1"
 $env:SSD_LAB_SUSTAINED_LABEL = "rand_read_120s_repeat3"
 
 powershell -ExecutionPolicy Bypass -File .\scripts\collect_env_windows.ps1
-.\run_sustained_smoke.ps1
-python .\analyze_sustained_smoke.py
+.\scripts\runners\run_sustained_smoke.ps1
+python .\scripts\analysis\analyze_sustained_smoke.py
 ```
 
 ### Review Metrics
@@ -308,7 +308,7 @@ The telemetry recon is complete at the path/free-space/test-file/permission-boun
 
 ## Result Labeling
 
-`run_sustained_smoke.ps1` writes each new result set into a labeled subdirectory under:
+`scripts/runners/run_sustained_smoke.ps1` writes each new result set into a labeled subdirectory under:
 
 ```text
 results/sustained_smoke/<label>/

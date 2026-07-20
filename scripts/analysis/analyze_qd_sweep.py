@@ -1,4 +1,4 @@
-# analyze_qd_sweep.py
+# scripts/analysis/analyze_qd_sweep.py
 """
 Analyze fio QD sweep results.
 
@@ -18,7 +18,7 @@ Purpose:
     - Generate QD-vs-performance and QD-vs-latency plots.
 
 Usage:
-    python .\\analyze_qd_sweep.py
+    python .\\scripts/analysis/analyze_qd_sweep.py
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ PLOT_DIR = BASE_DIR / "results" / "qd_sweep_plots"
 
 
 # ---------------------------------------------------------------------
-# Columns expected from parse_fio_results.py
+# Columns expected from scripts/analysis/parse_fio_results.py
 # ---------------------------------------------------------------------
 GROUP_COLS = ["workload", "qd_from_filename"]
 
@@ -241,7 +241,7 @@ def print_console_summary(grouped: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    print("=== analyze_qd_sweep.py ===")
+    print("=== scripts/analysis/analyze_qd_sweep.py ===")
     print(f"Input CSV : {INPUT_CSV}")
     print(f"Output CSV: {OUTPUT_CSV}")
     print(f"Plot dir  : {PLOT_DIR}")

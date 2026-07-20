@@ -1,5 +1,5 @@
 """
-analyze_qd_reproducibility.py
+scripts/analysis/analyze_qd_reproducibility.py
 
 Purpose:
     Analyze run-to-run reproducibility of fio QD sweep results.
@@ -17,7 +17,7 @@ Outputs:
 Usage:
     PowerShell:
         cd D:\\ssd_lab
-        python .\\analyze_qd_reproducibility.py
+        python .\\scripts/analysis/analyze_qd_reproducibility.py
 
 Notes:
     CV = standard deviation / mean
@@ -284,7 +284,7 @@ def main() -> None:
     output_path = Path(args.output)
     plot_dir = Path(args.plot_dir)
 
-    print("=== analyze_qd_reproducibility.py ===")
+    print("=== scripts/analysis/analyze_qd_reproducibility.py ===")
     print(f"Input CSV : {input_path}")
     print(f"Output CSV: {output_path}")
     print(f"Plot dir  : {plot_dir}")

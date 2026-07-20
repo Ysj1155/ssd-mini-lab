@@ -1,4 +1,4 @@
-# run_sustained_smoke.ps1
+# scripts/runners/run_sustained_smoke.ps1
 #
 # Purpose:
 #   Run a conservative sustained fio smoke test.
@@ -16,7 +16,7 @@
 #
 # Usage:
 #   cd D:\ssd_lab
-#   .\run_sustained_smoke.ps1
+#   .\scripts\runners\run_sustained_smoke.ps1
 #
 # Optional overrides:
 #   $env:SSD_LAB_SUSTAINED_RUNTIME = "300"

@@ -1,4 +1,4 @@
-# run_external_ssd_sustained.ps1
+# scripts/runners/run_external_ssd_sustained.ps1
 #
 # Purpose:
 #   Run external-SSD sustained fio raw-data collection.

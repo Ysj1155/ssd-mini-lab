@@ -1,4 +1,4 @@
-# run_direct_buffered.ps1
+# scripts/runners/run_direct_buffered.ps1
 #
 # Purpose:
 #   Run fio direct I/O vs buffered I/O comparison.

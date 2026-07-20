@@ -1,5 +1,5 @@
 """
-plot_fio_summary.py
+scripts/analysis/plot_fio_summary.py
 
 Purpose:
     Read fio_summary.csv and generate validation-oriented baseline plots.
@@ -16,7 +16,7 @@ Behavior:
 Usage:
     PowerShell:
         cd D:\\ssd_lab
-        python .\\plot_fio_summary.py
+        python .\\scripts/analysis/plot_fio_summary.py
 """
 
 from __future__ import annotations

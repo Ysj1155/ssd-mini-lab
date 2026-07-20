@@ -47,7 +47,7 @@ This is intentionally small. It is a smoke test, not a final sustained validatio
 
 ```powershell
 cd D:\ssd_lab
-.\run_sustained_smoke.ps1
+.\scripts\runners\run_sustained_smoke.ps1
 ```
 
 Optional overrides:
@@ -57,7 +57,7 @@ $env:SSD_LAB_SUSTAINED_RUNTIME = "300"
 $env:SSD_LAB_SUSTAINED_SIZE = "2G"
 $env:SSD_LAB_SUSTAINED_RUNS = "3"
 $env:SSD_LAB_SUSTAINED_LABEL = "rand_write_300s_repeat3"
-.\run_sustained_smoke.ps1
+.\scripts\runners\run_sustained_smoke.ps1
 ```
 
 New runs are written into a labeled subdirectory:
@@ -72,7 +72,7 @@ If `SSD_LAB_SUSTAINED_LABEL` is not set, the script derives a label from workloa
 
 ```powershell
 cd D:\ssd_lab
-python .\analyze_sustained_smoke.py
+python .\scripts\analysis\analyze_sustained_smoke.py
 ```
 
 Outputs:

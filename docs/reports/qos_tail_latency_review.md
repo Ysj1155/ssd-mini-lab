@@ -30,7 +30,7 @@ Rebuild:
 
 ```powershell
 cd D:\ssd_lab
-python .\analyze_qos_tail_latency.py
+python .\scripts\analysis\analyze_qos_tail_latency.py
 ```
 
 ## Important Caution

@@ -12,13 +12,13 @@ condition -> execution -> parsed result -> graph -> interpretation boundary
 
 | Track               | Question                                             | Controlled condition                               | Execution                                       | Main output                                                                  |
 |---------------------|------------------------------------------------------|----------------------------------------------------|-------------------------------------------------|------------------------------------------------------------------------------|
-| Baseline fio        | What is the first observable performance profile?    | Windows file-based fio, repeated runs per workload | `run_baseline.ps1`                              | `results/fio_summary.csv`, `results/plots/`                                  |
-| Queue-depth sweep   | How does QD change throughput and p99 latency?       | 4K random read/write, QD 1/4/16/32                 | `run_qd_sweep.ps1`                              | `results/qd_sweep_grouped.csv`, `results/qd_sweep_plots/`                    |
-| QD reproducibility  | Which QD conditions are stable across repeats?       | Same QD sweep inputs, run-to-run CV review         | `analyze_qd_reproducibility.py`                 | `results/qd_sweep_reproducibility.csv`                                       |
-| Direct vs buffered  | How much does OS/filesystem cache change the result? | 4K random read/write, `direct=1` vs `direct=0`     | `run_direct_buffered.ps1`                       | `results/direct_buffered_comparison.csv`, `results/direct_buffered_plots/`   |
-| WSL path comparison | Does the path layer change fio behavior?             | WSL native ext4 vs `/mnt/d` Windows-mounted path   | `run_wsl_path_compare.ps1`                      | `results/wsl_path_compare_comparison.csv`, `results/wsl_path_compare_plots/` |
-| QoS review          | Which results look risky beyond average IOPS?        | p99, p99.9, and CV review across result sets       | `analyze_qos_tail_latency.py`                   | `results/qos_tail_latency_summary.csv`, `results/qos_tail_latency_plots/`    |
-| Sustained workload  | Does longer runtime expose worse tail behavior?      | 4K random, QD16, direct=1, 120s/300s repeats       | `run_sustained_smoke.ps1`                       | `results/sustained_smoke_*.csv`, `results/sustained_smoke_plots/`            |
+| Baseline fio        | What is the first observable performance profile?    | Windows file-based fio, repeated runs per workload | `scripts/runners/run_baseline.ps1`                              | `results/fio_summary.csv`, `results/plots/`                                  |
+| Queue-depth sweep   | How does QD change throughput and p99 latency?       | 4K random read/write, QD 1/4/16/32                 | `scripts/runners/run_qd_sweep.ps1`                              | `results/qd_sweep_grouped.csv`, `results/qd_sweep_plots/`                    |
+| QD reproducibility  | Which QD conditions are stable across repeats?       | Same QD sweep inputs, run-to-run CV review         | `scripts/analysis/analyze_qd_reproducibility.py`                 | `results/qd_sweep_reproducibility.csv`                                       |
+| Direct vs buffered  | How much does OS/filesystem cache change the result? | 4K random read/write, `direct=1` vs `direct=0`     | `scripts/runners/run_direct_buffered.ps1`                       | `results/direct_buffered_comparison.csv`, `results/direct_buffered_plots/`   |
+| WSL path comparison | Does the path layer change fio behavior?             | WSL native ext4 vs `/mnt/d` Windows-mounted path   | `scripts/runners/run_wsl_path_compare.ps1`                      | `results/wsl_path_compare_comparison.csv`, `results/wsl_path_compare_plots/` |
+| QoS review          | Which results look risky beyond average IOPS?        | p99, p99.9, and CV review across result sets       | `scripts/analysis/analyze_qos_tail_latency.py`                   | `results/qos_tail_latency_summary.csv`, `results/qos_tail_latency_plots/`    |
+| Sustained workload  | Does longer runtime expose worse tail behavior?      | 4K random, QD16, direct=1, 120s/300s repeats       | `scripts/runners/run_sustained_smoke.ps1`                       | `results/sustained_smoke_*.csv`, `results/sustained_smoke_plots/`            |
 | Telemetry recon     | What environment facts can be collected safely?      | Read-only metadata and telemetry queries only      | `scripts/collect_storage_telemetry_windows.ps1` | `results/telemetry/latest/`                                                  |
 
 ## 2. fio JSON to CSV Flow
@@ -28,7 +28,7 @@ fio produces JSON files. The lab keeps those raw files, then parses them into CS
 ```mermaid
 flowchart LR
     A["fio run scripts"] --> B["fio JSON results"]
-    B --> C["parse_fio_results.py"]
+    B --> C["scripts/analysis/parse_fio_results.py"]
     C --> D["summary CSV"]
     D --> E["analysis scripts"]
     E --> F["grouped/comparison CSV"]
@@ -41,9 +41,9 @@ Example baseline flow:
 
 ```text
 results/*.json
-  -> parse_fio_results.py
+  -> scripts/analysis/parse_fio_results.py
   -> results/fio_summary.csv
-  -> plot_fio_summary.py
+  -> scripts/analysis/plot_fio_summary.py
   -> results/plots/
   -> docs/reports/baseline_v1.md
 ```
@@ -52,7 +52,7 @@ Example sustained flow:
 
 ```text
 results/sustained_smoke/<label>/*.json
-  -> analyze_sustained_smoke.py
+  -> scripts/analysis/analyze_sustained_smoke.py
   -> results/sustained_smoke_summary.csv
   -> results/sustained_smoke_repeatability.csv
   -> results/sustained_smoke_result_set_comparison.csv

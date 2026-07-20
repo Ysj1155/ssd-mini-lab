@@ -1,4 +1,4 @@
-# run_qd_sweep.ps1
+# scripts/runners/run_qd_sweep.ps1
 #
 # Purpose:
 #   Run fio QD sweep for SSD mini-lab.

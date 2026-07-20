@@ -25,7 +25,7 @@ The prefill run creates the test file before the read tests and is excluded from
 
 ## Parser Fix
 
-`parse_fio_results.py` now extracts `direct0` / `direct1` from filenames into `direct_from_filename`.
+`scripts/analysis/parse_fio_results.py` now extracts `direct0` / `direct1` from filenames into `direct_from_filename`.
 
 Before this fix, files such as `rand_read_direct0_run1.json` were parsed as workload `rand_read_direct0`. That split the same workload into separate names and made grouped analysis awkward.
 
@@ -115,11 +115,11 @@ Buffered random read had much higher run-to-run variation. This suggests cache s
 ```powershell
 cd D:\ssd_lab
 
-.\run_direct_buffered.ps1
+.\scripts\runners\run_direct_buffered.ps1
 
-python .\parse_fio_results.py `
+python .\scripts\analysis\parse_fio_results.py `
   --input-dir D:\ssd_lab\results\direct_buffered `
   --output D:\ssd_lab\results\direct_buffered_summary.csv
 
-python .\analyze_direct_buffered.py
+python .\scripts\analysis\analyze_direct_buffered.py
 ```

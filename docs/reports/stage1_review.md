@@ -13,11 +13,11 @@ Stage 1 covers the first Windows file-based validation loop:
 | Area | Status | Main artifact |
 |---|---|---|
 | Baseline workload runs | Done | `docs/reports/baseline_v1.md` |
-| fio JSON parser | Done | `parse_fio_results.py` |
-| Baseline plots | Done | `plot_fio_summary.py`, `results/plots/` |
-| Queue-depth sweep | Done | `analyze_qd_sweep.py`, `results/qd_sweep_grouped.csv` |
-| QD reproducibility | Done | `analyze_qd_reproducibility.py`, `results/qd_sweep_reproducibility.csv` |
-| Direct vs buffered I/O | Done | `analyze_direct_buffered.py`, `docs/reports/direct_buffered_week7.md` |
+| fio JSON parser | Done | `scripts/analysis/parse_fio_results.py` |
+| Baseline plots | Done | `scripts/analysis/plot_fio_summary.py`, `results/plots/` |
+| Queue-depth sweep | Done | `scripts/analysis/analyze_qd_sweep.py`, `results/qd_sweep_grouped.csv` |
+| QD reproducibility | Done | `scripts/analysis/analyze_qd_reproducibility.py`, `results/qd_sweep_reproducibility.csv` |
+| Direct vs buffered I/O | Done | `scripts/analysis/analyze_direct_buffered.py`, `docs/reports/direct_buffered_week7.md` |
 
 ## Repository Outputs
 

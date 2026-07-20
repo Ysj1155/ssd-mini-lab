@@ -1,4 +1,4 @@
-# run_external_ssd_qd_smoke.ps1
+# scripts/runners/run_external_ssd_qd_smoke.ps1
 #
 # Purpose:
 #   Run a lightweight external-SSD QD sweep smoke test.

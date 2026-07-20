@@ -1,4 +1,4 @@
-# run_wsl_path_compare.ps1
+# scripts/runners/run_wsl_path_compare.ps1
 #
 # Purpose:
 #   Launch the WSL path comparison fio script from Windows PowerShell.
@@ -8,7 +8,7 @@
 #
 # Usage:
 #   cd D:\ssd_lab
-#   .\run_wsl_path_compare.ps1
+#   .\scripts\runners\run_wsl_path_compare.ps1
 
 $ErrorActionPreference = "Stop"
 

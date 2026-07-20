@@ -1,5 +1,5 @@
 """
-analyze_sustained_smoke.py
+scripts/analysis/analyze_sustained_smoke.py
 
 Purpose:
     Analyze conservative sustained fio smoke-test output.
@@ -22,7 +22,7 @@ Outputs:
 
 Usage:
     cd D:\\ssd_lab
-    python .\\analyze_sustained_smoke.py
+    python .\\scripts/analysis/analyze_sustained_smoke.py
 """
 
 from __future__ import annotations

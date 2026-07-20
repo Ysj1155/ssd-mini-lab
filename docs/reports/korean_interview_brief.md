@@ -26,7 +26,7 @@ Direct I/O와 buffered I/O 비교에서는 buffered 결과가 더 좋아 보일 
 
 연결되는 파일:
 
-- `parse_fio_results.py`
+- `scripts/analysis/parse_fio_results.py`
 - `docs/reports/baseline_v1.md`
 - `docs/reports/ssd_validation_competency_map.md`
 
@@ -49,7 +49,7 @@ Direct I/O와 buffered I/O 비교에서는 buffered 결과가 더 좋아 보일 
 
 연결되는 파일:
 
-- `analyze_qd_reproducibility.py`
+- `scripts/analysis/analyze_qd_reproducibility.py`
 - `results/qd_sweep_reproducibility.csv`
 
 ### 4. 경로와 cache 효과를 구분하려고 했다
@@ -82,8 +82,8 @@ Direct I/O와 buffered I/O 비교에서는 buffered 결과가 더 좋아 보일 
 
 연결되는 파일:
 
-- `run_sustained_smoke.ps1`
-- `analyze_sustained_smoke.py`
+- `scripts/runners/run_sustained_smoke.ps1`
+- `scripts/analysis/analyze_sustained_smoke.py`
 - `docs/reports/sustained_workload_week10.md`
 
 ## Questions I Can Answer With This Project

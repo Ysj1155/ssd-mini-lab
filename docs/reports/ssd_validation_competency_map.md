@@ -11,7 +11,7 @@ The project is not only a fio benchmark collection. It is a practice track for e
 | Competency | Evidence in this repo | What it demonstrates |
 |---|---|---|
 | Test condition definition | Baseline, QD sweep, direct/buffered, WSL path compare, sustained smoke | Ability to define workload, block size, queue depth, direct mode, path, runtime, and repeat count |
-| Result parsing | `parse_fio_results.py` | Ability to turn raw fio JSON into structured, comparable metrics |
+| Result parsing | `scripts/analysis/parse_fio_results.py` | Ability to turn raw fio JSON into structured, comparable metrics |
 | Metric selection | p95, p99, p99.9, CV, first-vs-last ratios | Understanding that average throughput alone is not enough |
 | Reproducibility review | `reproducibility_qd_sweep.md` | Ability to evaluate run-to-run variation instead of trusting one run |
 | Cache/path awareness | `direct_buffered_week7.md`, `wsl_path_compare_week9.md` | Ability to distinguish device behavior from OS/filesystem/path effects |
@@ -25,8 +25,8 @@ The project is not only a fio benchmark collection. It is a practice track for e
 
 Evidence:
 
-- `parse_fio_results.py`
-- `plot_fio_summary.py`
+- `scripts/analysis/parse_fio_results.py`
+- `scripts/analysis/plot_fio_summary.py`
 - `docs/reports/baseline_v1.md`
 
 Skill signal:
@@ -43,7 +43,7 @@ Interview framing:
 
 Evidence:
 
-- `analyze_qd_sweep.py`
+- `scripts/analysis/analyze_qd_sweep.py`
 - `docs/reports/reproducibility_qd_sweep.md`
 
 Skill signal:
@@ -60,7 +60,7 @@ Interview framing:
 
 Evidence:
 
-- `analyze_direct_buffered.py`
+- `scripts/analysis/analyze_direct_buffered.py`
 - `docs/reports/direct_buffered_week7.md`
 
 Skill signal:
@@ -79,7 +79,7 @@ Evidence:
 
 - `scripts/collect_env_windows.ps1`
 - `docs/reports/environment_collection_week8.md`
-- `analyze_wsl_path_compare.py`
+- `scripts/analysis/analyze_wsl_path_compare.py`
 - `docs/reports/wsl_path_compare_week9.md`
 
 Skill signal:
@@ -96,7 +96,7 @@ Interview framing:
 
 Evidence:
 
-- `analyze_qos_tail_latency.py`
+- `scripts/analysis/analyze_qos_tail_latency.py`
 - `docs/reports/qos_tail_latency_review.md`
 
 Skill signal:
@@ -113,8 +113,8 @@ Interview framing:
 
 Evidence:
 
-- `run_sustained_smoke.ps1`
-- `analyze_sustained_smoke.py`
+- `scripts/runners/run_sustained_smoke.ps1`
+- `scripts/analysis/analyze_sustained_smoke.py`
 - `docs/reports/sustained_workload_week10.md`
 
 Skill signal:

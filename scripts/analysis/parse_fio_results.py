@@ -1,5 +1,5 @@
 """
-parse_fio_results.py
+scripts/analysis/parse_fio_results.py
 
 Purpose:
     Parse fio JSON result files and summarize key validation-oriented metrics into CSV.
@@ -36,10 +36,10 @@ Default output:
 Usage:
     Baseline:
         cd D:\\ssd_lab
-        python .\\parse_fio_results.py
+        python .\\scripts/analysis/parse_fio_results.py
 
     QD sweep:
-        python .\\parse_fio_results.py `
+        python .\\scripts/analysis/parse_fio_results.py `
           --input-dir D:\\ssd_lab\\results\\qd_sweep `
           --output D:\\ssd_lab\\results\\qd_sweep_summary.csv
 """
