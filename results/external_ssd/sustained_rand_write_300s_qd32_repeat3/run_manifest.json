@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-07-20T07:40:44.127795+00:00",
+  "generated_at": "2026-07-21T04:30:44.759688+00:00",
   "generator": "scripts/analysis/build_external_ssd_run_manifest.py",
   "run_id": "sustained_rand_write_300s_qd32_repeat3",
   "result_set": "sustained_rand_write_300s_qd32_repeat3",
@@ -36,10 +36,9 @@
     "requirement_matrix": "docs/reports/external_ssd_requirement_matrix.md",
     "validation_matrix": "configs/external_ssd_validation_matrix.yaml",
     "product_report": "docs/reports/external_ssd_product_validation.md",
-    "env_snapshot": "results/env/latest/manifest.json",
-    "telemetry_snapshot": "results/telemetry/latest/manifest.json",
     "runner_manifest": null,
-    "observer_manifests": []
+    "observer_manifests": [],
+    "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests"
   },
   "execution_model": {
     "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",

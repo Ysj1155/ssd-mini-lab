@@ -303,10 +303,9 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
             "requirement_matrix": rel(REQUIREMENT_MATRIX) if REQUIREMENT_MATRIX.exists() else None,
             "validation_matrix": rel(MATRIX_PATH) if MATRIX_PATH.exists() else None,
             "product_report": rel(PRODUCT_REPORT) if PRODUCT_REPORT.exists() else None,
-            "env_snapshot": rel(ENV_MANIFEST) if ENV_MANIFEST.exists() else None,
-            "telemetry_snapshot": rel(TELEMETRY_MANIFEST) if TELEMETRY_MANIFEST.exists() else None,
             "runner_manifest": rel(runner_manifest_path) if runner_manifest_path.exists() else None,
             "observer_manifests": [rel(path) for path in observer_manifest_paths],
+            "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests",
         },
         "execution_model": {
             "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",

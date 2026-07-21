@@ -1,0 +1,55 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_rand_write_300s_qd32_trace_repeat3_20260721",
+    "started_at":  "2026-07-21T13:00:45.0263303+09:00",
+    "completed_at":  "2026-07-21T13:15:47.6201724+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_sustained.ps1",
+    "safety":  "fio file-target runner; refuses targets outside E:\\validation; no raw physical-drive target",
+    "fio_command":  "C:\\Program Files\\fio\\fio.exe",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721",
+    "test_file":  "E:\\validation\\ssd_lab_fio_testfile",
+    "conditions":  {
+                       "workload":  "rand_write",
+                       "rw":  "randwrite",
+                       "bs":  "4k",
+                       "iodepth":  "32",
+                       "size":  "512M",
+                       "runtime_sec":  "300",
+                       "direct":  "1",
+                       "numjobs":  "1",
+                       "log_avg_msec":  "1000",
+                       "readonly":  false,
+                       "planned_runs":  3
+                   },
+    "runs":  [
+                 {
+                     "run":  1,
+                     "started_at":  "2026-07-21T13:00:45.0861895+09:00",
+                     "completed_at":  "2026-07-21T13:05:45.9872763+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721\\sustained_rand_write_300s_qd32_trace_repeat3_20260721_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721\\sustained_rand_write_300s_qd32_trace_repeat3_20260721_run1"
+                 },
+                 {
+                     "run":  2,
+                     "started_at":  "2026-07-21T13:05:46.0002688+09:00",
+                     "completed_at":  "2026-07-21T13:10:46.8019296+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721\\sustained_rand_write_300s_qd32_trace_repeat3_20260721_run2.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721\\sustained_rand_write_300s_qd32_trace_repeat3_20260721_run2"
+                 },
+                 {
+                     "run":  3,
+                     "started_at":  "2026-07-21T13:10:46.8019296+09:00",
+                     "completed_at":  "2026-07-21T13:15:47.6150089+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721\\sustained_rand_write_300s_qd32_trace_repeat3_20260721_run3.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_rand_write_300s_qd32_trace_repeat3_20260721\\sustained_rand_write_300s_qd32_trace_repeat3_20260721_run3"
+                 }
+             ]
+}

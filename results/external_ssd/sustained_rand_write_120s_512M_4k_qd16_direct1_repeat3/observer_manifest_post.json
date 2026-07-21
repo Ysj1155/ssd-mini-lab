@@ -1,0 +1,37 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "observer",
+    "run_id":  "sustained_rand_write_120s_512M_4k_qd16_direct1_repeat3",
+    "phase":  "post",
+    "collected_at":  "2026-07-21T12:59:56.9744888+09:00",
+    "status":  "complete",
+    "observer":  "scripts/observers/collect_external_ssd_observer.ps1",
+    "safety":  "read-only observer; no fio execution; no raw physical-drive writes",
+    "collectors":  [
+                       {
+                           "name":  "environment",
+                           "collector":  "D:\\ssd_lab\\scripts\\collect_env_windows.ps1",
+                           "started_at":  "2026-07-21T12:59:27.2268489+09:00",
+                           "completed_at":  "2026-07-21T12:59:52.9807557+09:00",
+                           "exit_code":  0,
+                           "status":  "complete",
+                           "latest_manifest":  "D:\\ssd_lab\\results\\env\\latest\\manifest.json",
+                           "output_dir":  "D:\\ssd_lab\\results\\env\\20260721_125927",
+                           "limitation":  null
+                       },
+                       {
+                           "name":  "storage_telemetry",
+                           "collector":  "D:\\ssd_lab\\scripts\\collect_storage_telemetry_windows.ps1",
+                           "started_at":  "2026-07-21T12:59:53.0830011+09:00",
+                           "completed_at":  "2026-07-21T12:59:56.9498407+09:00",
+                           "exit_code":  0,
+                           "status":  "complete",
+                           "latest_manifest":  "D:\\ssd_lab\\results\\telemetry\\latest\\manifest.json",
+                           "output_dir":  "D:\\ssd_lab\\results\\telemetry\\20260721_125953",
+                           "limitation":  null
+                       }
+                   ],
+    "limitations":  [
+
+                    ]
+}

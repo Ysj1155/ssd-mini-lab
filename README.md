@@ -26,9 +26,9 @@ Interpretation boundary: results include the USB path, Windows, exFAT, and fio f
 | Does longer runtime expose write-side QoS risk? | Random write QD32, 120s vs 300s, repeat=3 |
 | Can every result be traced to its conditions and evidence? | Run manifest plus separate runner/observer manifests |
 
-Latest finding: the 300s QD32 random-write result averaged 138.74 MiB/s and 35,517 IOPS. Compared with the matching 120s result, p99.9 increased from 2,124 us to 3,249 us, last-third IOPS averaged 0.91x the first third, and last-third average completion latency reached 1.12x. This is a black-box QoS observation, not proof of internal GC.
+Latest finding: a second 300s QD32 random-write session averaged 147.90 MiB/s and 37,862 IOPS with lower p99/p99.9 than the first session, so the original late-run decline was not reproduced. Rare maximum-latency stalls of 5.7-6.1 seconds remain visible as black-box anomalies.
 
-Historical sustained runs predate the runner/observer evidence model. Their integrated manifests are therefore marked `limited` when those execution artifacts are absent.
+The 2026-07-21 QD32 300s run is the first result with matching pre-observer, runner, and post-observer evidence. Historical runs remain `limited` when those execution artifacts are absent.
 
 ## Start Here
 

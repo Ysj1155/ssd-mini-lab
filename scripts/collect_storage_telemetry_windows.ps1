@@ -7,9 +7,11 @@
 #   results/telemetry/<timestamp>/
 #
 # Safety:
-#   This script does not run fio.
-#   This script does not write to raw block devices.
-#   It only queries Windows storage metadata and read-only counters.
+#   This script does not run fio or write to raw block devices.
+
+param(
+    [string]$TestFile = $env:SSD_LAB_EXTERNAL_TESTFILE
+)
 
 $ErrorActionPreference = "Continue"
 
@@ -19,7 +21,24 @@ $OutputRoot = Join-Path $BaseDir "results\telemetry"
 $OutputDir = Join-Path $OutputRoot $Timestamp
 $LatestDir = Join-Path $OutputRoot "latest"
 
+if ([string]::IsNullOrWhiteSpace($TestFile)) {
+    $TestFile = Join-Path $BaseDir "fio_testfile_sustained_smoke"
+}
+
+$TargetRoot = [System.IO.Path]::GetPathRoot($TestFile)
+if ([string]::IsNullOrWhiteSpace($TargetRoot)) {
+    throw "TestFile must be an absolute path: $TestFile"
+}
+
+$TargetDrive = $TargetRoot.TrimEnd('\').TrimEnd(':')
+$Limitations = [System.Collections.Generic.List[string]]::new()
+
 New-Item -ItemType Directory -Force $OutputDir | Out-Null
+
+function Add-Limitation {
+    param([string]$Message)
+    [void]$script:Limitations.Add($Message)
+}
 
 function Write-Section {
     param(
@@ -31,7 +50,9 @@ function Write-Section {
         & $Command *>&1 | Out-File -FilePath $Path -Encoding utf8
     }
     catch {
-        "ERROR: $($_.Exception.Message)" | Out-File -FilePath $Path -Encoding utf8
+        $message = $_.Exception.Message
+        "ERROR: $message" | Out-File -FilePath $Path -Encoding utf8
+        Add-Limitation "$([System.IO.Path]::GetFileName($Path)): $message"
     }
 }
 
@@ -45,7 +66,9 @@ function Export-SectionCsv {
         & $Command | Export-Csv -Path $Path -NoTypeInformation -Encoding utf8
     }
     catch {
-        "ERROR: $($_.Exception.Message)" | Out-File -FilePath $Path -Encoding utf8
+        $message = $_.Exception.Message
+        "ERROR: $message" | Out-File -FilePath $Path -Encoding utf8
+        Add-Limitation "$([System.IO.Path]::GetFileName($Path)): $message"
     }
 }
 
@@ -58,21 +81,16 @@ function Write-Native {
 
     try {
         & $Command @Arguments *>&1 | Out-File -FilePath $Path -Encoding utf8
+        if ($LASTEXITCODE -ne 0) {
+            Add-Limitation "$([System.IO.Path]::GetFileName($Path)): native command exit code $LASTEXITCODE"
+        }
     }
     catch {
-        "ERROR: $($_.Exception.Message)" | Out-File -FilePath $Path -Encoding utf8
+        $message = $_.Exception.Message
+        "ERROR: $message" | Out-File -FilePath $Path -Encoding utf8
+        Add-Limitation "$([System.IO.Path]::GetFileName($Path)): $message"
     }
 }
-
-$manifest = [ordered]@{
-    collected_at = (Get-Date).ToString("o")
-    base_dir = $BaseDir
-    output_dir = $OutputDir
-    collector = "scripts/collect_storage_telemetry_windows.ps1"
-    safety = "read-only metadata and telemetry queries; no fio; no raw-device writes"
-}
-
-$manifest | ConvertTo-Json -Depth 3 | Out-File -FilePath (Join-Path $OutputDir "manifest.json") -Encoding utf8
 
 Export-SectionCsv (Join-Path $OutputDir "disk_info.csv") {
     Get-Disk -ErrorAction Stop |
@@ -110,12 +128,26 @@ Export-SectionCsv (Join-Path $OutputDir "win32_diskdrive.csv") {
         Select-Object Index, Model, SerialNumber, InterfaceType, MediaType, Size, Partitions, Status, FirmwareRevision
 }
 
-Write-Section (Join-Path $OutputDir "fsutil_volume_diskfree_D.txt") {
-    fsutil volume diskfree D:
+Export-SectionCsv (Join-Path $OutputDir "target_volume_info.csv") {
+    Get-Volume -DriveLetter $TargetDrive -ErrorAction Stop |
+        Select-Object DriveLetter, FileSystemLabel, FileSystem, DriveType, HealthStatus, OperationalStatus, Size, SizeRemaining
 }
 
-Write-Section (Join-Path $OutputDir "driveinfo_D.txt") {
-    $drive = New-Object System.IO.DriveInfo("D")
+Export-SectionCsv (Join-Path $OutputDir "target_disk_info.csv") {
+    Get-Partition -DriveLetter $TargetDrive -ErrorAction Stop |
+        Get-Disk -ErrorAction Stop |
+        Select-Object Number, FriendlyName, SerialNumber, BusType, MediaType, Size, PartitionStyle, HealthStatus, OperationalStatus
+}
+
+Write-Section (Join-Path $OutputDir "target_volume_diskfree.txt") {
+    fsutil volume diskfree "${TargetDrive}:"
+    if ($LASTEXITCODE -ne 0) {
+        throw "fsutil exit code $LASTEXITCODE"
+    }
+}
+
+Write-Section (Join-Path $OutputDir "target_driveinfo.txt") {
+    $drive = New-Object System.IO.DriveInfo($TargetDrive)
     [PSCustomObject]@{
         Name = $drive.Name
         DriveType = $drive.DriveType
@@ -128,26 +160,47 @@ Write-Section (Join-Path $OutputDir "driveinfo_D.txt") {
 }
 
 Write-Section (Join-Path $OutputDir "testfile_info.txt") {
-    $testFile = Join-Path $BaseDir "fio_testfile_sustained_smoke"
-    if (Test-Path $testFile) {
-        Get-Item -LiteralPath $testFile | Select-Object FullName, Length, LastWriteTime
+    if (-not (Test-Path -LiteralPath $TestFile)) {
+        throw "Test file not found: $TestFile"
     }
-    else {
-        "Test file not found: $testFile"
-    }
+    Get-Item -LiteralPath $TestFile | Select-Object FullName, Length, LastWriteTime
 }
 
-Write-Section (Join-Path $OutputDir "smartctl_availability.txt") {
-    Get-Command smartctl -ErrorAction SilentlyContinue
+$Smartctl = Get-Command smartctl -ErrorAction SilentlyContinue
+if ($null -eq $Smartctl) {
+    "smartctl command not available" | Out-File -FilePath (Join-Path $OutputDir "smartctl_availability.txt") -Encoding utf8
+    Add-Limitation "smartctl command not available"
+}
+else {
+    $Smartctl | Out-File -FilePath (Join-Path $OutputDir "smartctl_availability.txt") -Encoding utf8
 }
 
-if ($env:SSD_LAB_SMARTCTL_SCAN -eq "1") {
+if ($env:SSD_LAB_SMARTCTL_SCAN -eq "1" -and $null -ne $Smartctl) {
     Write-Native (Join-Path $OutputDir "smartctl_scan.txt") "smartctl" @("--scan-open")
 }
 else {
-    "Not run by default. Set SSD_LAB_SMARTCTL_SCAN=1 to run smartctl --scan-open." |
+    "Not run. Set SSD_LAB_SMARTCTL_SCAN=1 and install smartctl to enable scan-open." |
         Out-File -FilePath (Join-Path $OutputDir "smartctl_scan.txt") -Encoding utf8
+    Add-Limitation "smartctl scan not available or not requested"
 }
+
+$Status = if ($Limitations.Count -eq 0) { "complete" } else { "limited" }
+$Manifest = [ordered]@{
+    schema_version = "1.0"
+    collected_at = (Get-Date).ToString("o")
+    base_dir = $BaseDir
+    output_dir = $OutputDir
+    collector = "scripts/collect_storage_telemetry_windows.ps1"
+    status = $Status
+    target_file = $TestFile
+    target_drive = $TargetDrive
+    limitations = @($Limitations)
+    safety = "read-only metadata and telemetry queries; no fio; no raw-device writes"
+}
+
+$Manifest |
+    ConvertTo-Json -Depth 5 |
+    Out-File -FilePath (Join-Path $OutputDir "manifest.json") -Encoding utf8
 
 if (Test-Path $LatestDir) {
     Remove-Item -LiteralPath $LatestDir -Recurse -Force
@@ -156,5 +209,8 @@ if (Test-Path $LatestDir) {
 Copy-Item -Path $OutputDir -Destination $LatestDir -Recurse -Force
 
 Write-Host "=== Storage telemetry collected ==="
+Write-Host "Status : $Status"
+Write-Host "Target : $TestFile"
+Write-Host "Drive  : $TargetDrive"
 Write-Host "Output : $OutputDir"
 Write-Host "Latest : $LatestDir"

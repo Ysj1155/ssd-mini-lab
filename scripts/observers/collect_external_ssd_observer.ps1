@@ -5,11 +5,6 @@
 #
 # Output:
 #   results/external_ssd/<run_id>/observer_manifest_<phase>.json
-#
-# Safety:
-#   This script does not run fio.
-#   This script does not write to raw block devices.
-#   It only calls read-only environment and telemetry collectors.
 
 param(
     [string]$RunLabel = $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL,
@@ -22,6 +17,7 @@ $ErrorActionPreference = "Continue"
 
 $BaseDir = "D:\ssd_lab"
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
+$TestFile = $env:SSD_LAB_EXTERNAL_TESTFILE
 
 if ([string]::IsNullOrWhiteSpace($RunLabel)) {
     $RunLabel = "external_ssd_observer_unlabeled"
@@ -69,6 +65,8 @@ function Invoke-Collector {
         status = "started"
         latest_manifest = $LatestManifestPath
         output_dir = $null
+        target_file = $null
+        limitations = @()
         limitation = $null
     }
 
@@ -76,60 +74,74 @@ function Invoke-Collector {
         $record.completed_at = (Get-Date).ToString("o")
         $record.exit_code = 1
         $record.status = "limited"
+        $record.limitations = @("collector script not found")
         $record.limitation = "collector script not found"
         return $record
     }
 
-    powershell -ExecutionPolicy Bypass -File $ScriptPath
-    $record.exit_code = $LASTEXITCODE
+    powershell -ExecutionPolicy Bypass -File $ScriptPath | Out-Host
+    $collectorExitCode = $LASTEXITCODE
+    $record.exit_code = $collectorExitCode
     $record.completed_at = (Get-Date).ToString("o")
 
     $manifest = Read-CollectorManifest -Path $LatestManifestPath
     if ($null -ne $manifest) {
         $record.output_dir = $manifest.output_dir
+        $record.target_file = $manifest.target_file
+        if ($null -ne $manifest.limitations) {
+            $record.limitations = @($manifest.limitations)
+        }
     }
 
-    if ($LASTEXITCODE -eq 0 -and $null -ne $manifest) {
-        $record.status = "complete"
+    if ($collectorExitCode -ne 0 -or $null -eq $manifest) {
+        $record.status = "limited"
+        $record.limitations += "collector did not return a usable manifest"
+    }
+    elseif ($manifest.PSObject.Properties.Name -contains "status") {
+        $record.status = $manifest.status
     }
     else {
-        $record.status = "limited"
-        $record.limitation = "collector did not return a usable manifest"
+        $record.status = "complete"
+    }
+
+    if ($record.limitations.Count -gt 0) {
+        $record.limitation = $record.limitations -join "; "
     }
 
     return $record
 }
 
-$collectors = @()
-$limitations = @()
+$Collectors = @()
+$Limitations = @()
 
 if (-not $SkipEnvironment) {
-    $collectors += Invoke-Collector `
+    $Collectors += Invoke-Collector `
         -Name "environment" `
         -ScriptPath (Join-Path $BaseDir "scripts\collect_env_windows.ps1") `
         -LatestManifestPath (Join-Path $BaseDir "results\env\latest\manifest.json")
 }
 else {
-    $limitations += "environment collector skipped"
+    $Limitations += "environment collector skipped"
 }
 
 if (-not $SkipTelemetry) {
-    $collectors += Invoke-Collector `
+    $Collectors += Invoke-Collector `
         -Name "storage_telemetry" `
         -ScriptPath (Join-Path $BaseDir "scripts\collect_storage_telemetry_windows.ps1") `
         -LatestManifestPath (Join-Path $BaseDir "results\telemetry\latest\manifest.json")
 }
 else {
-    $limitations += "storage telemetry collector skipped"
+    $Limitations += "storage telemetry collector skipped"
 }
 
-foreach ($collector in $collectors) {
+foreach ($collector in $Collectors) {
     if ($collector.status -ne "complete") {
-        $limitations += "$($collector.name): $($collector.limitation)"
+        $detail = if ($collector.limitation) { $collector.limitation } else { $collector.status }
+        $Limitations += "$($collector.name): $detail"
     }
 }
 
-$Status = if ($limitations.Count -eq 0) { "complete" } else { "limited" }
+$Status = if ($Limitations.Count -eq 0) { "complete" } else { "limited" }
 
 $ObserverManifest = [ordered]@{
     schema_version = "1.0"
@@ -139,9 +151,10 @@ $ObserverManifest = [ordered]@{
     collected_at = (Get-Date).ToString("o")
     status = $Status
     observer = "scripts/observers/collect_external_ssd_observer.ps1"
+    target_file = $TestFile
     safety = "read-only observer; no fio execution; no raw physical-drive writes"
-    collectors = $collectors
-    limitations = $limitations
+    collectors = $Collectors
+    limitations = $Limitations
 }
 
 $ObserverManifest |
