@@ -1,6 +1,6 @@
 # External SSD Product Validation Report
 
-Status: QD sweep repeat=3, sustained read/write QD16/QD32 120s repeat=3, and two sustained random-write QD32 300s repeat=3 sessions completed. The 2026-07-21 QD32 300s run is the first result with matching pre-observer, runner, and post-observer evidence under one run ID.
+Status: QD sweep repeat=3, three sustained random-write QD16 120s sessions, and two sustained random-write QD32 300s sessions completed. The 2026-07-21 QD32 and 2026-07-22 QD16 runs have matching pre-observer, runner, post-observer, parsed CSV, and integrated manifest evidence.
 
 ## 1. Scope
 
@@ -27,9 +27,10 @@ Related evidence:
 | File system | exFAT |
 | Test target | `E:\validation\ssd_lab_fio_testfile` |
 | fio version | `fio-3.42` |
-| Evidence-complete run ID | `sustained_rand_write_300s_qd32_trace_repeat3_20260721` |
+| QD32 evidence-complete run | `sustained_rand_write_300s_qd32_trace_repeat3_20260721` |
+| QD16 evidence-complete run | `sustained_rand_write_120s_qd16_trace_repeat3_20260722` |
 
-The evidence-complete run has pre/post environment and telemetry collector outputs linked through observer manifests. The collector used during that run still recorded its legacy D: test file in `testfile_info.txt`, so device telemetry for that run remains Limited even though execution traceability is complete. The collector has since been corrected to derive the target file and drive from `SSD_LAB_EXTERNAL_TESTFILE`.
+The QD32 evidence-complete run predates target-aware telemetry and therefore retains a Limited device-telemetry interpretation. The QD16 evidence-complete run used the corrected collector: pre/post evidence identifies `E:\validation\ssd_lab_fio_testfile`, E: volume, and `SanDisk Extreme SSD` over USB. SMART, reliability counters, and fsutil remained Limited and are explicitly recorded.
 
 ## 3. Execution Coverage
 
@@ -38,13 +39,13 @@ The evidence-complete run has pre/post environment and telemetry collector outpu
 | `EXT-QD-SMOKE` | 4K randread/randwrite, QD 1/4/16/32, 30s | 1 | Complete |
 | `EXT-PERF-RR-QD-SWEEP` | 4K randread, QD 1/4/16/32, 30s | 3 | Complete |
 | `EXT-PERF-RW-QD-SWEEP` | 4K randwrite, QD 1/4/16/32, 30s | 3 | Complete |
-| `EXT-SUST-WRITE-120S` | 4K randwrite, QD16, 120s | 3 + 3 | Two sessions complete; second session lacks pre-observer |
+| `EXT-SUST-WRITE-120S` | 4K randwrite, QD16, 120s | 3 + 3 + 3 | Three sessions complete; latest execution trace complete |
 | `EXT-SUST-READ-120S` | 4K randread, QD16, 120s | 3 | Complete |
 | `EXT-SUST-READ-QD32-120S` | 4K randread, QD32, 120s | 3 | Complete |
 | `EXT-SUST-WRITE-QD32-120S` | 4K randwrite, QD32, 120s | 3 | Complete |
 | `EXT-SUST-WRITE-QD32-300S` | 4K randwrite, QD32, 300s | 3 + 3 | Two sessions complete; latest execution trace complete |
 
-The analyzer currently includes 21 sustained fio JSON jobs. All report `error: 0`, and each result set contains the expected time-series logs.
+The analyzer currently includes 24 sustained fio JSON jobs. All report `error: 0`, and each result set contains the expected time-series logs.
 
 ## 4. QD Sweep Observation
 
@@ -71,11 +72,27 @@ Random read scaled with QD and remained repeatable. Random write throughput satu
 | randread 120s QD32 | 235.12 | 0.078 | 60,192 | 1,095.00 | 1,591.98 | 0.979 | 1.026 |
 | randwrite 120s QD16, original | 162.96 | 0.044 | 41,717 | 516.10 | 735.91 | 1.059 | 0.950 |
 | randwrite 120s QD16, 2026-07-21 | 125.13 | 0.032 | 32,034 | 950.27 | 4,560.21 | 1.162 | 0.869 |
+| randwrite 120s QD16, traced 2026-07-22 | 127.19 | 0.017 | 32,561 | 667.65 | 1,313.45 | 1.078 | 0.899 |
 | randwrite 120s QD32 | 141.73 | 0.051 | 36,283 | 1,226.07 | 2,124.46 | 0.974 | 1.016 |
 | randwrite 300s QD32, original | 138.74 | 0.065 | 35,517 | 1,329.83 | 3,249.49 | 0.910 | 1.116 |
 | randwrite 300s QD32, traced | 147.90 | 0.010 | 37,862 | 1,015.81 | 1,717.59 | 1.014 | 0.759 |
 
-The second QD16 session was materially slower and had much worse tail latency than the original QD16 session. This confirms that a single repeat group is insufficient to describe cross-session behavior.
+### QD16 120s Cross-Session Comparison
+
+| Metric | Original | 2026-07-21 | Traced 2026-07-22 |
+|---|---:|---:|---:|
+| Avg BW MiB/s | 162.96 | 125.13 | 127.19 |
+| Avg IOPS | 41,717 | 32,034 | 32,561 |
+| Avg p99 us | 516.10 | 950.27 | 667.65 |
+| Avg p99.9 us | 735.91 | 4,560.21 | 1,313.45 |
+| BW CV | 0.044 | 0.032 | 0.017 |
+| Last/first IOPS | 1.059 | 1.162 | 1.078 |
+
+The traced session reproduced the lower QD16 throughput level: average bandwidth remained about 22% below the original session and within 1.6% of the 2026-07-21 session. The lower-throughput state is therefore no longer a one-session observation.
+
+Tail latency did not move as one fixed package with throughput. The traced session's p99.9 was higher than the original session but 71% lower than the 2026-07-21 session. Within-session repeatability was strong, with BW CV 1.7%, p99 CV 1.2%, and p99.9 CV 7.1%.
+
+The traced session also showed no late-run degradation. Last-third IOPS averaged 1.078x the first third, while last-third average completion latency was 0.899x the first third. The defensible conclusion is that QD16 has entered a reproducible lower-throughput regime across two sessions, while severe tail-latency inflation remains intermittent and is not determined by throughput level alone.
 
 ## 6. QD32 300s Cross-Session Comparison
 
@@ -104,25 +121,31 @@ The aggregate last/first completion-latency ratio of 0.759 is not evidence of ge
 
 ## 7. Traceability and Telemetry Status
 
-The traced 300s QD32 run contains:
+The traced QD32 and QD16 runs contain:
 
-- `observer_manifest_pre.json`: complete execution record
-- `runner_manifest.json`: 3 runs, all exit code 0
-- `observer_manifest_post.json`: complete execution record
+- matching `observer_manifest_pre.json`, `runner_manifest.json`, and `observer_manifest_post.json`
+- 3 fio runs per result set, all exit code 0
 - raw fio JSON and bandwidth/IOPS/latency logs
 - parsed summary, time-series, window, and repeatability CSVs
 - integrated `run_manifest.json`: `complete`
 
 The integrated manifest now relies on run-specific observer manifests rather than mutable global `results/*/latest` links.
 
-Telemetry interpretation remains Limited for the completed run because:
+The corrected collector used by the QD16 run confirmed:
 
-- its legacy collector recorded the wrong test-file metadata path
+- target file `E:\validation\ssd_lab_fio_testfile`
+- E: volume `Healthy / OK`
+- `SanDisk Extreme SSD`, USB, disk `Healthy / Online`
+- unchanged pre/post free-space state for the reused file target
+
+Telemetry interpretation remains Limited because:
+
 - SMART was unavailable or not requested
 - storage reliability counters were unavailable through the current Windows access path
+- fsutil disk-free query returned a nonzero exit code
 - no direct power measurement exists
 
-The corrected collector now records `target_file`, `target_drive`, `status`, and explicit `limitations`. A future run will propagate those limitations through the observer manifest instead of reporting collector completion as full telemetry coverage.
+These limitations are propagated through the observer manifests instead of being reported as complete telemetry coverage.
 
 ## 8. Requirement Verdict
 
@@ -131,30 +154,32 @@ The corrected collector now records `target_file`, `target_drive`, `status`, and
 | `REQ-PERF-001` | Observation | Random-read QD sweep repeat=3 exists; no external specification threshold is defined |
 | `REQ-PERF-002` | Observation | Random-write QD sweep repeat=3 exists; no external specification threshold is defined |
 | `REQ-QOS-001` | Pass | p99 and p99.9 are reported for QD sweep and sustained runs |
-| `REQ-REPRO-001` | Pass | Three repeats and CV are reported; cross-session differences are retained |
+| `REQ-REPRO-001` | Pass | Three QD16 sessions retain per-run CV and cross-session differences |
 | `REQ-SUST-001` | Pass | First/middle/last window evidence exists for sustained writes |
 | `REQ-SUST-002` | Pass | Matching QD32 write conditions were compared at 120s and 300s |
 | `REQ-SUST-003` | Pass | Matching sustained read/write conditions exist at QD16 and QD32 |
-| `REQ-ENV-001` | Pass for traced run | Pre/post environment collectors are linked by run ID |
-| `REQ-TEL-001` | Limited | Collector ran, but target metadata and device-level counters were incomplete |
-| `REQ-OBS-001` | Pass for traced run | Pre observer, runner, and post observer are linked |
-| `REQ-TRACE-001` | Pass for traced run | Integrated manifest links conditions and run-specific evidence |
+| `REQ-ENV-001` | Pass for traced runs | Pre/post environment collectors are linked by run ID |
+| `REQ-TEL-001` | Limited | Target metadata is correct; SMART, reliability counters, and fsutil remain limited |
+| `REQ-OBS-001` | Pass for traced runs | Pre observer, runner, and post observer are linked |
+| `REQ-TRACE-001` | Pass for traced runs | Integrated manifests link conditions and run-specific evidence |
 | `REQ-LIMIT-001` | Pass | USB, Windows, exFAT, file-target, telemetry, and root-cause limits are explicit |
 
 ## 9. Limitations
 
 - The test file is 512 MiB, so results do not establish full-drive or enterprise steady-state behavior.
 - USB bridge, enclosure, port, host controller, Windows, exFAT, and fio file-target effects are combined.
-- The evidence-complete run predates the corrected target-aware telemetry collector.
+- The QD32 evidence-complete run predates the corrected target-aware telemetry collector.
 - Exact DUT model, enclosure/adapter, and host port remain to be confirmed.
 - No direct power measurement or internal firmware/NAND/FTL/GC trace is available.
 - Hard performance pass/fail thresholds require an external requirement or established baseline.
 
 ## 10. Current Verdict
 
-The lab now demonstrates both measurement and evidence engineering: controlled fio conditions, repeated raw data, cross-session comparison, tail-latency anomaly retention, separate runner/observer roles, and integrated traceability.
+The lab now demonstrates both measurement and evidence engineering: controlled fio conditions, repeated raw data, three-session QD16 comparison, tail-latency anomaly retention, target-aware telemetry limitations, separate runner/observer roles, and integrated traceability.
 
 The QD32 300s late-run degradation observed in the first session was not reproduced in the traced session. The stronger conclusion is that session state materially affects black-box results and that rare multi-second stalls must be reviewed separately from p99/p99.9.
+
+At QD16 120s, the lower throughput level was reproduced across two consecutive sessions, but the severe p99.9 inflation was not. Throughput state and tail-latency state must therefore be tracked as separate validation dimensions.
 
 Portfolio statement:
 

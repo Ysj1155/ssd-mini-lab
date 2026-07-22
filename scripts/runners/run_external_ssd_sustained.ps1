@@ -205,6 +205,6 @@ Save-RunnerManifest -Manifest $RunnerManifest -Path $RunnerManifestPath
 
 Write-Host "=== External SSD sustained run completed ==="
 Write-Host "Expected JSON files: $Runs"
-Write-Host "Actual JSON files  : $((Get-ChildItem -Path $ResultDir -Filter *.json).Count)"
+Write-Host "Actual fio JSON files: $((Get-ChildItem -Path $ResultDir -Filter '*_run*.json').Count)"
 Write-Host "Result directory   : $ResultDir"
 Write-Host "Runner manifest    : $RunnerManifestPath"

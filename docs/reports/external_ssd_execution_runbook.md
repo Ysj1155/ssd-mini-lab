@@ -1,59 +1,80 @@
 # External SSD Execution Runbook
 
-This is the fixed execution procedure for the next external SSD sustained run.
+This is the fixed execution procedure for external SSD sustained runs.
 
-Codex prepares and reviews the workflow but does not run fio unless explicitly asked. The user confirms the external SSD path and executes fio locally.
+Codex prepares and reviews the workflow but does not run fio unless explicitly asked. The user confirms the external SSD path and executes the traced runner locally.
 
 ## 1. Safety Boundary
 
 - Use only the existing file target `E:\validation\ssd_lab_fio_testfile`.
-- Do not use a raw physical-drive path.
-- Do not substitute an internal OS-drive file.
-- Keep new product-validation runs under `results/external_ssd/<run_id>/`.
-- Read workloads use fio's `--readonly` flag through the runner.
+- Do not use a raw physical-drive path or an internal OS-drive file.
+- Keep each run under a unique `results/external_ssd/<run_id>/` directory.
+- The traced runner refuses to overwrite a directory that already contains fio run JSON.
+- Read workloads use fio's `--readonly` flag through the underlying runner.
 
 Confirm the target before every run:
 
 ```powershell
 cd D:\ssd_lab
-$env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-Get-Item -LiteralPath $env:SSD_LAB_EXTERNAL_TESTFILE | Select-Object FullName, Length, LastWriteTime
+Get-Item -LiteralPath "E:\validation\ssd_lab_fio_testfile" |
+    Select-Object FullName, Length, LastWriteTime
 Get-Volume -DriveLetter E
 ```
 
 Stop if the file is missing, the drive letter changed, or the path does not begin with `E:\validation\`.
 
-## 2. Define One Run ID and Its Conditions
+## 2. Next Experiment
 
-Set every condition explicitly in the same PowerShell session. For the next evidence-complete confirmation run:
+The next run checks QD16 120s random-write reproducibility across sessions.
 
-```powershell
-cd D:\ssd_lab
-$env:SSD_LAB_EXTERNAL_TESTFILE = "E:\validation\ssd_lab_fio_testfile"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL = "sustained_rand_write_300s_qd32_trace_repeat3"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_WORKLOAD = "rand_write"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RW = "randwrite"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RUNTIME = "300"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_SIZE = "512M"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_BS = "4k"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH = "32"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_DIRECT = "1"
-$env:SSD_LAB_EXTERNAL_SUSTAINED_RUNS = "3"
+Run ID:
+
+```text
+sustained_rand_write_120s_qd16_trace_repeat3_20260722
 ```
 
-This repeats the current QoS risk candidate under the new evidence model. The distinct run ID preserves the earlier result set and allows a cross-session confirmation without overwriting raw data.
+Condition:
+
+| Field | Value |
+|---|---|
+| rw | `randwrite` |
+| block size | `4k` |
+| queue depth | `16` |
+| runtime | `120s` |
+| test-file size | `512M` |
+| direct | `1` |
+| repeats | `3` |
+
+This condition has already produced materially different results in two sessions. The new run determines whether the slower, higher-tail-latency session repeats when execution evidence is complete.
 
 ## 3. Fixed Execution Sequence
 
-Run these commands in order:
+Run this single command from PowerShell or a PyCharm PowerShell terminal:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\observers\collect_external_ssd_observer.ps1 -Phase pre
-powershell -ExecutionPolicy Bypass -File .\scripts\runners\run_external_ssd_sustained.ps1
-powershell -ExecutionPolicy Bypass -File .\scripts\observers\collect_external_ssd_observer.ps1 -Phase post
+cd D:\ssd_lab
+
+powershell -ExecutionPolicy Bypass `
+  -File .\scripts\runners\run_external_ssd_traced_sustained.ps1 `
+  -RunLabel "sustained_rand_write_120s_qd16_trace_repeat3_20260722" `
+  -Rw randwrite `
+  -RuntimeSec 120 `
+  -Iodepth 16 `
+  -Runs 3 `
+  -BlockSize 4k `
+  -Size 512M `
+  -TestFile "E:\validation\ssd_lab_fio_testfile"
 ```
 
-Evidence ownership is intentionally separated:
+The traced runner sets all environment variables in one process and executes:
+
+```text
+pre observer -> fio runner -> post observer
+```
+
+Before fio starts, confirm the printed values show `RuntimeSec: 120`, `Iodepth: 16`, and `Runs: 3`. Stop with `Ctrl+C` if they differ.
+
+Evidence ownership remains separate:
 
 | Producer | Responsibility | Expected artifact |
 |---|---|---|
@@ -61,65 +82,59 @@ Evidence ownership is intentionally separated:
 | Runner | fio execution, exit codes, raw JSON, time-series logs | `runner_manifest.json` and fio artifacts |
 | Observer, post | Read-only host/path/telemetry context after fio | `observer_manifest_post.json` |
 
-All three manifests must share the same run ID from `SSD_LAB_EXTERNAL_SUSTAINED_LABEL`.
-
 ## 4. Post-Run Validation
 
-First verify file count, fio status, and target path:
-
 ```powershell
-$runDir = Join-Path ".\results\external_ssd" $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL
+$runLabel = "sustained_rand_write_120s_qd16_trace_repeat3_20260722"
+$runDir = Join-Path ".\results\external_ssd" $runLabel
+
 Get-ChildItem -LiteralPath $runDir | Select-Object Name, Length, LastWriteTime
-Select-String -Path (Join-Path $runDir "*_run*.json") -Pattern '"error"|"filename"'
+Select-String -Path (Join-Path $runDir "*_run*.json") `
+  -Pattern '"error"|"filename"'
 ```
 
 Expected minimum evidence:
 
 - 3 fio run JSON files with `error: 0`
-- fio time-series logs for each run
+- fio bandwidth, IOPS, and latency logs for each run
 - `runner_manifest.json`
 - `observer_manifest_pre.json`
 - `observer_manifest_post.json`
 - JSON `filename` values resolving to `E:\validation\ssd_lab_fio_testfile`
 
-Then rebuild the derived evidence:
+Then rebuild derived evidence:
 
 ```powershell
 python .\scripts\analysis\analyze_external_ssd_sustained.py
-python .\scripts\analysis\build_external_ssd_run_manifest.py --result-set $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL
-```
-
-Inspect the integrated manifest:
-
-```powershell
+python .\scripts\analysis\build_external_ssd_run_manifest.py --result-set $runLabel
 Get-Content -Raw (Join-Path $runDir "run_manifest.json")
 ```
 
-The expected integrated status is `complete`. A `limited` status is acceptable only when its anomaly list explicitly identifies the missing or restricted evidence.
+The integrated run manifest may be `complete` even when telemetry is `limited`; collector limitations must remain explicit in the observer manifests.
 
-## 5. Interpretation and Reporting
+## 5. Interpretation
 
-Review these outputs before changing the report:
+Compare the new result against:
 
-- `results/external_ssd_sustained_summary.csv`
-- `results/external_ssd_sustained_repeatability.csv`
-- `results/external_ssd_sustained_window_summary.csv`
-- `results/external_ssd/<run_id>/run_manifest.json`
+- `sustained_rand_write_120s_qd16_repeat3`
+- `sustained_rand_write_120s_512M_4k_qd16_direct1_repeat3`
 
-Compare the confirmation run against `sustained_rand_write_300s_qd32_repeat3` using:
+Review:
 
 - average bandwidth and IOPS
 - p99 and p99.9 completion latency
 - run-to-run CV
 - last-third IOPS / first-third IOPS
 - last-third average completion latency / first-third average completion latency
-- observer limitations and available telemetry
+- maximum-latency outliers
+- observer and telemetry limitations
 
-Do not infer internal FTL or GC behavior from these black-box file-target results.
+Do not infer internal FTL, GC, or USB root cause from these black-box file-target results.
 
 ## 6. Failure Handling
 
 - Wrong or missing target path: stop before fio and correct the path.
-- fio nonzero exit: preserve the raw output and runner manifest; do not merge it into a successful result.
-- Observer limitation: continue only if fio safety is unaffected, then retain the explicit `limited` status.
-- Missing logs or manifests: do not fabricate or backfill execution evidence; rerun with a new run ID if complete traceability is required.
+- Existing fio JSON under the run ID: choose a new run ID; do not overwrite raw data.
+- fio nonzero exit: preserve raw output and runner manifest; do not classify it as a successful result.
+- Observer limitation: continue only if fio target safety is unaffected, then retain `limited` telemetry evidence.
+- Missing logs or manifests: do not fabricate or backfill execution evidence.
