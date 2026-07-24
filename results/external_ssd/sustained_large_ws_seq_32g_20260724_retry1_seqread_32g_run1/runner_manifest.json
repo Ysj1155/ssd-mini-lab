@@ -1,0 +1,41 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1",
+    "test_case_id":  "EXT-LARGE-WS-SEQ-READ-32G",
+    "experiment_id":  "large_ws_seq_32g_20260724_retry1",
+    "state_phase":  "large_ws_seq_read",
+    "started_at":  "2026-07-24T13:39:08.4778697+09:00",
+    "completed_at":  "2026-07-24T13:40:26.8874284+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_large_ws_seq.ps1",
+    "safety":  "completion-based fio file-target runner; no raw physical-drive target",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1",
+    "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+    "conditions":  {
+                       "workload":  "seq_read",
+                       "rw":  "read",
+                       "bs":  "1M",
+                       "iodepth":  4,
+                       "size":  "32G",
+                       "planned_bytes":  34359738368,
+                       "direct":  1,
+                       "numjobs":  1,
+                       "ioengine":  "windowsaio",
+                       "time_based":  false,
+                       "overwrite":  true,
+                       "readonly":  true,
+                       "planned_runs":  1
+                   },
+    "runs":  [
+                 {
+                     "run":  1,
+                     "started_at":  "2026-07-24T13:39:23.5745918+09:00",
+                     "completed_at":  "2026-07-24T13:40:26.8874284+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1\\sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1\\sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1_run1"
+                 }
+             ]
+}

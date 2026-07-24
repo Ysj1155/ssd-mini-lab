@@ -41,5 +41,8 @@ External SSD runners:
 - `runners/run_external_ssd_state_recovery.ps1`
 - `runners/run_external_ssd_state_repro_session.ps1`
 - `runners/run_external_ssd_large_ws_seq.ps1`
+- `runners/run_external_ssd_mixed_7030.ps1`
+- `runners/run_external_ssd_mixed_controls.ps1`
+- `runners/run_external_ssd_mixed_abba.ps1`
 
 Safety note: external SSD runners require an explicit file target under `E:\validation` and do not use raw physical-drive targets.

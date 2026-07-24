@@ -1,0 +1,64 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3",
+    "test_case_id":  "EXT-MIXED-RW-7030-4K-QD16",
+    "experiment_id":  "mixed_7030_32g_20260724",
+    "started_at":  "2026-07-24T14:07:26.4874270+09:00",
+    "completed_at":  "2026-07-24T14:24:08.4571816+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_mixed_7030.ps1",
+    "safety":  "time-based fio file-target runner; no raw physical-drive target",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3",
+    "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+    "conditions":  {
+                       "same_physical_usb_port_confirmed":  true,
+                       "dedicated_file_write_confirmed":  true,
+                       "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                       "observed_file_bytes":  34359738368,
+                       "rw":  "randrw",
+                       "rwmixread":  70,
+                       "rwmixwrite":  30,
+                       "block_size":  "4k",
+                       "iodepth":  16,
+                       "size":  "32G",
+                       "runtime_sec":  180,
+                       "time_based":  true,
+                       "direct":  1,
+                       "numjobs":  1,
+                       "ioengine":  "windowsaio",
+                       "randrepeat":  1,
+                       "planned_runs":  3,
+                       "initial_idle_sec":  300,
+                       "inter_run_idle_sec":  60
+                   },
+    "runs":  [
+                 {
+                     "run":  1,
+                     "started_at":  "2026-07-24T14:13:05.5275776+09:00",
+                     "completed_at":  "2026-07-24T14:16:06.3118211+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3_run1"
+                 },
+                 {
+                     "run":  2,
+                     "started_at":  "2026-07-24T14:17:06.5013836+09:00",
+                     "completed_at":  "2026-07-24T14:20:07.4441056+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3_run2.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3_run2"
+                 },
+                 {
+                     "run":  3,
+                     "started_at":  "2026-07-24T14:21:07.4697966+09:00",
+                     "completed_at":  "2026-07-24T14:24:08.4415527+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3_run3.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3\\sustained_mixed_7030_32g_20260724_randrw_7030_4k_qd16_repeat3_run3"
+                 }
+             ]
+}

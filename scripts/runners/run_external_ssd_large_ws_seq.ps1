@@ -6,7 +6,8 @@
 #
 # Safety:
 #   The target must be a new file under E:\validation. The script refuses an
-#   existing target, requires at least 40 GiB free, and never uses a raw disk.
+#   existing target, creates and verifies the dedicated file before the idle
+#   interval, requires at least 40 GiB free, and never uses a raw disk.
 
 param(
     [string]$ExperimentLabel = "",
@@ -133,7 +134,14 @@ $Manifest = [ordered]@{
         iodepth = 4
         direct = 1
         numjobs = 1
-        execution_mode = "completion_based"
+        execution_mode = "completion_based_overwrite"
+    }
+    target_preparation = [ordered]@{
+        method = "dotnet_filestream_create_new_set_length"
+        started_at = $null
+        completed_at = $null
+        status = "planned"
+        observed_file_bytes = $null
     }
     observed_file_bytes_after_write = $null
     observed_file_bytes_after_read = $null
@@ -148,6 +156,41 @@ function Save-Json {
 
 function Save-ExperimentManifest {
     Save-Json -Value $Manifest -Path $ExperimentManifestPath
+}
+
+function Initialize-DedicatedTestFile {
+    $Manifest.target_preparation.status = "running"
+    $Manifest.target_preparation.started_at = (Get-Date).ToString("o")
+    Save-ExperimentManifest
+
+    $Stream = $null
+    try {
+        $Stream = [System.IO.FileStream]::new(
+            $TestFile,
+            [System.IO.FileMode]::CreateNew,
+            [System.IO.FileAccess]::Write,
+            [System.IO.FileShare]::None
+        )
+        $Stream.SetLength($ExpectedBytes)
+        $Stream.Flush($true)
+    }
+    finally {
+        if ($null -ne $Stream) {
+            $Stream.Dispose()
+        }
+    }
+
+    $PreparedFile = Get-Item -LiteralPath $TestFile -ErrorAction Stop
+    $Manifest.target_preparation.observed_file_bytes = $PreparedFile.Length
+    $Manifest.target_preparation.completed_at = (Get-Date).ToString("o")
+    if ($PreparedFile.Length -ne $ExpectedBytes) {
+        $Manifest.target_preparation.status = "failed"
+        Save-ExperimentManifest
+        throw "Dedicated file preparation produced an unexpected length. Expected=$ExpectedBytes, actual=$($PreparedFile.Length)"
+    }
+
+    $Manifest.target_preparation.status = "complete"
+    Save-ExperimentManifest
 }
 
 function Invoke-Observer {
@@ -208,6 +251,7 @@ function Invoke-SequentialPhase {
             numjobs = 1
             ioengine = "windowsaio"
             time_based = $false
+            overwrite = $true
             readonly = $ReadOnly
             planned_runs = 1
         }
@@ -238,7 +282,7 @@ function Invoke-SequentialPhase {
         "--ioengine=windowsaio",
         "--direct=1",
         "--thread=1",
-        "--unlink=0",
+        "--overwrite=1",
         "--group_reporting=1",
         "--log_avg_msec=1000",
         "--write_bw_log=$LogPrefix",
@@ -271,6 +315,9 @@ function Invoke-SequentialPhase {
     if (-not (Test-Path -LiteralPath $OutFile)) {
         throw "fio JSON was not created: $OutFile"
     }
+    if (-not (Test-Path -LiteralPath $TestFile)) {
+        throw "Dedicated target file is missing after fio $Workload completed: $TestFile"
+    }
 
     $Phase.status = "complete"
     $Phase.completed_at = (Get-Date).ToString("o")
@@ -283,11 +330,14 @@ Write-Host "=== External SSD 32 GiB sequential pilot ==="
 Write-Host "Experiment : $SafeExperiment"
 Write-Host "Test file  : $TestFile"
 Write-Host "Free GiB   : $([math]::Round($Volume.SizeRemaining / 1GB, 2))"
-Write-Host "Sequence   : 5m idle -> 32G seqwrite -> 60s idle -> 32G seqread"
+Write-Host "Sequence   : prepare 32G file -> 5m idle -> 32G seqwrite -> 60s idle -> 32G seqread"
 Write-Host "Manifest   : $ExperimentManifestPath"
 Write-Host ""
 
 try {
+    Write-Host "[setup] Creating and verifying the dedicated 32 GiB target"
+    Initialize-DedicatedTestFile
+
     $InitialIdleSec = $InitialIdleMinutes * 60
     Write-Host "[1/4] Initial idle interval: $InitialIdleSec seconds"
     Start-Sleep -Seconds $InitialIdleSec
@@ -319,6 +369,10 @@ try {
     Save-ExperimentManifest
 }
 catch {
+    if ($Manifest.target_preparation.status -eq "running") {
+        $Manifest.target_preparation.status = "failed"
+        $Manifest.target_preparation.completed_at = (Get-Date).ToString("o")
+    }
     foreach ($phase in $Phases) {
         if ($phase.status -eq "running") {
             $phase.status = "failed"

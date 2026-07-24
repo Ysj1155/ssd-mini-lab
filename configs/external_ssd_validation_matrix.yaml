@@ -245,3 +245,95 @@ test_cases:
       - REQ-ENV-001
       - REQ-OBS-001
       - REQ-TRACE-001
+
+  - id: EXT-MIXED-RW-7030-4K-QD16
+    purpose: "Observe concurrent read/write interference and per-direction QoS under a synthetic 70:30 4K random workload."
+    rw: randrw
+    rwmixread: 70
+    rwmixwrite: 30
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 3
+    inter_run_idle_sec: 60
+    iodepth: [16]
+    randrepeat: 1
+    requirement_links:
+      - REQ-MIXED-001
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-MIXED-CONTROL-RANDREAD-4K-QD16
+    purpose: "Provide a matched 100% random-read control for the 70:30 mixed workload."
+    rw: randread
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 3
+    inter_run_idle_sec: 60
+    iodepth: [16]
+    randrepeat: 1
+    requirement_links:
+      - REQ-MIXED-CTRL-002
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-MIXED-CONTROL-RANDWRITE-4K-QD16
+    purpose: "Provide a matched 100% random-write control for the 70:30 mixed workload."
+    rw: randwrite
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 3
+    inter_run_idle_sec: 60
+    iodepth: [16]
+    randrepeat: 1
+    requirement_links:
+      - REQ-MIXED-CTRL-002
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-MIXED-ABBA-PURE-READ
+    purpose: "Provide the A1/A2 pure-read positions in the matched ABBA read-QoS experiment."
+    rw: randread
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 2
+    iodepth: [16]
+    randrepeat: 1
+    sequence_positions: [A1, A2]
+    requirement_links:
+      - REQ-MIXED-ABBA-003
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-MIXED-ABBA-7030
+    purpose: "Provide the B1/B2 mixed positions in the matched ABBA read-QoS experiment."
+    rw: randrw
+    rwmixread: 70
+    rwmixwrite: 30
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 2
+    iodepth: [16]
+    randrepeat: 1
+    sequence_positions: [B1, B2]
+    requirement_links:
+      - REQ-MIXED-ABBA-003
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001

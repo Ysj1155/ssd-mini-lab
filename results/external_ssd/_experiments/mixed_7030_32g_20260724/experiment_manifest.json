@@ -1,0 +1,64 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "mixed_7030_32g_20260724",
+    "test_protocol_id":  "EXT-MIXED-RW-7030-001",
+    "started_at":  "2026-07-24T14:07:26.4707574+09:00",
+    "completed_at":  "2026-07-24T14:24:35.0701164+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_mixed_7030.ps1",
+    "safety":  "existing dedicated 32 GiB file target under E:\\validation; no raw physical-drive target",
+    "question":  "How do read and write throughput and tail latency behave when 4K random reads and writes are issued concurrently at a synthetic 70:30 ratio?",
+    "interpretation_boundary":  "Synthetic USB, Windows, exFAT file-target workload; it is not a customer trace and does not prove cache, FTL, GC, or NAND behavior.",
+    "fixed_controls":  {
+                           "same_physical_usb_port_confirmed":  true,
+                           "dedicated_file_write_confirmed":  true,
+                           "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                           "observed_file_bytes":  34359738368,
+                           "rw":  "randrw",
+                           "rwmixread":  70,
+                           "rwmixwrite":  30,
+                           "block_size":  "4k",
+                           "iodepth":  16,
+                           "size":  "32G",
+                           "runtime_sec":  180,
+                           "time_based":  true,
+                           "direct":  1,
+                           "numjobs":  1,
+                           "ioengine":  "windowsaio",
+                           "randrepeat":  1,
+                           "planned_runs":  3,
+                           "initial_idle_sec":  300,
+                           "inter_run_idle_sec":  60
+                       },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "state_phase":  "mixed_7030_run1",
+                       "test_case_id":  "EXT-MIXED-RW-7030-4K-QD16",
+                       "run":  1,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T14:13:05.5275776+09:00",
+                       "completed_at":  "2026-07-24T14:16:06.3118211+09:00"
+                   },
+                   {
+                       "order":  2,
+                       "state_phase":  "mixed_7030_run2",
+                       "test_case_id":  "EXT-MIXED-RW-7030-4K-QD16",
+                       "run":  2,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T14:17:06.5013836+09:00",
+                       "completed_at":  "2026-07-24T14:20:07.4441056+09:00"
+                   },
+                   {
+                       "order":  3,
+                       "state_phase":  "mixed_7030_run3",
+                       "test_case_id":  "EXT-MIXED-RW-7030-4K-QD16",
+                       "run":  3,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T14:21:07.4697966+09:00",
+                       "completed_at":  "2026-07-24T14:24:08.4415527+09:00"
+                   }
+               ],
+    "error":  null
+}

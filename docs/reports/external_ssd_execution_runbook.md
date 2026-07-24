@@ -8,7 +8,7 @@ Codex prepares and reviews external SSD workflows but does not run fio unless ex
 
 The state study is closed. Do not add sessions merely to search for a preferred direction.
 
-## 2. Next Experiment
+## 2. Completed Large-Working-Set Experiment
 
 Test protocol: `EXT-LARGE-WS-SEQ-001`
 
@@ -22,14 +22,15 @@ Fixed sequence:
 same physical USB port
   -> verify E: health and at least 40 GiB free
   -> confirm dedicated target does not exist
+  -> create and verify the dedicated 32 GiB target
   -> 5-minute idle
-  -> 32 GiB sequential write, bs=1M, QD4, direct=1, run=1
+  -> overwrite 32 GiB sequentially, bs=1M, QD4, direct=1, run=1
   -> verify exact 32 GiB file length
   -> 60-second idle
   -> 32 GiB sequential readonly read, bs=1M, QD4, direct=1, run=1
 ```
 
-Both fio phases are completion-based. They do not use `time_based` or repeatedly wrap a small file.
+Both fio phases are completion-based. They do not use `time_based` or repeatedly wrap a small file. The runner creates the exact-size target before the initial idle and passes `overwrite=1` to fio, so Windows fio operates on an existing dedicated file that remains available for the read phase.
 
 ## 3. Safety Boundary
 
@@ -47,6 +48,8 @@ The runner:
 - requires E: volume `Healthy / OK`
 - requires explicit same-port and dedicated-write confirmations
 - never targets a raw physical drive
+- creates and verifies the exact 32 GiB file before the initial idle
+- uses fio `overwrite=1` for both measured phases
 - retains the 32 GiB file after completion
 
 The write amount is 32 GiB. The read phase does not modify the file. Do not delete the file until the result has been reviewed and any desired follow-up read or verification work is complete.
@@ -168,5 +171,11 @@ One pilot is an observation. Repeat it only if the time series exposes a materia
 - fio nonzero exit: preserve raw output and failed manifests.
 - Write file length not exactly 32 GiB: classify the experiment as failed.
 - Observer limitation: preserve it as `limited`; do not fabricate telemetry.
-- Interrupted write: retain raw evidence and inspect the partial external file before deciding on cleanup.
+- Interrupted setup or write: retain raw evidence and inspect the external file before deciding on cleanup.
 - Wrong drive letter or physical port: do not classify the run as valid evidence.
+
+## 10. Current Next Experiment
+
+The next workload is `EXT-MIXED-READ-QOS-ABBA-001`: A1 pure read, B1/B2 70:30 mixed, and A2 pure read under matching 32 GiB, 4K, QD16, and 180-second conditions.
+
+Use [external_ssd_mixed_abba_runbook.md](external_ssd_mixed_abba_runbook.md) for the fixed sequence, safety checks, execution command, sweep gate, and prepared counterbalanced ratio-sweep design.

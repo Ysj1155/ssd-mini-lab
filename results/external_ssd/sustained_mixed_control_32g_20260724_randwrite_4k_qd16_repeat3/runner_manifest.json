@@ -1,0 +1,60 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3",
+    "test_case_id":  "EXT-MIXED-CONTROL-RANDWRITE-4K-QD16",
+    "experiment_id":  "mixed_control_32g_20260724",
+    "state_phase":  "pure_randwrite_control",
+    "started_at":  "2026-07-24T15:08:34.8985803+09:00",
+    "completed_at":  "2026-07-24T15:20:10.3603222+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_mixed_controls.ps1",
+    "safety":  "time-based fio file-target runner; no raw physical-drive target",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3",
+    "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+    "conditions":  {
+                       "workload":  "control_rand_write",
+                       "rw":  "randwrite",
+                       "bs":  "4k",
+                       "iodepth":  16,
+                       "size":  "32G",
+                       "runtime_sec":  180,
+                       "time_based":  true,
+                       "direct":  1,
+                       "numjobs":  1,
+                       "ioengine":  "windowsaio",
+                       "randrepeat":  1,
+                       "readonly":  false,
+                       "planned_runs":  3,
+                       "inter_run_idle_sec":  60
+                   },
+    "runs":  [
+                 {
+                     "run":  1,
+                     "started_at":  "2026-07-24T15:09:07.9482291+09:00",
+                     "completed_at":  "2026-07-24T15:12:08.6773578+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3_run1"
+                 },
+                 {
+                     "run":  2,
+                     "started_at":  "2026-07-24T15:13:08.7522387+09:00",
+                     "completed_at":  "2026-07-24T15:16:09.5185247+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3_run2.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3_run2"
+                 },
+                 {
+                     "run":  3,
+                     "started_at":  "2026-07-24T15:17:09.5748566+09:00",
+                     "completed_at":  "2026-07-24T15:20:10.3603222+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3_run3.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3\\sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3_run3"
+                 }
+             ]
+}

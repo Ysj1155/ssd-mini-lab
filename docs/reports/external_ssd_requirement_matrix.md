@@ -18,6 +18,9 @@ The values below are intentionally framed as tracking and review requirements fi
 | REQ-STATE-001 | QD16 write behavior shall be compared before and after a fixed QD32 write-conditioning sequence. | experiment manifest, fio JSON, summary and repeatability CSVs | Pass if both probes and the conditioning phase are linked with fixed idle intervals |
 | REQ-STATE-REPRO-002 | The complete baseline-conditioning-post sequence shall be repeated across three independently initiated sessions and evaluated with paired deltas. | session manifests, fio JSON, paired comparison CSV | Pass if three complete sessions preserve the fixed sequence and paired metrics |
 | REQ-LARGE-WS-001 | Sequential write and read behavior shall be captured over a 32 GiB completion-based file target with time-window evidence. | experiment manifest, fio JSON, time-series and window CSVs | Pass if write/read complete the planned bytes and preserve first/middle/last evidence |
+| REQ-MIXED-001 | Concurrent 4K random read/write behavior shall be measured with read and write throughput and tail latency reported separately. | experiment manifest, fio JSON, per-direction summary and repeatability CSVs | Pass if three 70:30 mixed runs contain nonzero read/write I/O and separate p99/p99.9 evidence |
+| REQ-MIXED-CTRL-002 | The 70:30 mixed result shall be compared with matched 100% random-read and 100% random-write controls. | control experiment manifest, fio JSON, comparison CSV | Pass if both pure controls complete three matching repeats and preserve per-direction QoS evidence |
+| REQ-MIXED-ABBA-003 | Read QoS under pure-read and 70:30 mixed load shall be compared in an A-B-B-A sequence that exposes first/last order and carry-over effects. | ABBA experiment manifest, four fio JSON files, phase comparison CSV | Pass if A1/B1/B2/A2 complete with matching controls and per-phase read p99/p99.9 evidence |
 | REQ-ENV-001 | Each validation run shall include environment and path context. | env snapshot, DUT profile | Pass if snapshot and DUT profile are linked |
 | REQ-TEL-001 | Telemetry shall be collected when available without destructive access. | telemetry snapshot | Pass if collected, Limited if permissions/tooling block device-level data |
 | REQ-OBS-001 | fio execution and read-only observation shall be recorded as separate evidence producers. | `runner_manifest.json`, `observer_manifest_<phase>.json` | Pass if both are linked, Limited if one side is missing with an explicit anomaly |
@@ -41,6 +44,11 @@ The values below are intentionally framed as tracking and review requirements fi
 | `EXT-STATE-REPRO-POST` | REQ-STATE-REPRO-002, REQ-QOS-001, REQ-OBS-001 |
 | `EXT-LARGE-WS-SEQ-WRITE-32G` | REQ-LARGE-WS-001, REQ-QOS-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
 | `EXT-LARGE-WS-SEQ-READ-32G` | REQ-LARGE-WS-001, REQ-QOS-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
+| `EXT-MIXED-RW-7030-4K-QD16` | REQ-MIXED-001, REQ-QOS-001, REQ-REPRO-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
+| `EXT-MIXED-CONTROL-RANDREAD-4K-QD16` | REQ-MIXED-CTRL-002, REQ-QOS-001, REQ-REPRO-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
+| `EXT-MIXED-CONTROL-RANDWRITE-4K-QD16` | REQ-MIXED-CTRL-002, REQ-QOS-001, REQ-REPRO-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
+| `EXT-MIXED-ABBA-PURE-READ` | REQ-MIXED-ABBA-003, REQ-QOS-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
+| `EXT-MIXED-ABBA-7030` | REQ-MIXED-ABBA-003, REQ-QOS-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
 
 ## Verdict Vocabulary
 

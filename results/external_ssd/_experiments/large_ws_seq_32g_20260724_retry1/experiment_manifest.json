@@ -1,0 +1,59 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "large_ws_seq_32g_20260724_retry1",
+    "test_protocol_id":  "EXT-LARGE-WS-SEQ-001",
+    "started_at":  "2026-07-24T13:29:51.3847059+09:00",
+    "completed_at":  "2026-07-24T13:40:48.9199949+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_large_ws_seq.ps1",
+    "safety":  "dedicated file target under E:\\validation; refuses existing target and raw physical-drive access",
+    "question":  "Does sequential throughput remain stable while completing one 32 GiB write and one 32 GiB read?",
+    "interpretation_boundary":  "USB, Windows, exFAT file-target result; any transition is externally observed and is not proof of cache, FTL, or garbage collection.",
+    "fixed_controls":  {
+                           "same_physical_usb_port_confirmed":  true,
+                           "dedicated_file_write_confirmed":  true,
+                           "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                           "expected_file_bytes":  34359738368,
+                           "required_free_bytes":  42949672960,
+                           "initial_free_bytes":  979505250304,
+                           "initial_idle_sec":  300,
+                           "read_idle_sec":  60,
+                           "ioengine":  "windowsaio",
+                           "block_size":  "1M",
+                           "iodepth":  4,
+                           "direct":  1,
+                           "numjobs":  1,
+                           "execution_mode":  "completion_based_overwrite"
+                       },
+    "target_preparation":  {
+                               "method":  "dotnet_filestream_create_new_set_length",
+                               "started_at":  "2026-07-24T13:29:51.4877331+09:00",
+                               "completed_at":  "2026-07-24T13:31:19.7031619+09:00",
+                               "status":  "complete",
+                               "observed_file_bytes":  34359738368
+                           },
+    "observed_file_bytes_after_write":  34359738368,
+    "observed_file_bytes_after_read":  34359738368,
+    "phases":  [
+                   {
+                       "order":  1,
+                       "state_phase":  "large_ws_seq_write",
+                       "test_case_id":  "EXT-LARGE-WS-SEQ-WRITE-32G",
+                       "run_id":  "sustained_large_ws_seq_32g_20260724_retry1_seqwrite_32g_run1",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T13:36:19.8331427+09:00",
+                       "completed_at":  "2026-07-24T13:38:08.4640752+09:00"
+                   },
+                   {
+                       "order":  2,
+                       "state_phase":  "large_ws_seq_read",
+                       "test_case_id":  "EXT-LARGE-WS-SEQ-READ-32G",
+                       "run_id":  "sustained_large_ws_seq_32g_20260724_retry1_seqread_32g_run1",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T13:39:08.4778697+09:00",
+                       "completed_at":  "2026-07-24T13:40:48.9199949+09:00"
+                   }
+               ],
+    "error":  null
+}

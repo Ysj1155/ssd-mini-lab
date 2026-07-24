@@ -1,0 +1,60 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "mixed_control_32g_20260724",
+    "test_protocol_id":  "EXT-MIXED-CONTROL-001",
+    "reference_experiment_id":  "mixed_7030_32g_20260724",
+    "started_at":  "2026-07-24T14:46:24.5126555+09:00",
+    "completed_at":  "2026-07-24T15:20:45.1122083+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_mixed_controls.ps1",
+    "safety":  "existing dedicated 32 GiB file target under E:\\validation; no raw physical-drive target",
+    "question":  "How do the 70:30 mixed results compare with matched 100% random-read and 100% random-write controls?",
+    "sequence_reason":  "Read control runs first to avoid preceding it with the write-control workload.",
+    "experimental_unit":  "three process repeats per pure control inside one connected session",
+    "interpretation_boundary":  "Matched synthetic controls on USB, Windows, and an exFAT file target; they are not independent reconnect sessions or proof of device-internal behavior.",
+    "fixed_controls":  {
+                           "same_physical_usb_port_confirmed":  true,
+                           "dedicated_file_write_confirmed":  true,
+                           "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                           "observed_file_bytes":  34359738368,
+                           "block_size":  "4k",
+                           "iodepth":  16,
+                           "size":  "32G",
+                           "runtime_sec":  180,
+                           "time_based":  true,
+                           "direct":  1,
+                           "numjobs":  1,
+                           "ioengine":  "windowsaio",
+                           "randrepeat":  1,
+                           "planned_runs_per_control":  3,
+                           "initial_idle_sec":  300,
+                           "transition_idle_sec":  300,
+                           "inter_run_idle_sec":  60,
+                           "control_order":  [
+                                                 "randread",
+                                                 "randwrite"
+                                             ]
+                       },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "state_phase":  "pure_randread_control",
+                       "test_case_id":  "EXT-MIXED-CONTROL-RANDREAD-4K-QD16",
+                       "run_id":  "sustained_mixed_control_32g_20260724_randread_4k_qd16_repeat3",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T14:51:24.9220708+09:00",
+                       "completed_at":  "2026-07-24T15:03:34.8729390+09:00"
+                   },
+                   {
+                       "order":  2,
+                       "state_phase":  "pure_randwrite_control",
+                       "test_case_id":  "EXT-MIXED-CONTROL-RANDWRITE-4K-QD16",
+                       "run_id":  "sustained_mixed_control_32g_20260724_randwrite_4k_qd16_repeat3",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T15:08:34.8985803+09:00",
+                       "completed_at":  "2026-07-24T15:20:45.1092119+09:00"
+                   }
+               ],
+    "error":  null
+}
