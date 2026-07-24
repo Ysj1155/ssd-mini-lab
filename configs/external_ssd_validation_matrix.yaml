@@ -216,3 +216,32 @@ test_cases:
       - REQ-STATE-REPRO-002
       - REQ-QOS-001
       - REQ-OBS-001
+  - id: EXT-LARGE-WS-SEQ-WRITE-32G
+    purpose: "Observe completion-based sequential-write behavior across a 32 GiB file target."
+    rw: write
+    bs: 1M
+    size: 32G
+    execution_mode: completion_based
+    repeats: 1
+    iodepth: [4]
+    requirement_links:
+      - REQ-LARGE-WS-001
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-LARGE-WS-SEQ-READ-32G
+    purpose: "Observe completion-based sequential-read behavior across the same 32 GiB file target."
+    rw: read
+    bs: 1M
+    size: 32G
+    execution_mode: completion_based
+    repeats: 1
+    iodepth: [4]
+    requirement_links:
+      - REQ-LARGE-WS-001
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001

@@ -30,7 +30,7 @@ Latest finding: three separately initiated paired sessions produced QD16 post-wr
 
 All three sessions preserve reconnect and same-port confirmations, complete parent/child manifests, matching pre-observer/runner/post-observer evidence, and paired comparison CSVs. The requirement passed because the evidence plan completed; the performance hypothesis did not.
 
-The next coverage gap is the 512 MiB working-set limit. A large-working-set sequential write/read pilot will extend the project beyond 4K random behavior without claiming internal cache, FTL, or GC root cause.
+The prepared next experiment, `EXT-LARGE-WS-SEQ-001`, addresses the 512 MiB working-set limit with one completion-based 32 GiB sequential write and read against a dedicated E: file. Any throughput transition remains an external observation rather than proof of cache, FTL, or GC behavior.
 
 ## Start Here
 
