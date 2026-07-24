@@ -24,7 +24,10 @@ param(
 
     [string]$BlockSize = "4k",
     [string]$Size = "512M",
-    [string]$TestFile = "E:\validation\ssd_lab_fio_testfile"
+    [string]$TestFile = "E:\validation\ssd_lab_fio_testfile",
+    [string]$TestCaseId = "",
+    [string]$ExperimentId = "",
+    [string]$StatePhase = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -60,6 +63,9 @@ $env:SSD_LAB_EXTERNAL_SUSTAINED_BS = $BlockSize
 $env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH = $Iodepth.ToString()
 $env:SSD_LAB_EXTERNAL_SUSTAINED_DIRECT = "1"
 $env:SSD_LAB_EXTERNAL_SUSTAINED_RUNS = $Runs.ToString()
+$env:SSD_LAB_EXTERNAL_TEST_CASE_ID = $TestCaseId
+$env:SSD_LAB_EXTERNAL_EXPERIMENT_ID = $ExperimentId
+$env:SSD_LAB_EXTERNAL_STATE_PHASE = $StatePhase
 
 $Conditions = [ordered]@{
     TestFile = $TestFile
@@ -71,6 +77,9 @@ $Conditions = [ordered]@{
     Iodepth = $Iodepth
     Direct = 1
     Runs = $Runs
+    TestCaseId = $TestCaseId
+    ExperimentId = $ExperimentId
+    StatePhase = $StatePhase
 }
 
 Write-Host "=== Traced external SSD sustained run ==="

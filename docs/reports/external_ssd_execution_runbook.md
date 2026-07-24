@@ -1,140 +1,58 @@
 # External SSD Execution Runbook
 
-This is the fixed execution procedure for external SSD sustained runs.
+Codex prepares and reviews external SSD workflows but does not run fio unless explicitly asked. The user confirms the physical setup and executes prepared PowerShell runners locally.
 
-Codex prepares and reviews the workflow but does not run fio unless explicitly asked. The user confirms the external SSD path and executes the traced runner locally.
+## 1. Completed State Study
 
-## 1. Safety Boundary
+`EXT-STATE-REPRO-002` completed on 2026-07-23 with three separately initiated sessions.
 
-- Use only the existing file target `E:\validation\ssd_lab_fio_testfile`.
-- Do not use a raw physical-drive path or an internal OS-drive file.
-- Keep each run under a unique `results/external_ssd/<run_id>/` directory.
-- The traced runner refuses to overwrite a directory that already contains fio run JSON.
-- Read workloads use fio's `--readonly` flag through the underlying runner.
+Each session preserved:
 
-Confirm the target before every run:
+```text
+10-minute user-confirmed disconnect
+  -> reconnect to the same physical USB port
+  -> 5-minute idle
+  -> QD16 baseline, 120s, run=1
+  -> QD32 conditioning, 300s, run=1
+  -> 60-second idle
+  -> QD16 post-write, 120s, run=1
+```
+
+| Session | Baseline MiB/s | Post MiB/s | BW delta | p99 delta | p99.9 delta |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 123.85 | 115.96 | -6.37% | +27.62% | +66.19% |
+| 2 | 140.87 | 130.17 | -7.59% | +27.34% | +108.97% |
+| 3 | 110.34 | 136.08 | +23.33% | -46.24% | -75.00% |
+
+Study verdict: `not_reproduced_under_controlled_external_sequence`.
+
+`REQ-STATE-REPRO-002` is Pass because all planned sessions, raw evidence, paired metrics, and traceability artifacts exist. The conditioning-uplift hypothesis is not reproduced because the paired direction is mixed.
+
+## 2. Evidence Regeneration
 
 ```powershell
 cd D:\ssd_lab
-Get-Item -LiteralPath "E:\validation\ssd_lab_fio_testfile" |
-    Select-Object FullName, Length, LastWriteTime
-Get-Volume -DriveLetter E
-```
-
-Stop if the file is missing, the drive letter changed, or the path does not begin with `E:\validation\`.
-
-## 2. Next Experiment
-
-The next run checks QD16 120s random-write reproducibility across sessions.
-
-Run ID:
-
-```text
-sustained_rand_write_120s_qd16_trace_repeat3_20260722
-```
-
-Condition:
-
-| Field | Value |
-|---|---|
-| rw | `randwrite` |
-| block size | `4k` |
-| queue depth | `16` |
-| runtime | `120s` |
-| test-file size | `512M` |
-| direct | `1` |
-| repeats | `3` |
-
-This condition has already produced materially different results in two sessions. The new run determines whether the slower, higher-tail-latency session repeats when execution evidence is complete.
-
-## 3. Fixed Execution Sequence
-
-Run this single command from PowerShell or a PyCharm PowerShell terminal:
-
-```powershell
-cd D:\ssd_lab
-
-powershell -ExecutionPolicy Bypass `
-  -File .\scripts\runners\run_external_ssd_traced_sustained.ps1 `
-  -RunLabel "sustained_rand_write_120s_qd16_trace_repeat3_20260722" `
-  -Rw randwrite `
-  -RuntimeSec 120 `
-  -Iodepth 16 `
-  -Runs 3 `
-  -BlockSize 4k `
-  -Size 512M `
-  -TestFile "E:\validation\ssd_lab_fio_testfile"
-```
-
-The traced runner sets all environment variables in one process and executes:
-
-```text
-pre observer -> fio runner -> post observer
-```
-
-Before fio starts, confirm the printed values show `RuntimeSec: 120`, `Iodepth: 16`, and `Runs: 3`. Stop with `Ctrl+C` if they differ.
-
-Evidence ownership remains separate:
-
-| Producer | Responsibility | Expected artifact |
-|---|---|---|
-| Observer, pre | Read-only host/path/telemetry context before fio | `observer_manifest_pre.json` |
-| Runner | fio execution, exit codes, raw JSON, time-series logs | `runner_manifest.json` and fio artifacts |
-| Observer, post | Read-only host/path/telemetry context after fio | `observer_manifest_post.json` |
-
-## 4. Post-Run Validation
-
-```powershell
-$runLabel = "sustained_rand_write_120s_qd16_trace_repeat3_20260722"
-$runDir = Join-Path ".\results\external_ssd" $runLabel
-
-Get-ChildItem -LiteralPath $runDir | Select-Object Name, Length, LastWriteTime
-Select-String -Path (Join-Path $runDir "*_run*.json") `
-  -Pattern '"error"|"filename"'
-```
-
-Expected minimum evidence:
-
-- 3 fio run JSON files with `error: 0`
-- fio bandwidth, IOPS, and latency logs for each run
-- `runner_manifest.json`
-- `observer_manifest_pre.json`
-- `observer_manifest_post.json`
-- JSON `filename` values resolving to `E:\validation\ssd_lab_fio_testfile`
-
-Then rebuild derived evidence:
-
-```powershell
 python .\scripts\analysis\analyze_external_ssd_sustained.py
-python .\scripts\analysis\build_external_ssd_run_manifest.py --result-set $runLabel
-Get-Content -Raw (Join-Path $runDir "run_manifest.json")
+python .\scripts\analysis\analyze_external_ssd_state_repro.py
+python .\scripts\analysis\build_external_ssd_run_manifest.py --all
 ```
 
-The integrated run manifest may be `complete` even when telemetry is `limited`; collector limitations must remain explicit in the observer manifests.
+Primary evidence:
 
-## 5. Interpretation
+- `results/external_ssd_state_repro_pairs.csv`
+- `results/external_ssd_state_repro_study_summary.csv`
+- `results/external_ssd/_experiments/state_repro_002_session*/experiment_manifest.json`
+- child raw JSON/logs and integrated `run_manifest.json` files
 
-Compare the new result against:
+## 3. Interpretation Boundary
 
-- `sustained_rand_write_120s_qd16_repeat3`
-- `sustained_rand_write_120s_512M_4k_qd16_direct1_repeat3`
+- Reconnect-start is an externally controlled label, not proof of an internally reset SSD state.
+- USB, Windows, exFAT, file-target, and device behavior remain combined.
+- SMART, reliability counters, and direct power measurement remain Limited.
+- The 512 MiB file target does not establish large-working-set or full-drive behavior.
 
-Review:
+## 4. Next Execution Status
 
-- average bandwidth and IOPS
-- p99 and p99.9 completion latency
-- run-to-run CV
-- last-third IOPS / first-third IOPS
-- last-third average completion latency / first-third average completion latency
-- maximum-latency outliers
-- observer and telemetry limitations
+The state study is closed. Do not add more sessions merely to search for a preferred direction.
 
-Do not infer internal FTL, GC, or USB root cause from these black-box file-target results.
-
-## 6. Failure Handling
-
-- Wrong or missing target path: stop before fio and correct the path.
-- Existing fio JSON under the run ID: choose a new run ID; do not overwrite raw data.
-- fio nonzero exit: preserve raw output and runner manifest; do not classify it as a successful result.
-- Observer limitation: continue only if fio target safety is unaffected, then retain `limited` telemetry evidence.
-- Missing logs or manifests: do not fabricate or backfill execution evidence.
+The next experiment should address the working-set and sequential-workload coverage gap. Its exact safety checks and execution command must be fixed before fio is run.

@@ -1,0 +1,40 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_state_repro_002_session2_20260723_condition_qd32_300s_run1",
+    "test_case_id":  "EXT-STATE-REPRO-CONDITION",
+    "experiment_id":  "state_repro_002_session2_20260723",
+    "state_phase":  "session_write_condition",
+    "started_at":  "2026-07-23T15:06:49.3467015+09:00",
+    "completed_at":  "2026-07-23T15:11:50.1924436+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_sustained.ps1",
+    "safety":  "fio file-target runner; refuses targets outside E:\\validation; no raw physical-drive target",
+    "fio_command":  "C:\\Program Files\\fio\\fio.exe",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_state_repro_002_session2_20260723_condition_qd32_300s_run1",
+    "test_file":  "E:\\validation\\ssd_lab_fio_testfile",
+    "conditions":  {
+                       "workload":  "rand_write",
+                       "rw":  "randwrite",
+                       "bs":  "4k",
+                       "iodepth":  "32",
+                       "size":  "512M",
+                       "runtime_sec":  "300",
+                       "direct":  "1",
+                       "numjobs":  "1",
+                       "log_avg_msec":  "1000",
+                       "readonly":  false,
+                       "planned_runs":  1
+                   },
+    "runs":  [
+                 {
+                     "run":  1,
+                     "started_at":  "2026-07-23T15:06:49.4376987+09:00",
+                     "completed_at":  "2026-07-23T15:11:50.1804815+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_state_repro_002_session2_20260723_condition_qd32_300s_run1\\sustained_state_repro_002_session2_20260723_condition_qd32_300s_run1_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_state_repro_002_session2_20260723_condition_qd32_300s_run1\\sustained_state_repro_002_session2_20260723_condition_qd32_300s_run1_run1"
+                 }
+             ]
+}

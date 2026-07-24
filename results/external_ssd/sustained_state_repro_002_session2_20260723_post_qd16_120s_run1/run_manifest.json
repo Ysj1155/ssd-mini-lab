@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-23T06:51:23.154542+00:00",
+  "generator": "scripts/analysis/build_external_ssd_run_manifest.py",
+  "run_id": "sustained_state_repro_002_session2_20260723_post_qd16_120s_run1",
+  "result_set": "sustained_state_repro_002_session2_20260723_post_qd16_120s_run1",
+  "test_case_id": "EXT-STATE-REPRO-POST",
+  "experiment_id": "state_repro_002_session2_20260723",
+  "state_phase": "session_post_write_probe",
+  "requirement_ids": [
+    "REQ-STATE-REPRO-002",
+    "REQ-QOS-001",
+    "REQ-OBS-001"
+  ],
+  "dut_id": "external_ssd_dut_01",
+  "status": "complete",
+  "result": "observation",
+  "tool_versions": {
+    "fio": [
+      "fio-3.42"
+    ],
+    "python": "3.12.1"
+  },
+  "conditions": {
+    "operation": "write",
+    "rw": "randwrite",
+    "bs": "4k",
+    "iodepth": 16,
+    "runtime_sec": 120,
+    "size": "512M",
+    "direct": 1,
+    "numjobs": 1
+  },
+  "evidence_links": {
+    "dut_profile": "docs/reports/external_ssd_dut_profile.md",
+    "requirement_matrix": "docs/reports/external_ssd_requirement_matrix.md",
+    "validation_matrix": "configs/external_ssd_validation_matrix.yaml",
+    "product_report": "docs/reports/external_ssd_product_validation.md",
+    "runner_manifest": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/runner_manifest.json",
+    "experiment_manifest": "results/external_ssd/_experiments/state_repro_002_session2_20260723/experiment_manifest.json",
+    "observer_manifests": [
+      "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/observer_manifest_post.json",
+      "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/observer_manifest_pre.json"
+    ],
+    "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests"
+  },
+  "execution_model": {
+    "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",
+    "runner_status": "present",
+    "observer_status": "complete"
+  },
+  "artifacts": {
+    "raw_dir": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1",
+    "summary_csv": "results/external_ssd_sustained_summary.csv",
+    "timeseries_csv": "results/external_ssd_sustained_timeseries.csv",
+    "window_summary_csv": "results/external_ssd_sustained_window_summary.csv",
+    "repeatability_csv": "results/external_ssd_sustained_repeatability.csv"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "fio_json": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1_run1.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1_run1_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1_run1_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1_run1_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1_run1_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1/sustained_state_repro_002_session2_20260723_post_qd16_120s_run1_run1_slat.1.log"
+      }
+    }
+  ],
+  "anomalies": [],
+  "interpretation_boundary": "USB, Windows, exFAT file-target result; not internal FTL/GC proof"
+}

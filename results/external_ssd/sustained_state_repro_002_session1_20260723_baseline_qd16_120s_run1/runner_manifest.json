@@ -1,0 +1,40 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_state_repro_002_session1_20260723_baseline_qd16_120s_run1",
+    "test_case_id":  "EXT-STATE-REPRO-BASELINE",
+    "experiment_id":  "state_repro_002_session1_20260723",
+    "state_phase":  "session_baseline_probe",
+    "started_at":  "2026-07-23T14:35:08.7670002+09:00",
+    "completed_at":  "2026-07-23T14:37:09.7216589+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_sustained.ps1",
+    "safety":  "fio file-target runner; refuses targets outside E:\\validation; no raw physical-drive target",
+    "fio_command":  "C:\\Program Files\\fio\\fio.exe",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_state_repro_002_session1_20260723_baseline_qd16_120s_run1",
+    "test_file":  "E:\\validation\\ssd_lab_fio_testfile",
+    "conditions":  {
+                       "workload":  "rand_write",
+                       "rw":  "randwrite",
+                       "bs":  "4k",
+                       "iodepth":  "16",
+                       "size":  "512M",
+                       "runtime_sec":  "120",
+                       "direct":  "1",
+                       "numjobs":  "1",
+                       "log_avg_msec":  "1000",
+                       "readonly":  false,
+                       "planned_runs":  1
+                   },
+    "runs":  [
+                 {
+                     "run":  1,
+                     "started_at":  "2026-07-23T14:35:08.8730035+09:00",
+                     "completed_at":  "2026-07-23T14:37:09.7106583+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_state_repro_002_session1_20260723_baseline_qd16_120s_run1\\sustained_state_repro_002_session1_20260723_baseline_qd16_120s_run1_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_state_repro_002_session1_20260723_baseline_qd16_120s_run1\\sustained_state_repro_002_session1_20260723_baseline_qd16_120s_run1_run1"
+                 }
+             ]
+}

@@ -136,3 +136,83 @@ test_cases:
       - REQ-QOS-001
       - REQ-REPRO-001
       - REQ-OBS-001
+
+  - id: EXT-STATE-IDLE-START-PROBE
+    purpose: "Measure QD16 behavior after a fixed five-minute host-visible idle interval."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 3
+    iodepth: [16]
+    requirement_links:
+      - REQ-STATE-001
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-OBS-001
+
+  - id: EXT-STATE-WRITE-CONDITION
+    purpose: "Apply one fixed QD32 random-write conditioning phase before the post-write probe."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 300
+    repeats: 1
+    iodepth: [32]
+    requirement_links:
+      - REQ-STATE-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-STATE-POST-WRITE-PROBE
+    purpose: "Measure QD16 behavior after fixed write conditioning and a 60-second idle interval."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 3
+    iodepth: [16]
+    requirement_links:
+      - REQ-STATE-001
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-OBS-001
+
+  - id: EXT-STATE-REPRO-BASELINE
+    purpose: "Measure one QD16 baseline probe in an independently initiated paired session."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 1
+    iodepth: [16]
+    requirement_links:
+      - REQ-STATE-REPRO-002
+      - REQ-QOS-001
+      - REQ-OBS-001
+
+  - id: EXT-STATE-REPRO-CONDITION
+    purpose: "Apply one fixed QD32 write-conditioning phase within a paired session."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 300
+    repeats: 1
+    iodepth: [32]
+    requirement_links:
+      - REQ-STATE-REPRO-002
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-STATE-REPRO-POST
+    purpose: "Measure one QD16 post-write probe in the same paired session."
+    rw: randwrite
+    bs: 4k
+    size: 512M
+    runtime_sec: 120
+    repeats: 1
+    iodepth: [16]
+    requirement_links:
+      - REQ-STATE-REPRO-002
+      - REQ-QOS-001
+      - REQ-OBS-001

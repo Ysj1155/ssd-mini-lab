@@ -37,6 +37,9 @@ $Bs = if ($env:SSD_LAB_EXTERNAL_SUSTAINED_BS) { $env:SSD_LAB_EXTERNAL_SUSTAINED_
 $Iodepth = if ($env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH) { $env:SSD_LAB_EXTERNAL_SUSTAINED_IODEPTH } else { "16" }
 $Direct = if ($env:SSD_LAB_EXTERNAL_SUSTAINED_DIRECT) { $env:SSD_LAB_EXTERNAL_SUSTAINED_DIRECT } else { "1" }
 $LogAvgMsec = if ($env:SSD_LAB_EXTERNAL_SUSTAINED_LOG_AVG_MSEC) { $env:SSD_LAB_EXTERNAL_SUSTAINED_LOG_AVG_MSEC } else { "1000" }
+$TestCaseId = if ($env:SSD_LAB_EXTERNAL_TEST_CASE_ID) { $env:SSD_LAB_EXTERNAL_TEST_CASE_ID } else { $null }
+$ExperimentId = if ($env:SSD_LAB_EXTERNAL_EXPERIMENT_ID) { $env:SSD_LAB_EXTERNAL_EXPERIMENT_ID } else { $null }
+$StatePhase = if ($env:SSD_LAB_EXTERNAL_STATE_PHASE) { $env:SSD_LAB_EXTERNAL_STATE_PHASE } else { $null }
 $ReadOnly = $Rw -match "read"
 
 $DefaultLabel = "sustained_${Workload}_${Runtime}s_${Size}_${Bs}_qd${Iodepth}_direct${Direct}_repeat${Runs}"
@@ -74,6 +77,9 @@ Write-Host "direct      : $Direct"
 Write-Host "runs        : $Runs"
 Write-Host "readonly    : $ReadOnly"
 Write-Host "log avg ms  : $LogAvgMsec"
+Write-Host "test case   : $TestCaseId"
+Write-Host "experiment  : $ExperimentId"
+Write-Host "state phase : $StatePhase"
 Write-Host ""
 
 if (-not ($TestFile -like "E:\validation\*")) {
@@ -102,6 +108,9 @@ $RunnerManifest = [ordered]@{
     schema_version = "1.0"
     role = "runner"
     run_id = $SafeLabel
+    test_case_id = $TestCaseId
+    experiment_id = $ExperimentId
+    state_phase = $StatePhase
     started_at = (Get-Date).ToString("o")
     completed_at = $null
     status = "started"

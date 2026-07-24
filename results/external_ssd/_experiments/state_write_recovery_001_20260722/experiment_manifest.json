@@ -1,0 +1,67 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "state_write_recovery_001_20260722",
+    "test_protocol_id":  "EXT-STATE-WRITE-RECOVERY-001",
+    "started_at":  "2026-07-23T13:38:33.6988628+09:00",
+    "completed_at":  "2026-07-23T14:04:03.6221352+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_state_recovery.ps1",
+    "safety":  "fio file target under E:\\validation; no raw physical-drive writes",
+    "hypothesis":  "A fixed preceding write workload may change subsequent QD16 throughput and tail latency.",
+    "interpretation_boundary":  "Idle-start and post-write are externally controlled labels, not proof of cold state, FTL behavior, or garbage collection.",
+    "fixed_controls":  {
+                           "same_physical_usb_port_confirmed":  true,
+                           "test_file":  "E:\\validation\\ssd_lab_fio_testfile",
+                           "initial_idle_sec":  300,
+                           "post_condition_idle_sec":  60,
+                           "probe":  {
+                                         "rw":  "randwrite",
+                                         "bs":  "4k",
+                                         "iodepth":  16,
+                                         "runtime_sec":  120,
+                                         "size":  "512M",
+                                         "repeats":  3,
+                                         "direct":  1
+                                     },
+                           "conditioning":  {
+                                                "rw":  "randwrite",
+                                                "bs":  "4k",
+                                                "iodepth":  32,
+                                                "runtime_sec":  300,
+                                                "size":  "512M",
+                                                "repeats":  1,
+                                                "direct":  1
+                                            }
+                       },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "state_phase":  "idle_start_probe",
+                       "test_case_id":  "EXT-STATE-IDLE-START-PROBE",
+                       "run_id":  "sustained_state_write_recovery_001_20260722_idle_start_qd16_120s_repeat3",
+                       "status":  "complete",
+                       "started_at":  "2026-07-23T13:43:33.8169526+09:00",
+                       "completed_at":  "2026-07-23T13:50:45.6454829+09:00"
+                   },
+                   {
+                       "order":  2,
+                       "state_phase":  "write_condition",
+                       "test_case_id":  "EXT-STATE-WRITE-CONDITION",
+                       "run_id":  "sustained_state_write_recovery_001_20260722_write_condition_qd32_300s_run1",
+                       "status":  "complete",
+                       "started_at":  "2026-07-23T13:50:45.6514771+09:00",
+                       "completed_at":  "2026-07-23T13:56:17.0818009+09:00"
+                   },
+                   {
+                       "order":  3,
+                       "state_phase":  "post_write_probe",
+                       "test_case_id":  "EXT-STATE-POST-WRITE-PROBE",
+                       "run_id":  "sustained_state_write_recovery_001_20260722_post_write_qd16_120s_repeat3",
+                       "status":  "complete",
+                       "started_at":  "2026-07-23T13:57:17.0988629+09:00",
+                       "completed_at":  "2026-07-23T14:04:03.6201373+09:00"
+                   }
+               ],
+    "error":  null
+}

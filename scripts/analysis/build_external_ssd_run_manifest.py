@@ -160,6 +160,10 @@ def find_test_case(
     return exact_qd_matches[0] if exact_qd_matches else matches[0]
 
 
+def find_test_case_by_id(cases: list[dict[str, Any]], test_case_id: str) -> dict[str, Any] | None:
+    return next((case for case in cases if case.get("id") == test_case_id), None)
+
+
 def is_fio_run_json(path: Path) -> bool:
     return bool(re.search(r"run\d+", path.stem, re.IGNORECASE))
 
@@ -214,7 +218,17 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
     numjobs = normalize_int(opts.get("numjobs")) or 1
     bs = opts.get("bs")
     size = opts.get("size")
-    test_case = find_test_case(test_cases, rw, bs, iodepth, runtime_sec, size)
+    runner_manifest: dict[str, Any] = {}
+    if runner_manifest_path.exists():
+        runner_manifest = json.loads(runner_manifest_path.read_text(encoding="utf-8-sig"))
+    declared_test_case_id = runner_manifest.get("test_case_id")
+    experiment_id = runner_manifest.get("experiment_id")
+    experiment_manifest_path = RESULT_ROOT / "_experiments" / experiment_id / "experiment_manifest.json" if experiment_id else None
+    test_case = (
+        find_test_case_by_id(test_cases, declared_test_case_id)
+        if declared_test_case_id
+        else find_test_case(test_cases, rw, bs, iodepth, runtime_sec, size)
+    )
 
     runs: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
@@ -269,7 +283,12 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
     if missing_artifacts:
         anomalies.append({"type": "missing_artifact", "details": missing_artifacts})
     if test_case is None:
-        anomalies.append({"type": "unmatched_test_case", "details": "No YAML test case matched observed fio conditions."})
+        details = (
+            f"Declared test case {declared_test_case_id!r} was not found in the validation matrix."
+            if declared_test_case_id
+            else "No YAML test case matched observed fio conditions."
+        )
+        anomalies.append({"type": "unmatched_test_case", "details": details})
     if traceability_gaps:
         anomalies.append({"type": "missing_execution_evidence", "details": traceability_gaps})
 
@@ -280,6 +299,8 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
         "run_id": result_dir.name,
         "result_set": result_dir.name,
         "test_case_id": test_case.get("id") if test_case else None,
+        "experiment_id": experiment_id,
+        "state_phase": runner_manifest.get("state_phase"),
         "requirement_ids": test_case.get("requirement_links", []) if test_case else [],
         "dut_id": "external_ssd_dut_01",
         "status": status,
@@ -304,6 +325,7 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
             "validation_matrix": rel(MATRIX_PATH) if MATRIX_PATH.exists() else None,
             "product_report": rel(PRODUCT_REPORT) if PRODUCT_REPORT.exists() else None,
             "runner_manifest": rel(runner_manifest_path) if runner_manifest_path.exists() else None,
+            "experiment_manifest": rel(experiment_manifest_path) if experiment_manifest_path and experiment_manifest_path.exists() else None,
             "observer_manifests": [rel(path) for path in observer_manifest_paths],
             "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests",
         },

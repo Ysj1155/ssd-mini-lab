@@ -26,9 +26,11 @@ Interpretation boundary: results include the USB path, Windows, exFAT, and fio f
 | Does longer runtime expose write-side QoS risk? | Random write QD32, 120s vs 300s, repeat=3 |
 | Can every result be traced to its conditions and evidence? | Run manifest plus separate runner/observer manifests |
 
-Latest finding: a second 300s QD32 random-write session averaged 147.90 MiB/s and 37,862 IOPS with lower p99/p99.9 than the first session, so the original late-run decline was not reproduced. Rare maximum-latency stalls of 5.7-6.1 seconds remain visible as black-box anomalies.
+Latest finding: three separately initiated paired sessions produced QD16 post-write bandwidth deltas of -6.37%, -7.59%, and +23.33%. The conditioning-uplift direction was mixed and therefore not reproduced under the controlled external sequence.
 
-The 2026-07-21 QD32 300s run is the first result with matching pre-observer, runner, and post-observer evidence. Historical runs remain `limited` when those execution artifacts are absent.
+All three sessions preserve reconnect and same-port confirmations, complete parent/child manifests, matching pre-observer/runner/post-observer evidence, and paired comparison CSVs. The requirement passed because the evidence plan completed; the performance hypothesis did not.
+
+The next coverage gap is the 512 MiB working-set limit. A large-working-set sequential write/read pilot will extend the project beyond 4K random behavior without claiming internal cache, FTL, or GC root cause.
 
 ## Start Here
 

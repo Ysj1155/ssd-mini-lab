@@ -14,6 +14,7 @@ Common entry points:
 - `analysis/analyze_qos_tail_latency.py`
 - `analysis/analyze_sustained_smoke.py`
 - `analysis/analyze_external_ssd_sustained.py`
+- `analysis/analyze_external_ssd_state_repro.py`
 - `analysis/build_external_ssd_run_manifest.py`
 
 Parser compatibility tests:
@@ -36,5 +37,8 @@ External SSD runners:
 
 - `runners/run_external_ssd_qd_smoke.ps1`
 - `runners/run_external_ssd_sustained.ps1`
+- `runners/run_external_ssd_traced_sustained.ps1`
+- `runners/run_external_ssd_state_recovery.ps1`
+- `runners/run_external_ssd_state_repro_session.ps1`
 
 Safety note: external SSD runners require an explicit file target under `E:\validation` and do not use raw physical-drive targets.

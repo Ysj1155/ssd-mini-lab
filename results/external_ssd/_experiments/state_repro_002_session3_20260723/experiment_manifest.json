@@ -1,0 +1,81 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "state_repro_002_session3_20260723",
+    "study_id":  "state_repro_002",
+    "session_index":  3,
+    "test_protocol_id":  "EXT-STATE-REPRO-002",
+    "started_at":  "2026-07-23T15:30:55.2153157+09:00",
+    "completed_at":  "2026-07-23T15:48:47.8321505+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_state_repro_session.ps1",
+    "safety":  "fio file target under E:\\validation; no raw physical-drive writes",
+    "hypothesis":  "The direction of the QD16 post-write delta may reproduce across independently initiated paired sessions.",
+    "experimental_unit":  "one complete reconnect-start baseline-conditioning-post session",
+    "interpretation_boundary":  "Reconnect-start is externally controlled but is not proof of an internally reset or cold SSD state.",
+    "fixed_controls":  {
+                           "reconnect_start_confirmed":  true,
+                           "same_physical_usb_port_confirmed":  true,
+                           "user_confirmed_disconnect_sec":  600,
+                           "test_file":  "E:\\validation\\ssd_lab_fio_testfile",
+                           "initial_idle_sec":  300,
+                           "post_condition_idle_sec":  60,
+                           "baseline_probe":  {
+                                                  "rw":  "randwrite",
+                                                  "bs":  "4k",
+                                                  "iodepth":  16,
+                                                  "runtime_sec":  120,
+                                                  "size":  "512M",
+                                                  "repeats":  1,
+                                                  "direct":  1
+                                              },
+                           "conditioning":  {
+                                                "rw":  "randwrite",
+                                                "bs":  "4k",
+                                                "iodepth":  32,
+                                                "runtime_sec":  300,
+                                                "size":  "512M",
+                                                "repeats":  1,
+                                                "direct":  1
+                                            },
+                           "post_write_probe":  {
+                                                    "rw":  "randwrite",
+                                                    "bs":  "4k",
+                                                    "iodepth":  16,
+                                                    "runtime_sec":  120,
+                                                    "size":  "512M",
+                                                    "repeats":  1,
+                                                    "direct":  1
+                                                }
+                       },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "state_phase":  "session_baseline_probe",
+                       "test_case_id":  "EXT-STATE-REPRO-BASELINE",
+                       "run_id":  "sustained_state_repro_002_session3_20260723_baseline_qd16_120s_run1",
+                       "status":  "complete",
+                       "started_at":  "2026-07-23T15:35:55.3510672+09:00",
+                       "completed_at":  "2026-07-23T15:38:51.9575964+09:00"
+                   },
+                   {
+                       "order":  2,
+                       "state_phase":  "session_write_condition",
+                       "test_case_id":  "EXT-STATE-REPRO-CONDITION",
+                       "run_id":  "sustained_state_repro_002_session3_20260723_condition_qd32_300s_run1",
+                       "status":  "complete",
+                       "started_at":  "2026-07-23T15:38:51.9685980+09:00",
+                       "completed_at":  "2026-07-23T15:44:55.3710206+09:00"
+                   },
+                   {
+                       "order":  3,
+                       "state_phase":  "session_post_write_probe",
+                       "test_case_id":  "EXT-STATE-REPRO-POST",
+                       "run_id":  "sustained_state_repro_002_session3_20260723_post_qd16_120s_run1",
+                       "status":  "complete",
+                       "started_at":  "2026-07-23T15:45:55.3833788+09:00",
+                       "completed_at":  "2026-07-23T15:48:47.8311535+09:00"
+                   }
+               ],
+    "error":  null
+}

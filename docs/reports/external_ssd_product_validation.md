@@ -1,6 +1,6 @@
 # External SSD Product Validation Report
 
-Status: QD sweep repeat=3, three sustained random-write QD16 120s sessions, and two sustained random-write QD32 300s sessions completed. The 2026-07-21 QD32 and 2026-07-22 QD16 runs have matching pre-observer, runner, post-observer, parsed CSV, and integrated manifest evidence.
+Status: QD sweep, sustained QD16/QD32 studies, one state-recovery sequence, and three independently initiated paired state-reproducibility sessions completed. The state studies retain parent/child manifests, matching observer/runner evidence, parsed CSVs, and explicit hypothesis verdicts.
 
 ## 1. Scope
 
@@ -16,6 +16,8 @@ Related evidence:
 - `configs/external_ssd_validation_matrix.yaml`
 - `results/external_ssd/`
 - `results/external_ssd_sustained_*.csv`
+- `results/external_ssd_state_repro_pairs.csv`
+- `results/external_ssd_state_repro_study_summary.csv`
 
 ## 2. DUT and Environment
 
@@ -44,8 +46,10 @@ The QD32 evidence-complete run predates target-aware telemetry and therefore ret
 | `EXT-SUST-READ-QD32-120S` | 4K randread, QD32, 120s | 3 | Complete |
 | `EXT-SUST-WRITE-QD32-120S` | 4K randwrite, QD32, 120s | 3 | Complete |
 | `EXT-SUST-WRITE-QD32-300S` | 4K randwrite, QD32, 300s | 3 + 3 | Two sessions complete; latest execution trace complete |
+| `EXT-STATE-WRITE-RECOVERY-001` | QD16 probe x3, QD32 condition x1, QD16 probe x3 | 1 sequence | Complete; initial uplift was unstable within the session |
+| `EXT-STATE-REPRO-002` | Reconnect-start QD16 baseline x1, QD32 condition x1, QD16 post x1 | 3 sessions | Complete; paired direction not reproduced |
 
-The analyzer currently includes 24 sustained fio JSON jobs. All report `error: 0`, and each result set contains the expected time-series logs.
+The analyzer currently includes 40 sustained fio JSON jobs. All report `error: 0`, and each result set contains the expected time-series logs.
 
 ## 4. QD Sweep Observation
 
@@ -119,15 +123,31 @@ These stalls are too rare to dominate p99.9 but are operationally important. The
 
 The aggregate last/first completion-latency ratio of 0.759 is not evidence of general improvement: it is pulled downward by a large early stall in run 2. Run-level time-series evidence must remain visible beside aggregate window ratios.
 
-## 7. Traceability and Telemetry Status
+## 7. State Conditioning and Independent-Session Study
 
-The traced QD32 and QD16 runs contain:
+`EXT-STATE-WRITE-RECOVERY-001` first compared three consecutive idle-start QD16 probes with three post-conditioning probes. Post-write average bandwidth was 147.14 MiB/s versus 122.71 MiB/s at idle-start, but the post-write runs were 159.88, 155.50, and 126.05 MiB/s. The apparent uplift was not stable through the third consecutive probe, showing that fio repeats inside one sequence were not independent state replicates.
+
+`EXT-STATE-REPRO-002` therefore changed the experimental unit to one complete reconnect-start baseline-conditioning-post session. Three sessions preserved a user-confirmed 600-second disconnect, the same physical USB port, a 300-second initial idle, and a 60-second post-conditioning idle.
+
+| Session | Baseline MiB/s | Post-write MiB/s | BW delta | p99 delta | p99.9 delta | Max-latency delta |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 123.85 | 115.96 | -6.37% | +27.62% | +66.19% | +91.78% |
+| 2 | 140.87 | 130.17 | -7.59% | +27.34% | +108.97% | +8.13% |
+| 3 | 110.34 | 136.08 | +23.33% | -46.24% | -75.00% | -23.27% |
+
+The paired bandwidth direction was mixed: two sessions decreased and one increased. Median bandwidth delta was -6.37%, with a range from -7.59% to +23.33%. The conditioning-uplift hypothesis is therefore `not_reproduced_under_controlled_external_sequence`.
+
+This is not a failed validation activity. `REQ-STATE-REPRO-002` passes because all three planned sessions and paired metrics exist with complete traceability. The performance hypothesis remains not reproduced because its direction was inconsistent. Reconnect-start also remains an external label rather than proof that the SSD entered a common internal state.
+
+## 8. Traceability and Telemetry Status
+
+The traced QD32/QD16 runs and both state protocols contain:
 
 - matching `observer_manifest_pre.json`, `runner_manifest.json`, and `observer_manifest_post.json`
-- 3 fio runs per result set, all exit code 0
+- all planned fio runs with exit code 0
 - raw fio JSON and bandwidth/IOPS/latency logs
-- parsed summary, time-series, window, and repeatability CSVs
-- integrated `run_manifest.json`: `complete`
+- parsed sustained and paired-comparison CSVs
+- complete child `run_manifest.json` files linked to parent experiment manifests
 
 The integrated manifest now relies on run-specific observer manifests rather than mutable global `results/*/latest` links.
 
@@ -147,7 +167,7 @@ Telemetry interpretation remains Limited because:
 
 These limitations are propagated through the observer manifests instead of being reported as complete telemetry coverage.
 
-## 8. Requirement Verdict
+## 9. Requirement Verdict
 
 | Requirement | Verdict | Evidence / boundary |
 |---|---|---|
@@ -158,22 +178,25 @@ These limitations are propagated through the observer manifests instead of being
 | `REQ-SUST-001` | Pass | First/middle/last window evidence exists for sustained writes |
 | `REQ-SUST-002` | Pass | Matching QD32 write conditions were compared at 120s and 300s |
 | `REQ-SUST-003` | Pass | Matching sustained read/write conditions exist at QD16 and QD32 |
+| `REQ-STATE-001` | Pass | Baseline, conditioning, and post-write phases are linked with fixed idle intervals |
+| `REQ-STATE-REPRO-002` | Pass | Three complete paired sessions preserve the fixed sequence; hypothesis result is not reproduced |
 | `REQ-ENV-001` | Pass for traced runs | Pre/post environment collectors are linked by run ID |
 | `REQ-TEL-001` | Limited | Target metadata is correct; SMART, reliability counters, and fsutil remain limited |
 | `REQ-OBS-001` | Pass for traced runs | Pre observer, runner, and post observer are linked |
 | `REQ-TRACE-001` | Pass for traced runs | Integrated manifests link conditions and run-specific evidence |
 | `REQ-LIMIT-001` | Pass | USB, Windows, exFAT, file-target, telemetry, and root-cause limits are explicit |
 
-## 9. Limitations
+## 10. Limitations
 
-- The test file is 512 MiB, so results do not establish full-drive or enterprise steady-state behavior.
+- The test file is 512 MiB, so results do not establish large-working-set, full-drive, or enterprise steady-state behavior.
+- The three state-reproducibility sessions occurred on one host and date; reconnect-start does not guarantee a common internal SSD state.
 - USB bridge, enclosure, port, host controller, Windows, exFAT, and fio file-target effects are combined.
 - The QD32 evidence-complete run predates the corrected target-aware telemetry collector.
 - Exact DUT model, enclosure/adapter, and host port remain to be confirmed.
 - No direct power measurement or internal firmware/NAND/FTL/GC trace is available.
 - Hard performance pass/fail thresholds require an external requirement or established baseline.
 
-## 10. Current Verdict
+## 11. Current Verdict
 
 The lab now demonstrates both measurement and evidence engineering: controlled fio conditions, repeated raw data, three-session QD16 comparison, tail-latency anomaly retention, target-aware telemetry limitations, separate runner/observer roles, and integrated traceability.
 
@@ -181,6 +204,8 @@ The QD32 300s late-run degradation observed in the first session was not reprodu
 
 At QD16 120s, the lower throughput level was reproduced across two consecutive sessions, but the severe p99.9 inflation was not. Throughput state and tail-latency state must therefore be tracked as separate validation dimensions.
 
+The later paired state study improved the experimental unit from consecutive fio repeats to complete reconnect-start sessions. Its mixed -6.37%, -7.59%, and +23.33% bandwidth deltas showed that a conditioning uplift was not reproducible under the controlled external sequence. The strongest conclusion is session-level black-box variability, not a deterministic internal mechanism.
+
 Portfolio statement:
 
-> I treated an external SSD as a black-box DUT, translated validation questions into controlled fio conditions, preserved raw JSON and time-series evidence, compared both within-session and cross-session repeatability, and connected requirements, execution roles, artifacts, verdicts, anomalies, and limitations through run manifests.
+> I treated an external SSD as a black-box DUT, translated validation questions into controlled fio conditions, improved the experimental unit when consecutive repeats proved dependent, preserved paired raw evidence across three reconnect-start sessions, and separated requirement completion from a performance hypothesis that was not reproduced.
