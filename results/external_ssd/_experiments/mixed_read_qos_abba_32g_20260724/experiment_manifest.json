@@ -1,0 +1,102 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "mixed_read_qos_abba_32g_20260724",
+    "test_protocol_id":  "EXT-MIXED-READ-QOS-ABBA-001",
+    "started_at":  "2026-07-24T15:37:12.4702230+09:00",
+    "completed_at":  "2026-07-24T15:58:14.9262808+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_mixed_abba.ps1",
+    "safety":  "existing dedicated 32 GiB file target under E:\\validation; no raw physical-drive target",
+    "question":  "Does adding 30% random writes inflate read p99/p99.9 under matched QD16 conditions after controlling sequence position with A-B-B-A?",
+    "experimental_unit":  "one connected-session A1-B1-B2-A2 sequence",
+    "interpretation_boundary":  "ABBA controls first/last sequence position inside one session but is not an independent reconnect replicate or proof of device-internal behavior.",
+    "fixed_controls":  {
+                           "same_physical_usb_port_confirmed":  true,
+                           "dedicated_file_write_confirmed":  true,
+                           "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                           "observed_file_bytes":  34359738368,
+                           "sequence":  [
+                                            "A1",
+                                            "B1",
+                                            "B2",
+                                            "A2"
+                                        ],
+                           "A":  "100% randread",
+                           "B":  "randrw 70% read / 30% write",
+                           "block_size":  "4k",
+                           "iodepth":  16,
+                           "size":  "32G",
+                           "runtime_sec":  180,
+                           "time_based":  true,
+                           "direct":  1,
+                           "numjobs":  1,
+                           "ioengine":  "windowsaio",
+                           "randrepeat":  1,
+                           "initial_idle_sec":  300,
+                           "inter_phase_idle_sec":  60
+                       },
+    "sweep_gate":  {
+                       "next_protocol":  "EXT-MIXED-RATIO-SWEEP-001",
+                       "proceed_if":  "A1 and A2 are sufficiently comparable and B1/B2 show repeatable read-QoS inflation; otherwise investigate carry-over or session state first."
+                   },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "code":  "A1",
+                       "state_phase":  "abba_a1",
+                       "test_case_id":  "EXT-MIXED-ABBA-PURE-READ",
+                       "workload":  "pure_randread",
+                       "rw":  "randread",
+                       "rwmixread":  null,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T15:42:37.5178544+09:00",
+                       "completed_at":  "2026-07-24T15:45:38.2950559+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase1_A1_run1.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase1_A1_run1"
+                   },
+                   {
+                       "order":  2,
+                       "code":  "B1",
+                       "state_phase":  "abba_b1",
+                       "test_case_id":  "EXT-MIXED-ABBA-7030",
+                       "workload":  "mixed_7030",
+                       "rw":  "randrw",
+                       "rwmixread":  70,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T15:46:38.4123815+09:00",
+                       "completed_at":  "2026-07-24T15:49:39.1395615+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase2_B1_run2.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase2_B1_run2"
+                   },
+                   {
+                       "order":  3,
+                       "code":  "B2",
+                       "state_phase":  "abba_b2",
+                       "test_case_id":  "EXT-MIXED-ABBA-7030",
+                       "workload":  "mixed_7030",
+                       "rw":  "randrw",
+                       "rwmixread":  70,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T15:50:39.1688554+09:00",
+                       "completed_at":  "2026-07-24T15:53:39.8191609+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase3_B2_run3.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase3_B2_run3"
+                   },
+                   {
+                       "order":  4,
+                       "code":  "A2",
+                       "state_phase":  "abba_a2",
+                       "test_case_id":  "EXT-MIXED-ABBA-PURE-READ",
+                       "workload":  "pure_randread",
+                       "rw":  "randread",
+                       "rwmixread":  null,
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T15:54:39.8350800+09:00",
+                       "completed_at":  "2026-07-24T15:57:40.5877479+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase4_A2_run4.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase4_A2_run4"
+                   }
+               ],
+    "error":  null
+}

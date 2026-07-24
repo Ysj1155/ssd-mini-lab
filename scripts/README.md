@@ -44,5 +44,7 @@ External SSD runners:
 - `runners/run_external_ssd_mixed_7030.ps1`
 - `runners/run_external_ssd_mixed_controls.ps1`
 - `runners/run_external_ssd_mixed_abba.ps1`
+- `runners/run_external_ssd_mixed_baab.ps1`
+- `runners/run_external_ssd_mixed_ratio_sweep.ps1`
 
 Safety note: external SSD runners require an explicit file target under `E:\validation` and do not use raw physical-drive targets.

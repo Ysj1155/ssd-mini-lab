@@ -174,8 +174,19 @@ One pilot is an observation. Repeat it only if the time series exposes a materia
 - Interrupted setup or write: retain raw evidence and inspect the external file before deciding on cleanup.
 - Wrong drive letter or physical port: do not classify the run as valid evidence.
 
-## 10. Current Next Experiment
+## 10. Completed Mixed Read-QoS Decision
 
-The next workload is `EXT-MIXED-READ-QOS-ABBA-001`: A1 pure read, B1/B2 70:30 mixed, and A2 pure read under matching 32 GiB, 4K, QD16, and 180-second conditions.
+The A-B-B-A and independent reconnect-start B-A-A-B sessions completed with matching 4K, QD16, 32 GiB, and 180-second controls. Their second mixed phases moved in opposite directions:
 
-Use [external_ssd_mixed_abba_runbook.md](external_ssd_mixed_abba_runbook.md) for the fixed sequence, safety checks, execution command, sweep gate, and prepared counterbalanced ratio-sweep design.
+- ABBA B2/B1: read bandwidth 0.712x, p99 1.345x, p99.9 3.925x
+- BAAB B2/B1: read bandwidth 1.224x, p99 0.910x, p99.9 0.724x
+
+The repeatable mixed read-tail inflation hypothesis is `not_reproduced_under_controlled_abba_baab_sequences`. Both evidence requirements pass because the planned sessions and comparisons exist.
+
+See [external_ssd_mixed_abba_baab_result.md](external_ssd_mixed_abba_baab_result.md).
+
+## 11. Current Next Experiment
+
+The next workload is `EXT-MIXED-RATIO-SWEEP-001`, a counterbalanced 90:10 / 70:30 / 50:50 descriptive response map. Each ratio occupies every sequence position once across three cycles.
+
+Use [external_ssd_mixed_ratio_sweep_runbook.md](external_ssd_mixed_ratio_sweep_runbook.md) for reconnect steps, the nine-phase order, safety checks, and the execution command. The result must be analyzed as ratio x cycle x position and must not be presented as causal confirmation of the closed ABBA/BAAB hypothesis.

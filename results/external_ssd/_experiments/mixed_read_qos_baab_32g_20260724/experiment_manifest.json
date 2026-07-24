@@ -1,0 +1,101 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "mixed_read_qos_baab_32g_20260724",
+    "test_protocol_id":  "EXT-MIXED-READ-QOS-BAAB-002",
+    "reference_experiment_id":  "mixed_read_qos_abba_32g_20260724",
+    "started_at":  "2026-07-24T16:20:53.1984024+09:00",
+    "completed_at":  "2026-07-24T16:41:38.1242509+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_mixed_baab.ps1",
+    "safety":  "existing dedicated 32 GiB file target under E:\\validation; no raw physical-drive target",
+    "question":  "Does an independent reconnect-start B-A-A-B session reproduce mixed read-QoS behavior after reversing the workload order?",
+    "experimental_unit":  "one independently initiated B1-A1-A2-B2 sequence",
+    "interpretation_boundary":  "Reconnect-start and same-port use are user-confirmed external conditions, not proof of an internally reset SSD state or device-internal behavior.",
+    "fixed_controls":  {
+                           "reconnect_start_confirmed":  true,
+                           "same_physical_usb_port_confirmed":  true,
+                           "dedicated_file_write_confirmed":  true,
+                           "user_confirmed_disconnect_sec":  600,
+                           "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                           "observed_file_bytes":  34359738368,
+                           "sequence":  [
+                                            "B1",
+                                            "A1",
+                                            "A2",
+                                            "B2"
+                                        ],
+                           "A":  "100% randread",
+                           "B":  "randrw 70% read / 30% write",
+                           "block_size":  "4k",
+                           "iodepth":  16,
+                           "size":  "32G",
+                           "runtime_sec":  180,
+                           "time_based":  true,
+                           "direct":  1,
+                           "numjobs":  1,
+                           "ioengine":  "windowsaio",
+                           "randrepeat":  1,
+                           "initial_idle_sec":  300,
+                           "inter_phase_idle_sec":  60
+                       },
+    "sweep_gate":  {
+                       "next_protocol":  "EXT-MIXED-RATIO-SWEEP-001",
+                       "proceed_if":  "ABBA and BAAB together separate sequence position from repeatable read-QoS direction; otherwise investigate session state before sweeping ratios."
+                   },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "code":  "B1",
+                       "state_phase":  "baab_b1",
+                       "test_case_id":  "EXT-MIXED-BAAB-7030",
+                       "workload":  "mixed_7030",
+                       "rw":  "randrw",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T16:26:14.9784660+09:00",
+                       "completed_at":  "2026-07-24T16:29:15.7021197+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase1_B1_run1.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase1_B1_run1"
+                   },
+                   {
+                       "order":  2,
+                       "code":  "A1",
+                       "state_phase":  "baab_a1",
+                       "test_case_id":  "EXT-MIXED-BAAB-PURE-READ",
+                       "workload":  "pure_randread",
+                       "rw":  "randread",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T16:30:15.8202004+09:00",
+                       "completed_at":  "2026-07-24T16:33:16.5474364+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase2_A1_run2.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase2_A1_run2"
+                   },
+                   {
+                       "order":  3,
+                       "code":  "A2",
+                       "state_phase":  "baab_a2",
+                       "test_case_id":  "EXT-MIXED-BAAB-PURE-READ",
+                       "workload":  "pure_randread",
+                       "rw":  "randread",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T16:34:16.5658329+09:00",
+                       "completed_at":  "2026-07-24T16:37:17.2706166+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase3_A2_run3.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase3_A2_run3"
+                   },
+                   {
+                       "order":  4,
+                       "code":  "B2",
+                       "state_phase":  "baab_b2",
+                       "test_case_id":  "EXT-MIXED-BAAB-7030",
+                       "workload":  "mixed_7030",
+                       "rw":  "randrw",
+                       "status":  "complete",
+                       "started_at":  "2026-07-24T16:38:17.2944633+09:00",
+                       "completed_at":  "2026-07-24T16:41:17.9901342+09:00",
+                       "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase4_B2_run4.json",
+                       "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_baab_32g_20260724\\sustained_mixed_read_qos_baab_32g_20260724_phase4_B2_run4"
+                   }
+               ],
+    "error":  null
+}

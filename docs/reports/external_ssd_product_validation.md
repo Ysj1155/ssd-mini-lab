@@ -1,6 +1,6 @@
 # External SSD Product Validation Report
 
-Status: QD sweep, sustained QD16/QD32 studies, one state-recovery sequence, and three independently initiated paired state-reproducibility sessions completed. The state studies retain parent/child manifests, matching observer/runner evidence, parsed CSVs, and explicit hypothesis verdicts.
+Status: QD sweep, sustained QD16/QD32 studies, state-reproducibility sessions, a 32 GiB sequential pilot, and controlled mixed-workload ABBA/BAAB sequences completed. Evidence requirements and performance-hypothesis verdicts are tracked separately.
 
 ## 1. Scope
 
@@ -13,6 +13,7 @@ Related evidence:
 - `docs/reports/external_ssd_dut_profile.md`
 - `docs/reports/external_ssd_requirement_matrix.md`
 - `docs/reports/external_ssd_execution_runbook.md`
+- `docs/reports/external_ssd_mixed_abba_baab_result.md`
 - `configs/external_ssd_validation_matrix.yaml`
 - `results/external_ssd/`
 - `results/external_ssd_sustained_*.csv`
@@ -48,6 +49,9 @@ The QD32 evidence-complete run predates target-aware telemetry and therefore ret
 | `EXT-SUST-WRITE-QD32-300S` | 4K randwrite, QD32, 300s | 3 + 3 | Two sessions complete; latest execution trace complete |
 | `EXT-STATE-WRITE-RECOVERY-001` | QD16 probe x3, QD32 condition x1, QD16 probe x3 | 1 sequence | Complete; initial uplift was unstable within the session |
 | `EXT-STATE-REPRO-002` | Reconnect-start QD16 baseline x1, QD32 condition x1, QD16 post x1 | 3 sessions | Complete; paired direction not reproduced |
+| `EXT-LARGE-WS-SEQ-001` | 32 GiB sequential write/read, 1M QD4 | 1 sequence | Complete |
+| `EXT-MIXED-READ-QOS-ABBA-001` | Pure read vs 70:30 mixed, 4K QD16, A-B-B-A | 4 phases | Complete |
+| `EXT-MIXED-READ-QOS-BAAB-002` | Reconnect-start 70:30 vs pure read, B-A-A-B | 4 phases | Complete; read-tail hypothesis not reproduced |
 
 The analyzer currently includes 40 sustained fio JSON jobs. All report `error: 0`, and each result set contains the expected time-series logs.
 
@@ -139,7 +143,24 @@ The paired bandwidth direction was mixed: two sessions decreased and one increas
 
 This is not a failed validation activity. `REQ-STATE-REPRO-002` passes because all three planned sessions and paired metrics exist with complete traceability. The performance hypothesis remains not reproduced because its direction was inconsistent. Reconnect-start also remains an external label rather than proof that the SSD entered a common internal state.
 
-## 8. Traceability and Telemetry Status
+## 8. Mixed Read-QoS ABBA/BAAB Decision
+
+The matched ABBA and independent reconnect-start BAAB sessions challenged whether a 70:30 random mix produces repeatable read p99/p99.9 inflation at 4K QD16.
+
+| Session | Comparison | Read BW | Read p99 | Read p99.9 |
+|---|---|---:|---:|---:|
+| ABBA | B2/B1 | 0.712x | 1.345x | 3.925x |
+| BAAB | B2/B1 | 1.224x | 0.910x | 0.724x |
+
+ABBA showed a slower and worse-tail second mixed phase. BAAB reversed all three directions. The repeatable mixed read-tail hypothesis is therefore `not_reproduced_under_controlled_abba_baab_sequences`.
+
+`REQ-MIXED-ABBA-003` and `REQ-MIXED-BAAB-004` pass because their planned phases, manifests, raw JSON, per-direction QoS, and observer evidence exist. A passed evidence requirement does not convert the performance hypothesis into a positive finding.
+
+The next counterbalanced ratio sweep is descriptive ratio-by-cycle-by-position mapping. It is not causal confirmation of write-induced read-tail inflation.
+
+See `docs/reports/external_ssd_mixed_abba_baab_result.md`.
+
+## 9. Traceability and Telemetry Status
 
 The traced QD32/QD16 runs and both state protocols contain:
 
@@ -167,7 +188,7 @@ Telemetry interpretation remains Limited because:
 
 These limitations are propagated through the observer manifests instead of being reported as complete telemetry coverage.
 
-## 9. Requirement Verdict
+## 10. Requirement Verdict
 
 | Requirement | Verdict | Evidence / boundary |
 |---|---|---|
@@ -180,15 +201,19 @@ These limitations are propagated through the observer manifests instead of being
 | `REQ-SUST-003` | Pass | Matching sustained read/write conditions exist at QD16 and QD32 |
 | `REQ-STATE-001` | Pass | Baseline, conditioning, and post-write phases are linked with fixed idle intervals |
 | `REQ-STATE-REPRO-002` | Pass | Three complete paired sessions preserve the fixed sequence; hypothesis result is not reproduced |
+| `REQ-LARGE-WS-001` | Pass | One 32 GiB completion-based sequential write/read sequence preserves raw and time-window evidence |
+| `REQ-MIXED-ABBA-003` | Pass | A1/B1/B2/A2 completed; the performance hypothesis was not reproduced |
+| `REQ-MIXED-BAAB-004` | Pass | Independent reconnect-start B1/A1/A2/B2 completed; the performance hypothesis was not reproduced |
+| `REQ-MIXED-RATIO-005` | Planned | Counterbalanced descriptive sweep is prepared but not yet executed |
 | `REQ-ENV-001` | Pass for traced runs | Pre/post environment collectors are linked by run ID |
 | `REQ-TEL-001` | Limited | Target metadata is correct; SMART, reliability counters, and fsutil remain limited |
 | `REQ-OBS-001` | Pass for traced runs | Pre observer, runner, and post observer are linked |
 | `REQ-TRACE-001` | Pass for traced runs | Integrated manifests link conditions and run-specific evidence |
 | `REQ-LIMIT-001` | Pass | USB, Windows, exFAT, file-target, telemetry, and root-cause limits are explicit |
 
-## 10. Limitations
+## 11. Limitations
 
-- The test file is 512 MiB, so results do not establish large-working-set, full-drive, or enterprise steady-state behavior.
+- Most sustained studies use a 512 MiB file; later sequential and mixed studies use a dedicated 32 GiB file. Neither establishes full-drive or enterprise steady-state behavior.
 - The three state-reproducibility sessions occurred on one host and date; reconnect-start does not guarantee a common internal SSD state.
 - USB bridge, enclosure, port, host controller, Windows, exFAT, and fio file-target effects are combined.
 - The QD32 evidence-complete run predates the corrected target-aware telemetry collector.
@@ -196,7 +221,7 @@ These limitations are propagated through the observer manifests instead of being
 - No direct power measurement or internal firmware/NAND/FTL/GC trace is available.
 - Hard performance pass/fail thresholds require an external requirement or established baseline.
 
-## 11. Current Verdict
+## 12. Current Verdict
 
 The lab now demonstrates both measurement and evidence engineering: controlled fio conditions, repeated raw data, three-session QD16 comparison, tail-latency anomaly retention, target-aware telemetry limitations, separate runner/observer roles, and integrated traceability.
 
@@ -205,6 +230,8 @@ The QD32 300s late-run degradation observed in the first session was not reprodu
 At QD16 120s, the lower throughput level was reproduced across two consecutive sessions, but the severe p99.9 inflation was not. Throughput state and tail-latency state must therefore be tracked as separate validation dimensions.
 
 The later paired state study improved the experimental unit from consecutive fio repeats to complete reconnect-start sessions. Its mixed -6.37%, -7.59%, and +23.33% bandwidth deltas showed that a conditioning uplift was not reproducible under the controlled external sequence. The strongest conclusion is session-level black-box variability, not a deterministic internal mechanism.
+
+The subsequent ABBA/BAAB study reached the same kind of disciplined negative result: the second mixed phase degraded in ABBA but improved in BAAB. Repeatable 70:30 read-tail inflation was not reproduced, so the next ratio sweep is explicitly exploratory and counterbalanced rather than framed as causal confirmation.
 
 Portfolio statement:
 

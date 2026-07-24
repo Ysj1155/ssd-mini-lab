@@ -1,0 +1,89 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_mixed_read_qos_abba_32g_20260724",
+    "test_case_id":  "EXT-MIXED-READ-QOS-ABBA-001",
+    "experiment_id":  "mixed_read_qos_abba_32g_20260724",
+    "started_at":  "2026-07-24T15:37:12.4702230+09:00",
+    "completed_at":  "2026-07-24T15:57:40.6189983+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_mixed_abba.ps1",
+    "safety":  "time-based fio file-target runner; no raw physical-drive target",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724",
+    "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+    "conditions":  {
+                       "same_physical_usb_port_confirmed":  true,
+                       "dedicated_file_write_confirmed":  true,
+                       "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                       "observed_file_bytes":  34359738368,
+                       "sequence":  [
+                                        "A1",
+                                        "B1",
+                                        "B2",
+                                        "A2"
+                                    ],
+                       "A":  "100% randread",
+                       "B":  "randrw 70% read / 30% write",
+                       "block_size":  "4k",
+                       "iodepth":  16,
+                       "size":  "32G",
+                       "runtime_sec":  180,
+                       "time_based":  true,
+                       "direct":  1,
+                       "numjobs":  1,
+                       "ioengine":  "windowsaio",
+                       "randrepeat":  1,
+                       "initial_idle_sec":  300,
+                       "inter_phase_idle_sec":  60
+                   },
+    "runs":  [
+                 {
+                     "phase_order":  1,
+                     "phase_code":  "A1",
+                     "workload":  "pure_randread",
+                     "rw":  "randread",
+                     "started_at":  "2026-07-24T15:42:37.5178544+09:00",
+                     "completed_at":  "2026-07-24T15:45:38.2950559+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase1_A1_run1.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase1_A1_run1"
+                 },
+                 {
+                     "phase_order":  2,
+                     "phase_code":  "B1",
+                     "workload":  "mixed_7030",
+                     "rw":  "randrw",
+                     "started_at":  "2026-07-24T15:46:38.4123815+09:00",
+                     "completed_at":  "2026-07-24T15:49:39.1395615+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase2_B1_run2.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase2_B1_run2"
+                 },
+                 {
+                     "phase_order":  3,
+                     "phase_code":  "B2",
+                     "workload":  "mixed_7030",
+                     "rw":  "randrw",
+                     "started_at":  "2026-07-24T15:50:39.1688554+09:00",
+                     "completed_at":  "2026-07-24T15:53:39.8191609+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase3_B2_run3.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase3_B2_run3"
+                 },
+                 {
+                     "phase_order":  4,
+                     "phase_code":  "A2",
+                     "workload":  "pure_randread",
+                     "rw":  "randread",
+                     "started_at":  "2026-07-24T15:54:39.8350800+09:00",
+                     "completed_at":  "2026-07-24T15:57:40.5877479+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase4_A2_run4.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_read_qos_abba_32g_20260724\\sustained_mixed_read_qos_abba_32g_20260724_phase4_A2_run4"
+                 }
+             ]
+}

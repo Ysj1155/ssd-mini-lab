@@ -130,15 +130,9 @@ Review:
 
 Do not interpret B/A bandwidth directly as a loss percentage because A and B issue different operation mixes through the same QD16 queue.
 
-## Sweep Gate
+## Sweep Gate Result
 
-Proceed to `EXT-MIXED-RATIO-SWEEP-001` when the ABBA evidence is directionally clear:
-
-- A1 and A2 remain broadly comparable in read throughput and p99
-- both B phases show read-tail inflation relative to the A phases
-- B1 and B2 agree on the direction of the effect
-
-If A2 does not recover, treat carry-over or session state as unresolved and run a reversed `B-A-A-B` session before a ratio sweep.
+The ABBA result did not satisfy the causal sweep gate because B1 and B2 did not agree. An independent reconnect-start BAAB session was therefore run. ABBA and BAAB then produced opposite B2/B1 directions, so the original read-tail hypothesis was closed as `not reproduced`.
 
 ## Prepared Ratio-Sweep Design
 
@@ -150,7 +144,7 @@ The planned ratios are:
 50:50
 ```
 
-Use three counterbalanced cycles so each ratio appears once in each sequence position:
+The follow-on uses three counterbalanced cycles so each ratio appears once in each sequence position:
 
 ```text
 cycle 1: 90:10 -> 70:30 -> 50:50
@@ -158,8 +152,7 @@ cycle 2: 70:30 -> 50:50 -> 90:10
 cycle 3: 50:50 -> 90:10 -> 70:30
 ```
 
-Hold `4K`, QD16, 32 GiB, 180 seconds, direct I/O, one job, and the random sequence constant. Use 60-second phase idle and a longer fixed idle between cycles. Implement the sweep runner only after reviewing the ABBA gate, because unresolved carry-over would make a nine-run sweep difficult to interpret.
-
+Hold `4K`, QD16, 32 GiB, 180 seconds, direct I/O, one job, and the random sequence constant. Use 60-second phase idle and a longer fixed idle between cycles. The sweep is descriptive ratio-by-cycle-by-position mapping, not causal confirmation.
 ## Interpretation Boundary
 
 ABBA reduces simple first-versus-last order bias inside one connected session. It does not create independent reconnect replicates and cannot identify USB, OS, thermal, cache, FTL, GC, or NAND root cause.

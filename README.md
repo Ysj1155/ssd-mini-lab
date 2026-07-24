@@ -30,7 +30,7 @@ Latest finding: three separately initiated paired sessions produced QD16 post-wr
 
 All three sessions preserve reconnect and same-port confirmations, complete parent/child manifests, matching pre-observer/runner/post-observer evidence, and paired comparison CSVs. The requirement passed because the evidence plan completed; the performance hypothesis did not.
 
-`EXT-LARGE-WS-SEQ-001` completed one 32 GiB sequential overwrite/read observation without a late-run throughput drop. `EXT-MIXED-RW-7030-001` and its matched pure controls exposed read-tail inflation under mixed load plus meaningful session-order variation. The prepared A-B-B-A experiment now tests that read-QoS effect while exposing first/last carry-over. None of these experiments is evidence of internal cache, FTL, or GC behavior.
+`EXT-LARGE-WS-SEQ-001` completed one 32 GiB sequential overwrite/read observation without a late-run throughput drop. The completed A-B-B-A and independent reconnect-start B-A-A-B sessions produced opposite B2/B1 directions. Repeatable read-tail inflation under the 70:30 mix was therefore `not reproduced`. The next experiment maps 90:10, 70:30, and 50:50 response with counterbalanced positions; it is descriptive mapping, not causal proof. None of these experiments is evidence of internal cache, FTL, or GC behavior.
 
 ## Start Here
 

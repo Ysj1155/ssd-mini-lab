@@ -31,3 +31,5 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | `external_ssd_requirement_matrix.md` | Product-like validation requirements |
 | `external_ssd_execution_runbook.md` | Local fio execution steps |
 | `external_ssd_product_validation.md` | Latest verdict and interpretation |
+| `external_ssd_mixed_abba_baab_result.md` | Closed ABBA/BAAB hypothesis and evidence verdict |
+| `external_ssd_mixed_ratio_sweep_runbook.md` | Next counterbalanced descriptive ratio sweep |

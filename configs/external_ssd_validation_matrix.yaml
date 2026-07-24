@@ -337,3 +337,65 @@ test_cases:
       - REQ-ENV-001
       - REQ-OBS-001
       - REQ-TRACE-001
+
+  - id: EXT-MIXED-BAAB-PURE-READ
+    purpose: "Provide the A1/A2 pure-read positions in an independent reconnect-start BAAB session."
+    rw: randread
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 2
+    iodepth: [16]
+    randrepeat: 1
+    sequence_positions: [A1, A2]
+    requirement_links:
+      - REQ-MIXED-BAAB-004
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-MIXED-BAAB-7030
+    purpose: "Provide the B1/B2 mixed positions in an independent reconnect-start BAAB session."
+    rw: randrw
+    rwmixread: 70
+    rwmixwrite: 30
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    repeats: 2
+    iodepth: [16]
+    randrepeat: 1
+    sequence_positions: [B1, B2]
+    requirement_links:
+      - REQ-MIXED-BAAB-004
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-MIXED-RATIO-SWEEP-001
+    purpose: "Map 90:10, 70:30, and 50:50 mixed response while counterbalancing sequence position after the ABBA/BAAB hypothesis was not reproduced."
+    rw: randrw
+    rwmixread: [90, 70, 50]
+    rwmixwrite: [10, 30, 50]
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    cycles: 3
+    phases: 9
+    inter_phase_idle_sec: 60
+    inter_cycle_idle_sec: 300
+    iodepth: [16]
+    randrepeat: 1
+    sequence:
+      - ["90:10", "70:30", "50:50"]
+      - ["70:30", "50:50", "90:10"]
+      - ["50:50", "90:10", "70:30"]
+    interpretation: "descriptive_ratio_by_cycle_by_position_mapping"
+    requirement_links:
+      - REQ-MIXED-RATIO-005
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
