@@ -399,3 +399,30 @@ test_cases:
       - REQ-ENV-001
       - REQ-OBS-001
       - REQ-TRACE-001
+
+  - id: EXT-MIXED-RATIO-SWEEP-REPRO-002
+    purpose: "Challenge Session 1 ratio response and phase-transition behavior in an independent reconnect-start session with a different counterbalanced order."
+    rw: randrw
+    rwmixread: [50, 70, 90]
+    rwmixwrite: [50, 30, 10]
+    bs: 4k
+    size: 32G
+    runtime_sec: 180
+    cycles: 3
+    phases: 9
+    inter_phase_idle_sec: 60
+    inter_cycle_idle_sec: 300
+    iodepth: [16]
+    randrepeat: 1
+    sequence_variant: session2
+    sequence:
+      - ["50:50", "70:30", "90:10"]
+      - ["70:30", "90:10", "50:50"]
+      - ["90:10", "50:50", "70:30"]
+    interpretation: "independent_reproduction_of_descriptive_mapping"
+    requirement_links:
+      - REQ-MIXED-RATIO-REPRO-006
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001

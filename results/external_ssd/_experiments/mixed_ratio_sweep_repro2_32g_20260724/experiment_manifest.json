@@ -1,0 +1,236 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "mixed_ratio_sweep_repro2_32g_20260724",
+  "test_protocol_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+  "reference_experiments": [
+    "mixed_read_qos_abba_32g_20260724",
+    "mixed_read_qos_baab_32g_20260724",
+    "mixed_ratio_sweep_32g_20260724"
+  ],
+  "started_at": "2026-07-24T20:01:56.4790533+09:00",
+  "completed_at": "2026-07-24T20:50:58.9145786+09:00",
+  "status": "complete",
+  "result": "observation",
+  "runner": "scripts/runners/run_external_ssd_mixed_ratio_sweep.ps1",
+  "safety": "existing dedicated 32 GiB file target under E:\\validation; no raw physical-drive target",
+  "question": "Does an independent counterbalanced session reproduce the ratio response and phase-transition pattern observed in session 1?",
+  "experimental_unit": "one three-phase cycle; three counterbalanced cycles form one descriptive mapping session",
+  "hypothesis_status": "independent_reproduction_of_descriptive_mapping",
+  "interpretation_boundary": "Descriptive ratio-by-cycle-by-position mapping only; the design does not prove a causal device-internal interference mechanism.",
+  "fixed_controls": {
+    "reconnect_start_confirmed": true,
+    "same_physical_usb_port_confirmed": true,
+    "dedicated_file_write_confirmed": true,
+    "user_confirmed_disconnect_sec": 600,
+    "test_file": "E:\\validation\\ssd_lab_seq_32g",
+    "observed_file_bytes": 34359738368,
+    "sequence_variant": "session2",
+    "cycles": [
+      {
+        "cycle": 1,
+        "sequence": [
+          "90:10",
+          "70:30",
+          "50:50"
+        ]
+      },
+      {
+        "cycle": 2,
+        "sequence": [
+          "50:50",
+          "90:10",
+          "70:30"
+        ]
+      },
+      {
+        "cycle": 3,
+        "sequence": [
+          "70:30",
+          "50:50",
+          "90:10"
+        ]
+      }
+    ],
+    "block_size": "4k",
+    "iodepth": 16,
+    "size": "32G",
+    "runtime_sec": 180,
+    "time_based": true,
+    "direct": 1,
+    "numjobs": 1,
+    "ioengine": "windowsaio",
+    "randrepeat": 1,
+    "initial_idle_sec": 300,
+    "inter_phase_idle_sec": 60,
+    "inter_cycle_idle_sec": 300
+  },
+  "analysis_plan": [
+    "report read and write bandwidth, IOPS, p99, p99.9, and maximum latency separately",
+    "retain cycle and position beside every ratio result",
+    "compare each ratio across all three positions before summarizing ratio response",
+    "treat isolated maximum-latency events separately from percentile behavior",
+    "do not claim internal cache, FTL, GC, NAND, firmware, or USB root cause"
+  ],
+  "phases": [
+    {
+      "order": 1,
+      "cycle": 1,
+      "position": 1,
+      "ratio": "50:50",
+      "read_pct": 50,
+      "write_pct": 50,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_50_50",
+      "status": "complete",
+      "started_at": "2026-07-24T20:07:18.4610866+09:00",
+      "completed_at": "2026-07-24T20:10:19.2040460+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase1_c1p1_r50w50.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase1_c1p1_r50w50"
+    },
+    {
+      "order": 2,
+      "cycle": 1,
+      "position": 2,
+      "ratio": "70:30",
+      "read_pct": 70,
+      "write_pct": 30,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_70_30",
+      "status": "complete",
+      "started_at": "2026-07-24T20:11:19.2921317+09:00",
+      "completed_at": "2026-07-24T20:14:19.9943917+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase2_c1p2_r70w30.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase2_c1p2_r70w30"
+    },
+    {
+      "order": 3,
+      "cycle": 1,
+      "position": 3,
+      "ratio": "90:10",
+      "read_pct": 90,
+      "write_pct": 10,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_90_10",
+      "status": "complete",
+      "started_at": "2026-07-24T20:15:20.0087616+09:00",
+      "completed_at": "2026-07-24T20:18:20.7022385+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase3_c1p3_r90w10.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase3_c1p3_r90w10"
+    },
+    {
+      "order": 4,
+      "cycle": 2,
+      "position": 1,
+      "ratio": "70:30",
+      "read_pct": 70,
+      "write_pct": 30,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_70_30",
+      "status": "complete",
+      "started_at": "2026-07-24T20:23:20.7273445+09:00",
+      "completed_at": "2026-07-24T20:26:21.4287291+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase4_c2p1_r70w30.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase4_c2p1_r70w30"
+    },
+    {
+      "order": 5,
+      "cycle": 2,
+      "position": 2,
+      "ratio": "90:10",
+      "read_pct": 90,
+      "write_pct": 10,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_90_10",
+      "status": "complete",
+      "started_at": "2026-07-24T20:27:21.4348164+09:00",
+      "completed_at": "2026-07-24T20:30:22.1377315+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase5_c2p2_r90w10.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase5_c2p2_r90w10"
+    },
+    {
+      "order": 6,
+      "cycle": 2,
+      "position": 3,
+      "ratio": "50:50",
+      "read_pct": 50,
+      "write_pct": 50,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_50_50",
+      "status": "complete",
+      "started_at": "2026-07-24T20:31:22.1481956+09:00",
+      "completed_at": "2026-07-24T20:34:22.8541925+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase6_c2p3_r50w50.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase6_c2p3_r50w50"
+    },
+    {
+      "order": 7,
+      "cycle": 3,
+      "position": 1,
+      "ratio": "90:10",
+      "read_pct": 90,
+      "write_pct": 10,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_90_10",
+      "status": "complete",
+      "started_at": "2026-07-24T20:39:22.8590764+09:00",
+      "completed_at": "2026-07-24T20:42:23.5664635+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase7_c3p1_r90w10.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase7_c3p1_r90w10"
+    },
+    {
+      "order": 8,
+      "cycle": 3,
+      "position": 2,
+      "ratio": "50:50",
+      "read_pct": 50,
+      "write_pct": 50,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_50_50",
+      "status": "complete",
+      "started_at": "2026-07-24T20:43:23.5687292+09:00",
+      "completed_at": "2026-07-24T20:46:24.2654093+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase8_c3p2_r50w50.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase8_c3p2_r50w50"
+    },
+    {
+      "order": 9,
+      "cycle": 3,
+      "position": 3,
+      "ratio": "70:30",
+      "read_pct": 70,
+      "write_pct": 30,
+      "test_case_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+      "workload": "mixed_70_30",
+      "status": "complete",
+      "started_at": "2026-07-24T20:47:24.2787751+09:00",
+      "completed_at": "2026-07-24T20:50:24.9778348+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase9_c3p3_r70w30.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_mixed_ratio_sweep_repro2_32g_20260724\\sustained_mixed_ratio_sweep_repro2_32g_20260724_phase9_c3p3_r70w30"
+    }
+  ],
+  "error": null,
+  "analysis_evidence": {
+    "status": "complete",
+    "analysis_manifest": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/analysis_manifest.json",
+    "classification": "descriptive_ratio_by_cycle_by_position_mapping",
+    "anomaly_count": 8,
+    "cross_session": {
+      "available": true,
+      "session1_experiment_id": "mixed_ratio_sweep_32g_20260724",
+      "session2_experiment_id": "mixed_ratio_sweep_repro2_32g_20260724",
+      "performance_verdict": "not_reproduced_across_independent_counterbalanced_sessions",
+      "ratio_comparison": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_ratio_comparison.csv",
+      "verdict": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_verdict.csv"
+    },
+    "derived_artifacts": {
+      "phase_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/phase_summary.csv",
+      "ratio_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/ratio_summary.csv",
+      "cycle_position_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cycle_position_summary.csv",
+      "window_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/window_summary.csv",
+      "transition_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/transition_summary.csv",
+      "anomalies": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/anomalies.csv",
+      "cross_session_ratio_comparison": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_ratio_comparison.csv",
+      "cross_session_verdict": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_verdict.csv"
+    }
+  }
+}

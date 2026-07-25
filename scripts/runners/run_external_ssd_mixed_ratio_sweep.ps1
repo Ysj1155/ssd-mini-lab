@@ -8,6 +8,9 @@ param(
     [string]$ExperimentLabel = "",
     [string]$TestFile = "E:\validation\ssd_lab_seq_32g",
 
+    [ValidateSet("session1", "session2")]
+    [string]$SequenceVariant = "session1",
+
     [ValidateRange(1, 1440)]
     [int]$ConfirmedDisconnectMinutes = 10,
 
@@ -35,10 +38,20 @@ $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $ExperimentRoot = Join-Path $ResultRoot "_experiments"
 $ObserverScript = Join-Path $BaseDir "scripts\observers\collect_external_ssd_observer.ps1"
 $ExpectedBytes = 32GB
-$ProtocolId = "EXT-MIXED-RATIO-SWEEP-001"
+if ($SequenceVariant -eq "session2") {
+    $ProtocolId = "EXT-MIXED-RATIO-SWEEP-REPRO-002"
+    $DefaultLabel = "mixed_ratio_sweep_repro2_32g_$(Get-Date -Format 'yyyyMMdd')"
+    $Question = "Does an independent counterbalanced session reproduce the ratio response and phase-transition pattern observed in session 1?"
+    $HypothesisStatus = "independent_reproduction_of_descriptive_mapping"
+} else {
+    $ProtocolId = "EXT-MIXED-RATIO-SWEEP-001"
+    $DefaultLabel = "mixed_ratio_sweep_32g_$(Get-Date -Format 'yyyyMMdd')"
+    $Question = "How do read and write response metrics vary across 90:10, 70:30, and 50:50 mixes when each ratio occupies each sequence position once?"
+    $HypothesisStatus = "exploratory_after_abba_baab_not_reproduced"
+}
 
 if ([string]::IsNullOrWhiteSpace($ExperimentLabel)) {
-    $ExperimentLabel = "mixed_ratio_sweep_32g_$(Get-Date -Format 'yyyyMMdd')"
+    $ExperimentLabel = $DefaultLabel
 }
 
 $SafeExperiment = $ExperimentLabel -replace '[^A-Za-z0-9_.-]', '_'
@@ -92,17 +105,42 @@ function Save-Json {
     $Value | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path -Encoding utf8
 }
 
-$PhaseSpecs = @(
-    [ordered]@{ order = 1; cycle = 1; position = 1; read_pct = 90 },
-    [ordered]@{ order = 2; cycle = 1; position = 2; read_pct = 70 },
-    [ordered]@{ order = 3; cycle = 1; position = 3; read_pct = 50 },
-    [ordered]@{ order = 4; cycle = 2; position = 1; read_pct = 70 },
-    [ordered]@{ order = 5; cycle = 2; position = 2; read_pct = 50 },
-    [ordered]@{ order = 6; cycle = 2; position = 3; read_pct = 90 },
-    [ordered]@{ order = 7; cycle = 3; position = 1; read_pct = 50 },
-    [ordered]@{ order = 8; cycle = 3; position = 2; read_pct = 90 },
-    [ordered]@{ order = 9; cycle = 3; position = 3; read_pct = 70 }
-)
+if ($SequenceVariant -eq "session2") {
+    $PhaseSpecs = @(
+        [ordered]@{ order = 1; cycle = 1; position = 1; read_pct = 50 },
+        [ordered]@{ order = 2; cycle = 1; position = 2; read_pct = 70 },
+        [ordered]@{ order = 3; cycle = 1; position = 3; read_pct = 90 },
+        [ordered]@{ order = 4; cycle = 2; position = 1; read_pct = 70 },
+        [ordered]@{ order = 5; cycle = 2; position = 2; read_pct = 90 },
+        [ordered]@{ order = 6; cycle = 2; position = 3; read_pct = 50 },
+        [ordered]@{ order = 7; cycle = 3; position = 1; read_pct = 90 },
+        [ordered]@{ order = 8; cycle = 3; position = 2; read_pct = 50 },
+        [ordered]@{ order = 9; cycle = 3; position = 3; read_pct = 70 }
+    )
+} else {
+    $PhaseSpecs = @(
+        [ordered]@{ order = 1; cycle = 1; position = 1; read_pct = 90 },
+        [ordered]@{ order = 2; cycle = 1; position = 2; read_pct = 70 },
+        [ordered]@{ order = 3; cycle = 1; position = 3; read_pct = 50 },
+        [ordered]@{ order = 4; cycle = 2; position = 1; read_pct = 70 },
+        [ordered]@{ order = 5; cycle = 2; position = 2; read_pct = 50 },
+        [ordered]@{ order = 6; cycle = 2; position = 3; read_pct = 90 },
+        [ordered]@{ order = 7; cycle = 3; position = 1; read_pct = 50 },
+        [ordered]@{ order = 8; cycle = 3; position = 2; read_pct = 90 },
+        [ordered]@{ order = 9; cycle = 3; position = 3; read_pct = 70 }
+    )
+}
+
+$CycleSequences = @()
+foreach ($CycleNumber in 1..3) {
+    $Sequence = @(
+        $PhaseSpecs |
+            Where-Object { $_.cycle -eq $CycleNumber } |
+            Sort-Object position |
+            ForEach-Object { "$($_.read_pct):$(100 - $_.read_pct)" }
+    )
+    $CycleSequences += [ordered]@{ cycle = $CycleNumber; sequence = $Sequence }
+}
 
 $Phases = @()
 foreach ($Spec in $PhaseSpecs) {
@@ -124,23 +162,28 @@ foreach ($Spec in $PhaseSpecs) {
     }
 }
 
+$ReferenceExperiments = @(
+    "mixed_read_qos_abba_32g_20260724",
+    "mixed_read_qos_baab_32g_20260724"
+)
+if ($SequenceVariant -eq "session2") {
+    $ReferenceExperiments += "mixed_ratio_sweep_32g_20260724"
+}
+
 $Manifest = [ordered]@{
     schema_version = "1.0"
     experiment_id = $SafeExperiment
     test_protocol_id = $ProtocolId
-    reference_experiments = @(
-        "mixed_read_qos_abba_32g_20260724",
-        "mixed_read_qos_baab_32g_20260724"
-    )
+    reference_experiments = $ReferenceExperiments
     started_at = (Get-Date).ToString("o")
     completed_at = $null
     status = "started"
     result = "observation"
     runner = "scripts/runners/run_external_ssd_mixed_ratio_sweep.ps1"
     safety = "existing dedicated 32 GiB file target under E:\validation; no raw physical-drive target"
-    question = "How do read and write response metrics vary across 90:10, 70:30, and 50:50 mixes when each ratio occupies each sequence position once?"
+    question = $Question
     experimental_unit = "one three-phase cycle; three counterbalanced cycles form one descriptive mapping session"
-    hypothesis_status = "exploratory_after_abba_baab_not_reproduced"
+    hypothesis_status = $HypothesisStatus
     interpretation_boundary = "Descriptive ratio-by-cycle-by-position mapping only; the design does not prove a causal device-internal interference mechanism."
     fixed_controls = [ordered]@{
         reconnect_start_confirmed = [bool]$ConfirmReconnectStart
@@ -149,11 +192,8 @@ $Manifest = [ordered]@{
         user_confirmed_disconnect_sec = $ConfirmedDisconnectMinutes * 60
         test_file = $TestFile
         observed_file_bytes = $TargetFile.Length
-        cycles = @(
-            [ordered]@{ cycle = 1; sequence = @("90:10", "70:30", "50:50") },
-            [ordered]@{ cycle = 2; sequence = @("70:30", "50:50", "90:10") },
-            [ordered]@{ cycle = 3; sequence = @("50:50", "90:10", "70:30") }
-        )
+        sequence_variant = $SequenceVariant
+        cycles = $CycleSequences
         block_size = "4k"
         iodepth = 16
         size = "32G"
@@ -208,7 +248,7 @@ function Invoke-Observer {
 
     $env:SSD_LAB_EXTERNAL_TESTFILE = $TestFile
     $env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL = $RunLabel
-    $env:SSD_LAB_EXTERNAL_SUSTAINED_WORKLOAD = "mixed_ratio_sweep"
+    $env:SSD_LAB_EXTERNAL_SUSTAINED_WORKLOAD = "mixed_ratio_sweep_$SequenceVariant"
     $env:SSD_LAB_EXTERNAL_SUSTAINED_RW = "randrw_counterbalanced"
     $env:SSD_LAB_EXTERNAL_SUSTAINED_RUNTIME = $RuntimeSec.ToString()
     $env:SSD_LAB_EXTERNAL_SUSTAINED_SIZE = "32G"
@@ -233,9 +273,10 @@ Write-Host "=== External SSD counterbalanced mixed-ratio sweep ==="
 Write-Host "Experiment : $SafeExperiment"
 Write-Host "Result set : $RunLabel"
 Write-Host "Test file  : $TestFile"
-Write-Host "Cycle 1    : 90:10 -> 70:30 -> 50:50"
-Write-Host "Cycle 2    : 70:30 -> 50:50 -> 90:10"
-Write-Host "Cycle 3    : 50:50 -> 90:10 -> 70:30"
+Write-Host "Variant    : $SequenceVariant"
+foreach ($Cycle in $CycleSequences) {
+    Write-Host "Cycle $($Cycle.cycle)    : $($Cycle.sequence -join ' -> ')"
+}
 Write-Host "Runtime    : $RuntimeSec seconds per phase"
 Write-Host "Start idle : $InitialIdleMinutes minutes"
 Write-Host "Phase idle : $InterPhaseIdleSec seconds"

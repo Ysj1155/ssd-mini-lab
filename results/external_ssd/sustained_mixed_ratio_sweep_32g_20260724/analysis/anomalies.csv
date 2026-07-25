@@ -1,0 +1,4 @@
+phase_order,cycle,position,ratio,anomaly_type,metric,observed_value,threshold
+2,1,2,70:30,late_bandwidth_rise,last_over_first_total_bandwidth,1.5533602152925254,>= 1.3
+2,1,2,70:30,maximum_latency_outlier,max_direction_clat_ms,124.553603,>= 100.0
+5,2,2,50:50,late_bandwidth_drop,last_over_first_total_bandwidth,0.5237522764227232,<= 0.7

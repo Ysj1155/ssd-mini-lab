@@ -185,8 +185,53 @@ The repeatable mixed read-tail inflation hypothesis is `not_reproduced_under_con
 
 See [external_ssd_mixed_abba_baab_result.md](external_ssd_mixed_abba_baab_result.md).
 
-## 11. Current Next Experiment
+## 11. Completed Counterbalanced Ratio Mapping
 
-The next workload is `EXT-MIXED-RATIO-SWEEP-001`, a counterbalanced 90:10 / 70:30 / 50:50 descriptive response map. Each ratio occupies every sequence position once across three cycles.
+`EXT-MIXED-RATIO-SWEEP-001` completed all nine phases with accurate 90:10, 70:30, and 50:50 byte mixes. The generated analysis preserves phase, ratio, cycle, position, first/middle/last windows, and anomaly flags.
 
-Use [external_ssd_mixed_ratio_sweep_runbook.md](external_ssd_mixed_ratio_sweep_runbook.md) for reconnect steps, the nine-phase order, safety checks, and the execution command. The result must be analyzed as ratio x cycle x position and must not be presented as causal confirmation of the closed ABBA/BAAB hypothesis.
+Observed Session 1 findings:
+
+- no monotonic total-throughput or read-tail penalty as write share increased
+- ratio mean total BW: 90:10 = 109.215, 70:30 = 129.522, 50:50 = 102.474 MiB/s
+- cycle mean total BW: 75.124, 109.744, and 156.343 MiB/s
+- Phase 5 last/first total BW = 0.524x
+- Phase 2 last/first total BW = 1.553x with a 124.554 ms maximum latency
+
+At the Session 1 checkpoint, the requirement passed while ratio ranking and phase-transition behavior remained single-session observations.
+
+See [external_ssd_mixed_ratio_sweep_result.md](external_ssd_mixed_ratio_sweep_result.md).
+
+## 12. Completed Independent Ratio Reproduction
+
+`EXT-MIXED-RATIO-SWEEP-REPRO-002` completed all nine Session 2 phases and the dedicated analyzer generated transition and cross-session evidence.
+
+Automated verdict:
+
+```text
+requirement_verdict: Pass
+performance_verdict: not_reproduced_across_independent_counterbalanced_sessions
+```
+
+Key disagreements:
+
+- ratio BW rank: `70:30 > 90:10 > 50:50` vs `90:10 > 70:30 > 50:50`
+- cycle rank: `3 > 2 > 1` vs `1 > 3 > 2`
+- position rank: `1 > 2 > 3` vs `3 > 2 > 1`
+- Phase 5: 0.524x drop vs 1.384x rise
+- 30-60 second ramp: 0/9 vs 8/9 phases
+
+See [external_ssd_mixed_ratio_cross_session_result.md](external_ssd_mixed_ratio_cross_session_result.md).
+
+## 13. Current Next Decision
+
+Do not add a third full ratio sweep merely to search for agreement. The next useful validation question is whether the Session 2 phase-start ramp depends on pre-probe idle duration while ratio, QD, runtime, target, and random sequence remain fixed.
+
+Candidate protocol: `EXT-IDLE-RAMP-001`
+
+```text
+fixed workload: 70:30, 4K, QD16, 32 GiB, 120s
+pre-probe idle sequence: 300s -> 60s -> 0s -> 0s -> 60s -> 300s
+primary metric: automated transition_sec
+```
+
+The runner is not yet implemented. Review and freeze the protocol before the next fio execution.

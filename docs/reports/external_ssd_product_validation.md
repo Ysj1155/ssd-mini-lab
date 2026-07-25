@@ -52,8 +52,9 @@ The QD32 evidence-complete run predates target-aware telemetry and therefore ret
 | `EXT-LARGE-WS-SEQ-001` | 32 GiB sequential write/read, 1M QD4 | 1 sequence | Complete |
 | `EXT-MIXED-READ-QOS-ABBA-001` | Pure read vs 70:30 mixed, 4K QD16, A-B-B-A | 4 phases | Complete |
 | `EXT-MIXED-READ-QOS-BAAB-002` | Reconnect-start 70:30 vs pure read, B-A-A-B | 4 phases | Complete; read-tail hypothesis not reproduced |
+| `EXT-MIXED-RATIO-SWEEP-001` | Counterbalanced 90:10 / 70:30 / 50:50, 4K QD16 | 9 phases | Complete; descriptive mapping |
 
-The analyzer currently includes 40 sustained fio JSON jobs. All report `error: 0`, and each result set contains the expected time-series logs.
+The sustained analyzer retains 40 earlier fio JSON jobs. The dedicated mixed-ratio analyzer covers two nine-phase sessions and generates phase, ratio, cycle/position, window, transition, anomaly, cross-session comparison, and verdict CSVs with linked analysis manifests.
 
 ## 4. QD Sweep Observation
 
@@ -156,11 +157,50 @@ ABBA showed a slower and worse-tail second mixed phase. BAAB reversed all three 
 
 `REQ-MIXED-ABBA-003` and `REQ-MIXED-BAAB-004` pass because their planned phases, manifests, raw JSON, per-direction QoS, and observer evidence exist. A passed evidence requirement does not convert the performance hypothesis into a positive finding.
 
-The next counterbalanced ratio sweep is descriptive ratio-by-cycle-by-position mapping. It is not causal confirmation of write-induced read-tail inflation.
+The completed counterbalanced ratio sweep remains descriptive ratio-by-cycle-by-position mapping. It is not causal confirmation of write-induced read-tail inflation.
 
 See `docs/reports/external_ssd_mixed_abba_baab_result.md`.
 
-## 9. Traceability and Telemetry Status
+## 9. Counterbalanced Mixed-Ratio Mapping
+
+`EXT-MIXED-RATIO-SWEEP-001` placed 90:10, 70:30, and 50:50 once in every cycle and sequence position. All nine phases completed with observed read shares within 0.04 percentage points of request.
+
+| Ratio | Mean total BW MiB/s | BW CV | Mean read p99 ms | Mean read p99.9 ms |
+|---|---:|---:|---:|---:|
+| 90:10 | 109.215 | 0.583 | 3.013 | 5.688 |
+| 70:30 | 129.522 | 0.397 | 1.821 | 3.643 |
+| 50:50 | 102.474 | 0.351 | 2.271 | 5.882 |
+
+No monotonic throughput or read-tail penalty appeared as write share increased. The ratio ranges were wide, so the 70:30 session mean advantage is an observation rather than an established DUT characteristic.
+
+Cycle mean total bandwidth rose from 75.124 to 109.744 to 156.343 MiB/s while mean read p99 fell from 3.932 to 2.445 to 0.728 ms. The cycle movement was larger than the ratio separation.
+
+The analyzer flagged Phase 2 late bandwidth rise at 1.553x, a 124.554 ms maximum latency in Phase 2, and a Phase 5 late bandwidth drop to 0.524x. Phase 6 remained low after 60 seconds idle, while Phase 7 was higher after the 300-second cycle boundary. These are externally observed associations, not an identified recovery mechanism.
+
+`REQ-MIXED-RATIO-005` passes because raw evidence, requested mixes, counterbalanced positions, derived CSVs, anomaly rules, and analysis traceability are complete. The completed `EXT-MIXED-RATIO-SWEEP-REPRO-002` follow-on did not reproduce the ratio or phase-transition directions.
+
+See `docs/reports/external_ssd_mixed_ratio_sweep_result.md`.
+
+## 10. Independent Mixed-Ratio Reproduction Verdict
+
+`EXT-MIXED-RATIO-SWEEP-REPRO-002` completed the second nine-phase counterbalanced session with Phase 5 changed from 50:50 to 90:10. The dedicated analyzer compared both sessions automatically.
+
+| Comparison | Session 1 | Session 2 | Reproduced |
+|---|---|---|---|
+| Total-BW ratio rank | 70:30 > 90:10 > 50:50 | 90:10 > 70:30 > 50:50 | No |
+| Cycle BW rank | 3 > 2 > 1 | 1 > 3 > 2 | No |
+| Position BW rank | 1 > 2 > 3 | 3 > 2 > 1 | No |
+| Phase 5 last/first BW | 0.524x drop | 1.384x rise | No |
+| 30-60 s ramp phases | 0 / 9 | 8 / 9 | No |
+
+Session-wide mean total bandwidth changed from 113.737 to 181.231 MiB/s. Mean read p99 changed from 2.368 to 0.635 ms, and mean read p99.9 changed from 5.071 to 1.089 ms.
+
+Transition time is defined as the first five consecutive one-second samples at or above 80% of the last-third mean total bandwidth. Median transition time changed from 1.003 seconds to 44.046 seconds.
+
+`REQ-MIXED-RATIO-REPRO-006` passes because both independent evidence units and their cross-session comparison are complete. The performance verdict is `not_reproduced_across_independent_counterbalanced_sessions`.
+
+See `docs/reports/external_ssd_mixed_ratio_cross_session_result.md`.
+## 11. Traceability and Telemetry Status
 
 The traced QD32/QD16 runs and both state protocols contain:
 
@@ -188,7 +228,7 @@ Telemetry interpretation remains Limited because:
 
 These limitations are propagated through the observer manifests instead of being reported as complete telemetry coverage.
 
-## 10. Requirement Verdict
+## 12. Requirement Verdict
 
 | Requirement | Verdict | Evidence / boundary |
 |---|---|---|
@@ -204,14 +244,15 @@ These limitations are propagated through the observer manifests instead of being
 | `REQ-LARGE-WS-001` | Pass | One 32 GiB completion-based sequential write/read sequence preserves raw and time-window evidence |
 | `REQ-MIXED-ABBA-003` | Pass | A1/B1/B2/A2 completed; the performance hypothesis was not reproduced |
 | `REQ-MIXED-BAAB-004` | Pass | Independent reconnect-start B1/A1/A2/B2 completed; the performance hypothesis was not reproduced |
-| `REQ-MIXED-RATIO-005` | Planned | Counterbalanced descriptive sweep is prepared but not yet executed |
+| `REQ-MIXED-RATIO-005` | Pass | Nine counterbalanced phases and linked ratio/cycle/position/window/anomaly evidence are complete |
+| `REQ-MIXED-RATIO-REPRO-006` | Pass | Two complete counterbalanced sessions preserve controls; ratio, cycle, position, Phase 5, and ramp directions were not reproduced |
 | `REQ-ENV-001` | Pass for traced runs | Pre/post environment collectors are linked by run ID |
 | `REQ-TEL-001` | Limited | Target metadata is correct; SMART, reliability counters, and fsutil remain limited |
 | `REQ-OBS-001` | Pass for traced runs | Pre observer, runner, and post observer are linked |
 | `REQ-TRACE-001` | Pass for traced runs | Integrated manifests link conditions and run-specific evidence |
 | `REQ-LIMIT-001` | Pass | USB, Windows, exFAT, file-target, telemetry, and root-cause limits are explicit |
 
-## 11. Limitations
+## 13. Limitations
 
 - Most sustained studies use a 512 MiB file; later sequential and mixed studies use a dedicated 32 GiB file. Neither establishes full-drive or enterprise steady-state behavior.
 - The three state-reproducibility sessions occurred on one host and date; reconnect-start does not guarantee a common internal SSD state.
@@ -221,7 +262,7 @@ These limitations are propagated through the observer manifests instead of being
 - No direct power measurement or internal firmware/NAND/FTL/GC trace is available.
 - Hard performance pass/fail thresholds require an external requirement or established baseline.
 
-## 12. Current Verdict
+## 14. Current Verdict
 
 The lab now demonstrates both measurement and evidence engineering: controlled fio conditions, repeated raw data, three-session QD16 comparison, tail-latency anomaly retention, target-aware telemetry limitations, separate runner/observer roles, and integrated traceability.
 
@@ -231,7 +272,9 @@ At QD16 120s, the lower throughput level was reproduced across two consecutive s
 
 The later paired state study improved the experimental unit from consecutive fio repeats to complete reconnect-start sessions. Its mixed -6.37%, -7.59%, and +23.33% bandwidth deltas showed that a conditioning uplift was not reproducible under the controlled external sequence. The strongest conclusion is session-level black-box variability, not a deterministic internal mechanism.
 
-The subsequent ABBA/BAAB study reached the same kind of disciplined negative result: the second mixed phase degraded in ABBA but improved in BAAB. Repeatable 70:30 read-tail inflation was not reproduced, so the next ratio sweep is explicitly exploratory and counterbalanced rather than framed as causal confirmation.
+The subsequent ABBA/BAAB study reached the same kind of disciplined negative result: the second mixed phase degraded in ABBA but improved in BAAB. Repeatable 70:30 read-tail inflation was not reproduced, so the ratio sweep was explicitly exploratory and counterbalanced rather than framed as causal confirmation.
+
+The independent Session 2 did not reproduce Session 1 ratio, cycle, position, or Phase 5 directions. Session 2 instead showed a systematic 37-53 second ramp in nearly every phase. The automated cross-session verdict is `not_reproduced_across_independent_counterbalanced_sessions`; the next useful question is idle-duration sensitivity, not a third full ratio sweep.
 
 Portfolio statement:
 

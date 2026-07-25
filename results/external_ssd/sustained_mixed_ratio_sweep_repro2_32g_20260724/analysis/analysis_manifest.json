@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "role": "analysis",
+  "experiment_id": "mixed_ratio_sweep_repro2_32g_20260724",
+  "test_protocol_id": "EXT-MIXED-RATIO-SWEEP-REPRO-002",
+  "created_at": "2026-07-25T13:35:59.247965+09:00",
+  "status": "complete",
+  "classification": "descriptive_ratio_by_cycle_by_position_mapping",
+  "hypothesis_status": "independent_reproduction_of_descriptive_mapping",
+  "analyzer": "scripts/analysis/analyze_external_ssd_mixed_ratio_sweep.py",
+  "source_artifacts": {
+    "experiment_manifest": "results/external_ssd/_experiments/mixed_ratio_sweep_repro2_32g_20260724/experiment_manifest.json",
+    "runner_manifest": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/runner_manifest.json",
+    "fio_json_count": 9,
+    "fio_log_count": 45
+  },
+  "derived_artifacts": {
+    "phase_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/phase_summary.csv",
+    "ratio_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/ratio_summary.csv",
+    "cycle_position_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cycle_position_summary.csv",
+    "window_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/window_summary.csv",
+    "transition_summary": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/transition_summary.csv",
+    "anomalies": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/anomalies.csv",
+    "cross_session_ratio_comparison": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_ratio_comparison.csv",
+    "cross_session_verdict": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_verdict.csv"
+  },
+  "anomaly_thresholds": {
+    "late_total_bandwidth_shift_fraction": 0.3,
+    "maximum_completion_latency_ms": 100.0
+  },
+  "transition_definition": {
+    "plateau_window": "last_third",
+    "plateau_fraction": 0.8,
+    "consecutive_samples": 5,
+    "metric": "total_bandwidth_mib_s"
+  },
+  "anomaly_count": 8,
+  "cross_session": {
+    "available": true,
+    "session1_experiment_id": "mixed_ratio_sweep_32g_20260724",
+    "session2_experiment_id": "mixed_ratio_sweep_repro2_32g_20260724",
+    "performance_verdict": "not_reproduced_across_independent_counterbalanced_sessions",
+    "ratio_comparison": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_ratio_comparison.csv",
+    "verdict": "results/external_ssd/sustained_mixed_ratio_sweep_repro2_32g_20260724/analysis/cross_session_verdict.csv"
+  },
+  "interpretation_boundary": "USB, Windows, exFAT file-target evidence; balanced ratio means are descriptive and do not prove a device-internal causal mechanism."
+}

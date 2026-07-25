@@ -26,11 +26,11 @@ Interpretation boundary: results include the USB path, Windows, exFAT, and fio f
 | Does longer runtime expose write-side QoS risk? | Random write QD32, 120s vs 300s, repeat=3 |
 | Can every result be traced to its conditions and evidence? | Run manifest plus separate runner/observer manifests |
 
-Latest finding: three separately initiated paired sessions produced QD16 post-write bandwidth deltas of -6.37%, -7.59%, and +23.33%. The conditioning-uplift direction was mixed and therefore not reproduced under the controlled external sequence.
+Latest finding: two independent counterbalanced mixed-ratio sessions disagreed on bandwidth and read-p99 ratio rank, cycle rank, position rank, and Phase 5 direction. The automated verdict is `not_reproduced_across_independent_counterbalanced_sessions`.
 
-All three sessions preserve reconnect and same-port confirmations, complete parent/child manifests, matching pre-observer/runner/post-observer evidence, and paired comparison CSVs. The requirement passed because the evidence plan completed; the performance hypothesis did not.
+The earlier three-session conditioning study and both mixed-ratio sessions preserve reconnect and same-port confirmations, complete manifests, matching observer/runner evidence, and automated comparison CSVs. Requirements pass when their evidence plans complete even when the performance direction does not reproduce.
 
-`EXT-LARGE-WS-SEQ-001` completed one 32 GiB sequential overwrite/read observation without a late-run throughput drop. The completed A-B-B-A and independent reconnect-start B-A-A-B sessions produced opposite B2/B1 directions. Repeatable read-tail inflation under the 70:30 mix was therefore `not reproduced`. The next experiment maps 90:10, 70:30, and 50:50 response with counterbalanced positions; it is descriptive mapping, not causal proof. None of these experiments is evidence of internal cache, FTL, or GC behavior.
+`EXT-LARGE-WS-SEQ-001` completed one 32 GiB sequential overwrite/read observation without a late-run throughput drop. The completed A-B-B-A and reconnect-start B-A-A-B sessions produced opposite directions, so repeatable 70:30 read-tail inflation was `not reproduced`. Two independent counterbalanced 90:10 / 70:30 / 50:50 sessions then disagreed on ratio, cycle, position, and Phase 5 directions. The analyzer records transition time and the cross-session verdict as `not_reproduced_across_independent_counterbalanced_sessions`. None of these experiments is evidence of internal cache, FTL, or GC behavior.
 
 ## Start Here
 
@@ -76,6 +76,7 @@ Large local fio test files are ignored by Git. Raw JSON/logs and derived CSVs ar
 cd D:\ssd_lab
 python -m unittest discover -s tests -p "test_*.py"
 python .\scripts\analysis\analyze_external_ssd_sustained.py
+python .\scripts\analysis\analyze_external_ssd_mixed_ratio_sweep.py
 python .\scripts\analysis\build_external_ssd_run_manifest.py --all
 ```
 

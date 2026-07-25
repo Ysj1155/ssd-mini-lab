@@ -15,6 +15,7 @@ Common entry points:
 - `analysis/analyze_sustained_smoke.py`
 - `analysis/analyze_external_ssd_sustained.py`
 - `analysis/analyze_external_ssd_state_repro.py`
+- `analysis/analyze_external_ssd_mixed_ratio_sweep.py` - phase, window, transition-time, and cross-session verdict CSVs
 - `analysis/build_external_ssd_run_manifest.py`
 
 Parser compatibility tests:

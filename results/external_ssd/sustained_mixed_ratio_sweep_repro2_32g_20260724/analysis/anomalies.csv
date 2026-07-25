@@ -1,0 +1,9 @@
+phase_order,cycle,position,ratio,anomaly_type,metric,observed_value,threshold
+1,1,1,50:50,late_bandwidth_rise,last_over_first_total_bandwidth,1.4914079032234253,>= 1.3
+2,1,2,70:30,late_bandwidth_rise,last_over_first_total_bandwidth,1.3398037378580596,>= 1.3
+3,1,3,90:10,late_bandwidth_rise,last_over_first_total_bandwidth,1.3251711453263042,>= 1.3
+5,2,2,90:10,late_bandwidth_rise,last_over_first_total_bandwidth,1.3842817887683296,>= 1.3
+6,2,3,50:50,late_bandwidth_rise,last_over_first_total_bandwidth,1.5072593510246746,>= 1.3
+7,3,1,90:10,late_bandwidth_rise,last_over_first_total_bandwidth,1.3382783252525525,>= 1.3
+8,3,2,50:50,late_bandwidth_rise,last_over_first_total_bandwidth,1.5654682711678367,>= 1.3
+9,3,3,70:30,late_bandwidth_rise,last_over_first_total_bandwidth,1.615432631707277,>= 1.3

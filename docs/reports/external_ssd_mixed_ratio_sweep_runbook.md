@@ -158,6 +158,19 @@ Classify the result as a descriptive mapping. A monotonic trend may justify a
 future independently replicated protocol; it is not by itself proof of an
 internal mechanism.
 
+## Completed Result
+
+The Session 1 execution completed on 2026-07-24. Generate or refresh the derived evidence with:
+
+```powershell
+python .\scripts\analysis\analyze_external_ssd_mixed_ratio_sweep.py `
+  --experiment-label mixed_ratio_sweep_32g_20260724
+```
+
+See [external_ssd_mixed_ratio_sweep_result.md](external_ssd_mixed_ratio_sweep_result.md) for the ratio, cycle, position, window, anomaly, and verdict review. The parent experiment manifest links the generated analysis manifest and CSV artifacts.
+
+The independent follow-on procedure is [external_ssd_mixed_ratio_sweep_session2_runbook.md](external_ssd_mixed_ratio_sweep_session2_runbook.md).
+
 ## Failure Handling
 
 - Preserve partial JSON, logs, and failed manifests.
