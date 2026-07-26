@@ -16,6 +16,7 @@ Common entry points:
 - `analysis/analyze_external_ssd_sustained.py`
 - `analysis/analyze_external_ssd_state_repro.py`
 - `analysis/analyze_external_ssd_mixed_ratio_sweep.py` - phase, window, transition-time, and cross-session verdict CSVs
+- `analysis/analyze_external_ssd_idle_ramp.py` - mirrored idle-pair, ramp, transition-time, and verdict CSVs
 - `analysis/build_external_ssd_run_manifest.py`
 
 Parser compatibility tests:
@@ -47,5 +48,6 @@ External SSD runners:
 - `runners/run_external_ssd_mixed_abba.ps1`
 - `runners/run_external_ssd_mixed_baab.ps1`
 - `runners/run_external_ssd_mixed_ratio_sweep.ps1`
+- `runners/run_external_ssd_idle_ramp.ps1`
 
 Safety note: external SSD runners require an explicit file target under `E:\validation` and do not use raw physical-drive targets.

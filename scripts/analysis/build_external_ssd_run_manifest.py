@@ -58,7 +58,7 @@ def read_fio_json(path: Path) -> dict[str, Any]:
 
 
 def extract_run(path: Path) -> int | None:
-    match = re.search(r"run(\d+)", path.stem, re.IGNORECASE)
+    match = re.search(r"(?:run|phase)(\d+)", path.stem, re.IGNORECASE)
     return int(match.group(1)) if match else None
 
 
@@ -165,7 +165,7 @@ def find_test_case_by_id(cases: list[dict[str, Any]], test_case_id: str) -> dict
 
 
 def is_fio_run_json(path: Path) -> bool:
-    return bool(re.search(r"run\d+", path.stem, re.IGNORECASE))
+    return extract_run(path) is not None
 
 
 def result_dirs(result_root: Path) -> list[Path]:
@@ -199,6 +199,9 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
         key=lambda path: (extract_run(path) or 0, path.name),
     )
     runner_manifest_path = result_dir / "runner_manifest.json"
+    analysis_dir = result_dir / "analysis"
+    analysis_manifest_path = analysis_dir / "analysis_manifest.json"
+    analysis_csv_paths = sorted(analysis_dir.glob("*.csv"))
     observer_manifest_paths = sorted(result_dir.glob("observer_manifest_*.json"))
     observer_phases = {
         path.stem.removeprefix("observer_manifest_")
@@ -326,6 +329,7 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
             "product_report": rel(PRODUCT_REPORT) if PRODUCT_REPORT.exists() else None,
             "runner_manifest": rel(runner_manifest_path) if runner_manifest_path.exists() else None,
             "experiment_manifest": rel(experiment_manifest_path) if experiment_manifest_path and experiment_manifest_path.exists() else None,
+            "analysis_manifest": rel(analysis_manifest_path) if analysis_manifest_path.exists() else None,
             "observer_manifests": [rel(path) for path in observer_manifest_paths],
             "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests",
         },
@@ -344,6 +348,7 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
             "timeseries_csv": rel(REPO_ROOT / "results" / "external_ssd_sustained_timeseries.csv"),
             "window_summary_csv": rel(REPO_ROOT / "results" / "external_ssd_sustained_window_summary.csv"),
             "repeatability_csv": rel(REPO_ROOT / "results" / "external_ssd_sustained_repeatability.csv"),
+            "analysis_csvs": [rel(path) for path in analysis_csv_paths],
         },
         "runs": runs,
         "anomalies": anomalies,

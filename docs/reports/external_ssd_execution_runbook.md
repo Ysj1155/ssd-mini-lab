@@ -222,11 +222,12 @@ Key disagreements:
 
 See [external_ssd_mixed_ratio_cross_session_result.md](external_ssd_mixed_ratio_cross_session_result.md).
 
-## 13. Current Next Decision
+## 13. Completed Idle-Ramp Decision
 
-Do not add a third full ratio sweep merely to search for agreement. The next useful validation question is whether the Session 2 phase-start ramp depends on pre-probe idle duration while ratio, QD, runtime, target, and random sequence remain fixed.
-
-Candidate protocol: `EXT-IDLE-RAMP-001`
+A third full ratio sweep was not added merely to search for agreement.
+`EXT-IDLE-RAMP-001` tested whether the Session 2 phase-start ramp depended on
+pre-probe idle duration while ratio, QD, runtime, target, random sequence, and
+physical port remained fixed.
 
 ```text
 fixed workload: 70:30, 4K, QD16, 32 GiB, 120s
@@ -234,4 +235,9 @@ pre-probe idle sequence: 300s -> 60s -> 0s -> 0s -> 60s -> 300s
 primary metric: automated transition_sec
 ```
 
-The runner is not yet implemented. Review and freeze the protocol before the next fio execution.
+The mirrored `A-B-C-C-B-A` sequence placed each idle condition in both an
+early and a late phase. All six phases completed, but none reproduced the
+prior 37-53 second ramp. The automated verdict is
+`no_clear_idle_duration_association`.
+
+See [external_ssd_idle_ramp_result.md](external_ssd_idle_ramp_result.md).

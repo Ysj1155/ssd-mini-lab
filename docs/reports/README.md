@@ -36,3 +36,5 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | `external_ssd_mixed_ratio_sweep_result.md` | Session 1 ratio, cycle, position, and anomaly verdict |
 | `external_ssd_mixed_ratio_sweep_session2_runbook.md` | Completed independent counterbalanced Session 2 procedure |
 | `external_ssd_mixed_ratio_cross_session_result.md` | Automated Session 1/2 reproduction verdict |
+| `external_ssd_idle_ramp_runbook.md` | Completed mirrored idle-duration ramp procedure |
+| `external_ssd_idle_ramp_result.md` | Idle-duration association verdict and evidence |

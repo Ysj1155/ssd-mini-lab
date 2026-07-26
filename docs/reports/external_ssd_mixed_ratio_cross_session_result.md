@@ -102,10 +102,11 @@ session and did not reproduce as a ratio-independent phase effect.
 The strongest defensible result is session-level black-box state variation,
 not a stable ratio, cycle, position, or phase-transition characteristic.
 
-No third full ratio sweep should be added merely to search for agreement. A
-future experiment should isolate pre-probe idle duration while holding one
-ratio fixed and use the automated transition-time metric as its primary
-response.
+No third full ratio sweep was added merely to search for agreement.
+`EXT-IDLE-RAMP-001` isolated pre-probe idle duration while holding one ratio
+fixed. The prior 37-53 second ramp did not reproduce, and the resulting verdict
+was `no_clear_idle_duration_association`. See
+`docs/reports/external_ssd_idle_ramp_result.md`.
 
 ## Evidence
 

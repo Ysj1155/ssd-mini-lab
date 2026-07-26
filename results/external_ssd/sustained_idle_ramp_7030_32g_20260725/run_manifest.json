@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-25T05:30:58.753129+00:00",
+  "generator": "scripts/analysis/build_external_ssd_run_manifest.py",
+  "run_id": "sustained_idle_ramp_7030_32g_20260725",
+  "result_set": "sustained_idle_ramp_7030_32g_20260725",
+  "test_case_id": "EXT-IDLE-RAMP-001",
+  "experiment_id": "idle_ramp_7030_32g_20260725",
+  "state_phase": null,
+  "requirement_ids": [
+    "REQ-IDLE-RAMP-007",
+    "REQ-QOS-001",
+    "REQ-ENV-001",
+    "REQ-OBS-001",
+    "REQ-TRACE-001"
+  ],
+  "dut_id": "external_ssd_dut_01",
+  "status": "complete",
+  "result": "observation",
+  "tool_versions": {
+    "fio": [
+      "fio-3.42"
+    ],
+    "python": "3.12.1"
+  },
+  "conditions": {
+    "operation": "read",
+    "rw": "randrw",
+    "bs": "4k",
+    "iodepth": 16,
+    "runtime_sec": 120,
+    "size": "32G",
+    "direct": 1,
+    "numjobs": 1
+  },
+  "evidence_links": {
+    "dut_profile": "docs/reports/external_ssd_dut_profile.md",
+    "requirement_matrix": "docs/reports/external_ssd_requirement_matrix.md",
+    "validation_matrix": "configs/external_ssd_validation_matrix.yaml",
+    "product_report": "docs/reports/external_ssd_product_validation.md",
+    "runner_manifest": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/runner_manifest.json",
+    "experiment_manifest": "results/external_ssd/_experiments/idle_ramp_7030_32g_20260725/experiment_manifest.json",
+    "analysis_manifest": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/analysis/analysis_manifest.json",
+    "observer_manifests": [
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/observer_manifest_post.json",
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/observer_manifest_pre.json"
+    ],
+    "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests"
+  },
+  "execution_model": {
+    "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",
+    "runner_status": "present",
+    "observer_status": "complete"
+  },
+  "artifacts": {
+    "raw_dir": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725",
+    "summary_csv": "results/external_ssd_sustained_summary.csv",
+    "timeseries_csv": "results/external_ssd_sustained_timeseries.csv",
+    "window_summary_csv": "results/external_ssd_sustained_window_summary.csv",
+    "repeatability_csv": "results/external_ssd_sustained_repeatability.csv",
+    "analysis_csvs": [
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/analysis/idle_condition_summary.csv",
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/analysis/phase_summary.csv",
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/analysis/transition_summary.csv",
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/analysis/verdict.csv",
+      "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/analysis/window_summary.csv"
+    ]
+  },
+  "runs": [
+    {
+      "run": 1,
+      "fio_json": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase1_A1_idle300.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase1_A1_idle300_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase1_A1_idle300_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase1_A1_idle300_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase1_A1_idle300_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase1_A1_idle300_slat.1.log"
+      }
+    },
+    {
+      "run": 2,
+      "fio_json": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase2_B1_idle60.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase2_B1_idle60_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase2_B1_idle60_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase2_B1_idle60_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase2_B1_idle60_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase2_B1_idle60_slat.1.log"
+      }
+    },
+    {
+      "run": 3,
+      "fio_json": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase3_C1_idle0.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase3_C1_idle0_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase3_C1_idle0_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase3_C1_idle0_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase3_C1_idle0_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase3_C1_idle0_slat.1.log"
+      }
+    },
+    {
+      "run": 4,
+      "fio_json": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase4_C2_idle0.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase4_C2_idle0_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase4_C2_idle0_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase4_C2_idle0_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase4_C2_idle0_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase4_C2_idle0_slat.1.log"
+      }
+    },
+    {
+      "run": 5,
+      "fio_json": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase5_B2_idle60.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase5_B2_idle60_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase5_B2_idle60_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase5_B2_idle60_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase5_B2_idle60_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase5_B2_idle60_slat.1.log"
+      }
+    },
+    {
+      "run": 6,
+      "fio_json": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase6_A2_idle300.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase6_A2_idle300_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase6_A2_idle300_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase6_A2_idle300_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase6_A2_idle300_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_idle_ramp_7030_32g_20260725/sustained_idle_ramp_7030_32g_20260725_phase6_A2_idle300_slat.1.log"
+      }
+    }
+  ],
+  "anomalies": [],
+  "interpretation_boundary": "USB, Windows, exFAT file-target result; not internal FTL/GC proof"
+}

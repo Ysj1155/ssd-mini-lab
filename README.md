@@ -28,6 +28,8 @@ Interpretation boundary: results include the USB path, Windows, exFAT, and fio f
 
 Latest finding: two independent counterbalanced mixed-ratio sessions disagreed on bandwidth and read-p99 ratio rank, cycle rank, position rank, and Phase 5 direction. The automated verdict is `not_reproduced_across_independent_counterbalanced_sessions`.
 
+The completed `EXT-IDLE-RAMP-001` protocol isolated requested pre-probe idle at 0/60/300 seconds under one fixed 70:30 workload. All mirrored pairs agreed that the prior 37-53 second ramp was absent, while average bandwidth remained unstable across the 0-second and 300-second pairs. The verdict is `no_clear_idle_duration_association`.
+
 The earlier three-session conditioning study and both mixed-ratio sessions preserve reconnect and same-port confirmations, complete manifests, matching observer/runner evidence, and automated comparison CSVs. Requirements pass when their evidence plans complete even when the performance direction does not reproduce.
 
 `EXT-LARGE-WS-SEQ-001` completed one 32 GiB sequential overwrite/read observation without a late-run throughput drop. The completed A-B-B-A and reconnect-start B-A-A-B sessions produced opposite directions, so repeatable 70:30 read-tail inflation was `not reproduced`. Two independent counterbalanced 90:10 / 70:30 / 50:50 sessions then disagreed on ratio, cycle, position, and Phase 5 directions. The analyzer records transition time and the cross-session verdict as `not_reproduced_across_independent_counterbalanced_sessions`. None of these experiments is evidence of internal cache, FTL, or GC behavior.

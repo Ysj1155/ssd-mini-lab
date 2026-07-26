@@ -426,3 +426,33 @@ test_cases:
       - REQ-ENV-001
       - REQ-OBS-001
       - REQ-TRACE-001
+  - id: EXT-IDLE-RAMP-001
+    purpose: "Test whether phase-start ramp presence or transition time is associated with requested pre-probe idle duration under one fixed workload."
+    rw: randrw
+    rwmixread: 70
+    rwmixwrite: 30
+    bs: 4k
+    size: 32G
+    runtime_sec: 120
+    phases: 6
+    repeats_per_idle: 2
+    requested_pre_probe_idle_sec: [300, 60, 0, 0, 60, 300]
+    sequence_design: "A-B-C-C-B-A"
+    iodepth: [16]
+    randrepeat: 1
+    transition_definition:
+      plateau_window: last_third
+      plateau_fraction: 0.80
+      consecutive_samples: 5
+    ramp_present_rule:
+      minimum_transition_sec: 10
+      minimum_plateau_over_first_third: 1.30
+    pair_consistency_transition_tolerance_sec: 20
+    positive_association_requires_all_pairs_consistent: true
+    interpretation: "external_idle_duration_association_only"
+    requirement_links:
+      - REQ-IDLE-RAMP-007
+      - REQ-QOS-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
