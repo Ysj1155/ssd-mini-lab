@@ -1,0 +1,103 @@
+# Compact external SSD black-box regression profile
+#
+# This file defines reusable conditions and analyzer expectations only.
+# It does not authorize or launch fio. All targets remain explicit file targets.
+
+schema_version: "1.0"
+profile_id: EXT-REGRESSION-COMPACT-001
+requirement_id: REQ-REG-011
+threshold_mode: observation
+target_scope: external_ssd_file_target
+interpretation_boundary: "USB, Windows, exFAT file-target evidence; not internal FTL/GC proof"
+
+components:
+  - id: REG-PERF-RR-4K-QD1
+    source_test_case: EXT-PERF-RR-QD-SWEEP
+    category: performance
+    rw: randread
+    bs: 4k
+    iodepth: 1
+    runtime_sec: 30
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, summary_csv, p99, p999]
+
+  - id: REG-PERF-RR-4K-QD16
+    source_test_case: EXT-PERF-RR-QD-SWEEP
+    category: performance
+    rw: randread
+    bs: 4k
+    iodepth: 16
+    runtime_sec: 30
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, summary_csv, p99, p999]
+
+  - id: REG-PERF-RW-4K-QD1
+    source_test_case: EXT-PERF-RW-QD-SWEEP
+    category: performance
+    rw: randwrite
+    bs: 4k
+    iodepth: 1
+    runtime_sec: 30
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, summary_csv, p99, p999]
+
+  - id: REG-PERF-RW-4K-QD16
+    source_test_case: EXT-PERF-RW-QD-SWEEP
+    category: performance
+    rw: randwrite
+    bs: 4k
+    iodepth: 16
+    runtime_sec: 30
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, summary_csv, p99, p999]
+
+  - id: REG-PERF-RR-64K-QD32
+    source_test_case: EXT-BS-RANDREAD-001
+    category: performance
+    rw: randread
+    bs: 64k
+    iodepth: 32
+    runtime_sec: 30
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, summary_csv, p99, p999]
+
+  - id: REG-PERF-RW-64K-QD32
+    source_test_case: EXT-BS-RANDWRITE-002
+    category: performance
+    rw: randwrite
+    bs: 64k
+    iodepth: 32
+    runtime_sec: 30
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, summary_csv, p99, p999]
+
+  - id: REG-QOS-RW-4K-QD16-120S
+    source_test_case: EXT-SUST-WRITE-120S
+    category: sustained_qos
+    rw: randwrite
+    bs: 4k
+    iodepth: 16
+    runtime_sec: 120
+    repeats: 3
+    required_evidence: [run_manifest, fio_json, time_series_csv, window_csv, p99, p999]
+
+  - id: REG-DATA-CRC32C-4G
+    source_test_case: EXT-DATA-INTEGRITY-001
+    category: integrity
+    rw: write_verify
+    bs: 1m
+    iodepth: 4
+    size: 4G
+    repeats: 1
+    verify: crc32c
+    host_observer_gating: false
+    required_evidence: [run_manifest, write_json, verify_json, integrity_verdict]
+
+verdict_policy:
+  evidence_status: [complete, limited, blocked]
+  integrity_verdict: [Pass, Fail, Blocked]
+  performance_verdict: [Observation, Pass, Regression, Blocked]
+  qos_verdict: [Observation, Pass, Regression, Blocked]
+  host_observer_status: [complete, limited, not_produced]
+  release_precedence: [Fail, Blocked, Review, Observation, Pass]
+  note: "Host observer limitations affect evidence status but do not overwrite integrity."

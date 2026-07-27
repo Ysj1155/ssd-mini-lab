@@ -44,3 +44,4 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | `external_ssd_data_integrity_runbook.md` | Prepared 4 GiB CRC32C write/readback execution and verdict procedure |
 | external_ssd_data_integrity_result.md | CRC32C integrity Pass and synchronized host-observer Limited verdict |
 | `windows_host_counter_observer.md` | Synchronized Windows logical-disk counter evidence model and limits |
+| `external_ssd_regression_profile.md` | Compact requirement-based regression profile and analyzer contract |

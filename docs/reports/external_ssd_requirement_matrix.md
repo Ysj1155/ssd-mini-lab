@@ -28,6 +28,7 @@ The values below are intentionally framed as tracking and review requirements fi
 | REQ-BS-008 | Random read and random write response shall be mapped at 4K, 64K, and 1M with block size counterbalanced across cycle and sequence position. | two experiment manifests, 18 fio JSON files, block-size summaries, cycle/position summaries, and paired comparison | Pass if both workload sessions complete, each block size has three observations covering every cycle and position, and bandwidth/IOPS/p99/p99.9 variation is reported |
 | REQ-DATA-009 | A new dedicated 4 GiB file shall be written with CRC32C metadata and completely verified by readback. | fio write/verify JSON, integrity summary, verdict CSV | Pass if both phases process exactly 4 GiB with zero fio and verification errors |
 | REQ-HOST-OBS-010 | Host-visible storage counters shall be sampled on the same time axis as each integrity fio phase when Windows exposes them. | phase counter CSVs and host-observer manifests | Pass if both phases contain samples; Limited if access or sampling is unavailable with explicit errors |
+| REQ-REG-011 | A compact regression profile shall aggregate stable performance, QoS, integrity, and evidence conditions without conflating their verdicts. | profile YAML, component manifests, evidence index, component summary, aggregate verdict | Pass when all required components are present and mature gates pass; Observation while performance bands are immature; integrity failure is Fail |
 | REQ-ENV-001 | Each validation run shall include environment and path context. | env snapshot, DUT profile | Pass if snapshot and DUT profile are linked |
 | REQ-TEL-001 | Telemetry shall be collected when available without destructive access. | telemetry snapshot | Pass if collected, Limited if permissions/tooling block device-level data |
 | REQ-OBS-001 | fio execution and read-only observation shall be recorded as separate evidence producers. | `runner_manifest.json`, `observer_manifest_<phase>.json` | Pass if both are linked, Limited if one side is missing with an explicit anomaly |
@@ -64,6 +65,7 @@ The values below are intentionally framed as tracking and review requirements fi
 | `EXT-BS-RANDREAD-001` | REQ-BS-008, REQ-QOS-001, REQ-REPRO-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
 | `EXT-BS-RANDWRITE-002` | REQ-BS-008, REQ-QOS-001, REQ-REPRO-001, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001 |
 | `EXT-DATA-INTEGRITY-001` | REQ-DATA-009, REQ-HOST-OBS-010, REQ-ENV-001, REQ-OBS-001, REQ-TRACE-001, REQ-LIMIT-001 |
+| `EXT-REGRESSION-COMPACT-001` | REQ-REG-011, REQ-PERF-001, REQ-PERF-002, REQ-QOS-001, REQ-SUST-001, REQ-DATA-009, REQ-TRACE-001, REQ-LIMIT-001 |
 
 ## Verdict Vocabulary
 

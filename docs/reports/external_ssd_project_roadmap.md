@@ -139,7 +139,7 @@ The final portfolio should be smaller than the repository:
 1. Completed: close the controlled block-size result and update portfolio evidence.
 2. Completed: `EXT-DATA-INTEGRITY-001` passed the file-target CRC32C requirement.
 3. Completed with limitation: synchronized logical-disk evidence was produced but classified Limited.
-4. Define a compact regression profile.
+4. Contract complete: compact regression YAML, verdict separation, and manifest-only analyzer are defined; no workload has been run.
 5. Produce the Korean portfolio README and interview brief.
 
 Do not add another broad performance sweep unless a requirement or a specific
