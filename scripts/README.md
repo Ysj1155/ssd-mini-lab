@@ -19,7 +19,7 @@ Common entry points:
 - `analysis/analyze_external_ssd_idle_ramp.py` - mirrored idle-pair, ramp, transition-time, and verdict CSVs
 - `analysis/analyze_external_ssd_block_size_sweep.py` - block-size, cycle/position, read/write comparison, and verdict CSVs
 - `analysis/analyze_external_ssd_data_integrity.py` - CRC32C write/readback integrity summary and explicit Pass/Fail verdict
-- `analysis/analyze_external_ssd_regression.py` - manifest-only compact regression aggregation; never launches fio
+- `analysis/analyze_external_ssd_regression.py` - verifies linked evidence before compact regression aggregation; never launches fio
 - `analysis/build_external_ssd_run_manifest.py`
 
 Parser compatibility tests:

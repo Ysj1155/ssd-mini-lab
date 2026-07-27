@@ -51,13 +51,15 @@ Until then:
 - missing required evidence is `Blocked`
 - CRC32C or fio correctness failure is `Fail`
 - bandwidth and latency values are `Observation`
+- component-level `Pass` is rejected while threshold mode is `observation`
 - p99, p99.9, and maximum-latency anomalies are retained
 - a future mature-band violation becomes `Regression` and requires `Review`
 
 ## 4. Analyzer Input Contract
 
-The analyzer accepts one JSON evidence index. It aggregates verdicts already
-produced by component analyzers and never invokes a workload.
+The analyzer accepts one JSON evidence index. It validates the linked source
+manifest and required artifacts before aggregating component verdicts. It
+never invokes a workload.
 
 ```json
 {
@@ -73,7 +75,7 @@ produced by component analyzers and never invokes a workload.
     },
     {
       "component_id": "REG-DATA-CRC32C-4G",
-      "evidence_status": "complete",
+      "evidence_status": "limited",
       "integrity_verdict": "Pass",
       "host_observer_status": "limited",
       "source_manifest": "results/external_ssd/.../run_manifest.json"
@@ -84,12 +86,24 @@ produced by component analyzers and never invokes a workload.
 
 Contract rules:
 
-- every YAML component ID appears exactly once
+- `run_id` is required and nonempty
+- each received YAML component ID appears at most once
 - unknown or duplicate component IDs are rejected
-- every received component links one source manifest
+- every received component links an existing repository-relative
+  `run_manifest.json`; absolute paths and repository escapes are rejected
+- source `test_case_id`, status, matching fio job options, repeat count, and
+  YAML `required_evidence` artifacts are verified
+- summary evidence must contain condition-matching rows and complete p99/p99.9
+  fields when those metrics are required
+- errored fio jobs cannot support a successful evidence or integrity claim
+- evidence-index status cannot be stronger than the source-manifest status
+- integrity and host-observer verdicts must match the linked analysis manifest
 - absent components become `Blocked`
 - performance components provide performance and QoS verdicts
 - the integrity component provides integrity and host-observer verdicts
+- `host_observer_gating: false` keeps observer limitations separate from the
+  integrity verdict; a future gating component blocks unless observer evidence
+  is complete
 
 ## 5. Analyzer Outputs
 
