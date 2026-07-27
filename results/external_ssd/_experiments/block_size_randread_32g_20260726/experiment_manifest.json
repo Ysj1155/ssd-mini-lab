@@ -1,0 +1,209 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "block_size_randread_32g_20260726",
+  "test_protocol_id": "EXT-BS-RANDREAD-001",
+  "started_at": "2026-07-26T23:02:35.5824011+09:00",
+  "completed_at": "2026-07-26T23:21:12.2768982+09:00",
+  "status": "complete",
+  "result": "observation",
+  "runner": "scripts/runners/run_external_ssd_block_size_sweep.ps1",
+  "safety": "existing dedicated 32 GiB file target under E:\\validation; no raw physical-drive target",
+  "question": "How do bandwidth, IOPS, and tail latency change across 4K, 64K, and 1M random read I/O when each block size occupies each sequence position once?",
+  "experimental_unit": "one three-phase cycle; three Latin-square cycles form one workload session",
+  "interpretation_boundary": "Random file-target block-size mapping over USB, Windows, and exFAT; read and write sessions are independent observations and do not prove device-internal causes.",
+  "fixed_controls": {
+    "reconnect_start_confirmed": true,
+    "same_physical_usb_port_confirmed": true,
+    "dedicated_file_write_confirmed": false,
+    "user_confirmed_disconnect_sec": 600,
+    "test_file": "E:\\validation\\ssd_lab_seq_32g",
+    "observed_file_bytes": 34359738368,
+    "workload": "randread",
+    "operation": "read",
+    "cycles": [
+      {
+        "cycle": 1,
+        "sequence": [
+          "1m",
+          "64k",
+          "4k"
+        ]
+      },
+      {
+        "cycle": 2,
+        "sequence": [
+          "4k",
+          "1m",
+          "64k"
+        ]
+      },
+      {
+        "cycle": 3,
+        "sequence": [
+          "64k",
+          "4k",
+          "1m"
+        ]
+      }
+    ],
+    "block_sizes": [
+      "4k",
+      "64k",
+      "1m"
+    ],
+    "iodepth": 32,
+    "size": "32G",
+    "runtime_sec": 30,
+    "time_based": true,
+    "direct": 1,
+    "numjobs": 1,
+    "ioengine": "windowsaio",
+    "randrepeat": 1,
+    "initial_idle_sec": 300,
+    "inter_phase_idle_sec": 60,
+    "read_only": true
+  },
+  "analysis_plan": [
+    "report bandwidth, IOPS, p99, p99.9, and maximum latency for each block size",
+    "report repeat variation across the three cycle/position placements",
+    "retain cycle and position to expose order effects",
+    "compare read and write sessions descriptively only after both complete",
+    "do not compare 4K random and 1M sequential evidence as if block size were the only variable",
+    "do not claim internal cache, firmware, FTL, GC, NAND, thermal, or USB root cause"
+  ],
+  "phases": [
+    {
+      "order": 1,
+      "cycle": 1,
+      "position": 1,
+      "block_size": "4k",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:08:04.9574781+09:00",
+      "completed_at": "2026-07-26T23:08:35.6981809+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase1_c1p1_bs4k.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase1_c1p1_bs4k"
+    },
+    {
+      "order": 2,
+      "cycle": 1,
+      "position": 2,
+      "block_size": "64k",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:09:35.7855934+09:00",
+      "completed_at": "2026-07-26T23:10:06.5035808+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase2_c1p2_bs64k.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase2_c1p2_bs64k"
+    },
+    {
+      "order": 3,
+      "cycle": 1,
+      "position": 3,
+      "block_size": "1m",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:11:06.5192070+09:00",
+      "completed_at": "2026-07-26T23:11:37.2226271+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase3_c1p3_bs1m.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase3_c1p3_bs1m"
+    },
+    {
+      "order": 4,
+      "cycle": 2,
+      "position": 1,
+      "block_size": "64k",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:12:37.2466092+09:00",
+      "completed_at": "2026-07-26T23:13:07.9375712+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase4_c2p1_bs64k.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase4_c2p1_bs64k"
+    },
+    {
+      "order": 5,
+      "cycle": 2,
+      "position": 2,
+      "block_size": "1m",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:14:07.9582385+09:00",
+      "completed_at": "2026-07-26T23:14:38.6502688+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase5_c2p2_bs1m.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase5_c2p2_bs1m"
+    },
+    {
+      "order": 6,
+      "cycle": 2,
+      "position": 3,
+      "block_size": "4k",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:15:38.6621692+09:00",
+      "completed_at": "2026-07-26T23:16:09.3542589+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase6_c2p3_bs4k.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase6_c2p3_bs4k"
+    },
+    {
+      "order": 7,
+      "cycle": 3,
+      "position": 1,
+      "block_size": "1m",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:17:09.3660354+09:00",
+      "completed_at": "2026-07-26T23:17:40.0623262+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase7_c3p1_bs1m.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase7_c3p1_bs1m"
+    },
+    {
+      "order": 8,
+      "cycle": 3,
+      "position": 2,
+      "block_size": "4k",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:18:40.0730547+09:00",
+      "completed_at": "2026-07-26T23:19:10.7756694+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase8_c3p2_bs4k.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase8_c3p2_bs4k"
+    },
+    {
+      "order": 9,
+      "cycle": 3,
+      "position": 3,
+      "block_size": "64k",
+      "test_case_id": "EXT-BS-RANDREAD-001",
+      "workload": "randread",
+      "status": "complete",
+      "started_at": "2026-07-26T23:20:10.8049820+09:00",
+      "completed_at": "2026-07-26T23:20:41.4986823+09:00",
+      "fio_json": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase9_c3p3_bs64k.json",
+      "log_prefix": "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randread_32g_20260726\\sustained_block_size_randread_32g_20260726_phase9_c3p3_bs64k"
+    }
+  ],
+  "error": null,
+  "analysis_evidence": {
+    "status": "complete",
+    "analysis_manifest": "results/external_ssd/sustained_block_size_randread_32g_20260726/analysis/analysis_manifest.json",
+    "classification": "counterbalanced_block_size_mapping",
+    "derived_artifacts": {
+      "phase_summary": "results/external_ssd/sustained_block_size_randread_32g_20260726/analysis/phase_summary.csv",
+      "block_size_summary": "results/external_ssd/sustained_block_size_randread_32g_20260726/analysis/block_size_summary.csv",
+      "cycle_position_summary": "results/external_ssd/sustained_block_size_randread_32g_20260726/analysis/cycle_position_summary.csv"
+    },
+    "paired_analysis": {
+      "status": "complete",
+      "paired_analysis_manifest": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/paired_analysis_manifest.json",
+      "performance_verdict": "descriptive_block_size_mapping_complete"
+    }
+  }
+}

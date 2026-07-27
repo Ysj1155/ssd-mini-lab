@@ -1,0 +1,2 @@
+read_experiment_id,write_experiment_id,requirement_id,requirement_verdict,read_phase_count,write_phase_count,block_sizes,repeats_per_block_size_per_workload,sequence_balance,performance_verdict,interpretation_boundary
+block_size_randread_32g_20260726,block_size_randwrite_32g_20260726,REQ-BS-008,Pass,9,9,"4k,64k,1m",3,each block size appears once in every cycle and position,descriptive_block_size_mapping_complete,"Read and write were independent reconnect-start sessions; cross-workload ratios are descriptive, not causal."

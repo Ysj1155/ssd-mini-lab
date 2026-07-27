@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "role": "paired_analysis",
+  "created_at": "2026-07-27T00:05:56.198593+09:00",
+  "status": "complete",
+  "classification": "controlled_read_write_block_size_mapping",
+  "analyzer": "scripts/analysis/analyze_external_ssd_block_size_sweep.py",
+  "source_experiments": {
+    "randread": "block_size_randread_32g_20260726",
+    "randwrite": "block_size_randwrite_32g_20260726"
+  },
+  "session_analysis_manifests": {
+    "randread": "results/external_ssd/sustained_block_size_randread_32g_20260726/analysis/analysis_manifest.json",
+    "randwrite": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/analysis_manifest.json"
+  },
+  "derived_artifacts": {
+    "cross_workload_comparison": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/cross_workload_comparison.csv",
+    "verdict": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/verdict.csv"
+  },
+  "requirement_verdict": "Pass",
+  "performance_verdict": "descriptive_block_size_mapping_complete",
+  "interpretation_boundary": "Read and write were independent reconnect-start sessions; cross-workload ratios are descriptive, not causal."
+}

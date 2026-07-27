@@ -290,6 +290,8 @@ rand_write는 rand_read보다 IOPS가 낮고 p99 latency가 높았다. 이는 ba
 
 ### 9.2 Block size sweep
 
+Status update (2026-07-27): the controlled external-SSD 4K/64K/1M random read/write protocol completed. See `external_ssd_block_size_sweep_result.md`. The original block-size roadmap item is closed.
+
 목적: block size 변화가 throughput과 latency에 미치는 영향을 확인한다.
 
 계획 조건:

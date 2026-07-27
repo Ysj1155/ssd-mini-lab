@@ -1,0 +1,182 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-26T15:05:58.340350+00:00",
+  "generator": "scripts/analysis/build_external_ssd_run_manifest.py",
+  "run_id": "sustained_block_size_randwrite_32g_20260726",
+  "result_set": "sustained_block_size_randwrite_32g_20260726",
+  "test_case_id": "EXT-BS-RANDWRITE-002",
+  "experiment_id": "block_size_randwrite_32g_20260726",
+  "state_phase": null,
+  "requirement_ids": [
+    "REQ-BS-008",
+    "REQ-QOS-001",
+    "REQ-REPRO-001",
+    "REQ-ENV-001",
+    "REQ-OBS-001",
+    "REQ-TRACE-001"
+  ],
+  "dut_id": "external_ssd_dut_01",
+  "status": "complete",
+  "result": "observation",
+  "tool_versions": {
+    "fio": [
+      "fio-3.42"
+    ],
+    "python": "3.12.1"
+  },
+  "conditions": {
+    "operation": "write",
+    "rw": "randwrite",
+    "bs": "4k",
+    "iodepth": 32,
+    "runtime_sec": 30,
+    "size": "32G",
+    "direct": 1,
+    "numjobs": 1
+  },
+  "evidence_links": {
+    "dut_profile": "docs/reports/external_ssd_dut_profile.md",
+    "requirement_matrix": "docs/reports/external_ssd_requirement_matrix.md",
+    "validation_matrix": "configs/external_ssd_validation_matrix.yaml",
+    "product_report": "docs/reports/external_ssd_product_validation.md",
+    "runner_manifest": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/runner_manifest.json",
+    "experiment_manifest": "results/external_ssd/_experiments/block_size_randwrite_32g_20260726/experiment_manifest.json",
+    "analysis_manifest": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/analysis_manifest.json",
+    "observer_manifests": [
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/observer_manifest_post.json",
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/observer_manifest_pre.json"
+    ],
+    "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests"
+  },
+  "execution_model": {
+    "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",
+    "runner_status": "present",
+    "observer_status": "complete"
+  },
+  "artifacts": {
+    "raw_dir": "results/external_ssd/sustained_block_size_randwrite_32g_20260726",
+    "summary_csv": "results/external_ssd_sustained_summary.csv",
+    "timeseries_csv": "results/external_ssd_sustained_timeseries.csv",
+    "window_summary_csv": "results/external_ssd_sustained_window_summary.csv",
+    "repeatability_csv": "results/external_ssd_sustained_repeatability.csv",
+    "analysis_csvs": [
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/block_size_summary.csv",
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/cross_workload_comparison.csv",
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/cycle_position_summary.csv",
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/phase_summary.csv",
+      "results/external_ssd/sustained_block_size_randwrite_32g_20260726/analysis/verdict.csv"
+    ]
+  },
+  "runs": [
+    {
+      "run": 1,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k_slat.1.log"
+      }
+    },
+    {
+      "run": 2,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k_slat.1.log"
+      }
+    },
+    {
+      "run": 3,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m_slat.1.log"
+      }
+    },
+    {
+      "run": 4,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k_slat.1.log"
+      }
+    },
+    {
+      "run": 5,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m_slat.1.log"
+      }
+    },
+    {
+      "run": 6,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k_slat.1.log"
+      }
+    },
+    {
+      "run": 7,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m_slat.1.log"
+      }
+    },
+    {
+      "run": 8,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k_slat.1.log"
+      }
+    },
+    {
+      "run": 9,
+      "fio_json": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_block_size_randwrite_32g_20260726/sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k_slat.1.log"
+      }
+    }
+  ],
+  "anomalies": [],
+  "interpretation_boundary": "USB, Windows, exFAT file-target result; not internal FTL/GC proof"
+}

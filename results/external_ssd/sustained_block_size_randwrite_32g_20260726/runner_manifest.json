@@ -1,0 +1,194 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_block_size_randwrite_32g_20260726",
+    "test_case_id":  "EXT-BS-RANDWRITE-002",
+    "experiment_id":  "block_size_randwrite_32g_20260726",
+    "started_at":  "2026-07-26T23:46:25.3799453+09:00",
+    "completed_at":  "2026-07-27T00:04:28.3193340+09:00",
+    "status":  "complete",
+    "runner":  "scripts/runners/run_external_ssd_block_size_sweep.ps1",
+    "safety":  "time-based fio file-target runner; no raw physical-drive target",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726",
+    "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+    "conditions":  {
+                       "reconnect_start_confirmed":  true,
+                       "same_physical_usb_port_confirmed":  true,
+                       "dedicated_file_write_confirmed":  true,
+                       "user_confirmed_disconnect_sec":  600,
+                       "test_file":  "E:\\validation\\ssd_lab_seq_32g",
+                       "observed_file_bytes":  34359738368,
+                       "workload":  "randwrite",
+                       "operation":  "write",
+                       "cycles":  [
+                                      {
+                                          "cycle":  1,
+                                          "sequence":  [
+                                                           "1m",
+                                                           "64k",
+                                                           "4k"
+                                                       ]
+                                      },
+                                      {
+                                          "cycle":  2,
+                                          "sequence":  [
+                                                           "4k",
+                                                           "1m",
+                                                           "64k"
+                                                       ]
+                                      },
+                                      {
+                                          "cycle":  3,
+                                          "sequence":  [
+                                                           "64k",
+                                                           "4k",
+                                                           "1m"
+                                                       ]
+                                      }
+                                  ],
+                       "block_sizes":  [
+                                           "4k",
+                                           "64k",
+                                           "1m"
+                                       ],
+                       "iodepth":  32,
+                       "size":  "32G",
+                       "runtime_sec":  30,
+                       "time_based":  true,
+                       "direct":  1,
+                       "numjobs":  1,
+                       "ioengine":  "windowsaio",
+                       "randrepeat":  1,
+                       "initial_idle_sec":  300,
+                       "inter_phase_idle_sec":  60,
+                       "read_only":  false
+                   },
+    "runs":  [
+                 {
+                     "phase_order":  1,
+                     "cycle":  1,
+                     "position":  1,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "4k",
+                     "started_at":  "2026-07-26T23:51:51.8337796+09:00",
+                     "completed_at":  "2026-07-26T23:52:22.5355597+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase1_c1p1_bs4k"
+                 },
+                 {
+                     "phase_order":  2,
+                     "cycle":  1,
+                     "position":  2,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "64k",
+                     "started_at":  "2026-07-26T23:53:22.6157865+09:00",
+                     "completed_at":  "2026-07-26T23:53:53.3103214+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase2_c1p2_bs64k"
+                 },
+                 {
+                     "phase_order":  3,
+                     "cycle":  1,
+                     "position":  3,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "1m",
+                     "started_at":  "2026-07-26T23:54:53.3295149+09:00",
+                     "completed_at":  "2026-07-26T23:55:24.0309623+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase3_c1p3_bs1m"
+                 },
+                 {
+                     "phase_order":  4,
+                     "cycle":  2,
+                     "position":  1,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "64k",
+                     "started_at":  "2026-07-26T23:56:24.0432231+09:00",
+                     "completed_at":  "2026-07-26T23:56:54.7361250+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase4_c2p1_bs64k"
+                 },
+                 {
+                     "phase_order":  5,
+                     "cycle":  2,
+                     "position":  2,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "1m",
+                     "started_at":  "2026-07-26T23:57:54.7619953+09:00",
+                     "completed_at":  "2026-07-26T23:58:25.5311186+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase5_c2p2_bs1m"
+                 },
+                 {
+                     "phase_order":  6,
+                     "cycle":  2,
+                     "position":  3,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "4k",
+                     "started_at":  "2026-07-26T23:59:25.5378398+09:00",
+                     "completed_at":  "2026-07-26T23:59:56.2360686+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase6_c2p3_bs4k"
+                 },
+                 {
+                     "phase_order":  7,
+                     "cycle":  3,
+                     "position":  1,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "1m",
+                     "started_at":  "2026-07-27T00:00:56.2489806+09:00",
+                     "completed_at":  "2026-07-27T00:01:26.9410656+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase7_c3p1_bs1m"
+                 },
+                 {
+                     "phase_order":  8,
+                     "cycle":  3,
+                     "position":  2,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "4k",
+                     "started_at":  "2026-07-27T00:02:26.9452719+09:00",
+                     "completed_at":  "2026-07-27T00:02:57.6379476+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase8_c3p2_bs4k"
+                 },
+                 {
+                     "phase_order":  9,
+                     "cycle":  3,
+                     "position":  3,
+                     "workload":  "randwrite",
+                     "operation":  "write",
+                     "block_size":  "64k",
+                     "started_at":  "2026-07-27T00:03:57.6457746+09:00",
+                     "completed_at":  "2026-07-27T00:04:28.3193340+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_block_size_randwrite_32g_20260726\\sustained_block_size_randwrite_32g_20260726_phase9_c3p3_bs64k"
+                 }
+             ]
+}

@@ -1,0 +1,49 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "observer",
+    "run_id":  "sustained_block_size_randread_32g_20260726",
+    "phase":  "post",
+    "collected_at":  "2026-07-26T23:21:12.1764651+09:00",
+    "status":  "limited",
+    "observer":  "scripts/observers/collect_external_ssd_observer.ps1",
+    "target_file":  "E:\\validation\\ssd_lab_seq_32g",
+    "safety":  "read-only observer; no fio execution; no raw physical-drive writes",
+    "collectors":  [
+                       {
+                           "name":  "environment",
+                           "collector":  "D:\\ssd_lab\\scripts\\collect_env_windows.ps1",
+                           "started_at":  "2026-07-26T23:20:42.1530807+09:00",
+                           "completed_at":  "2026-07-26T23:21:06.0107640+09:00",
+                           "exit_code":  0,
+                           "status":  "complete",
+                           "latest_manifest":  "D:\\ssd_lab\\results\\env\\latest\\manifest.json",
+                           "output_dir":  "D:\\ssd_lab\\results\\env\\20260726_232042",
+                           "target_file":  null,
+                           "limitations":  [
+
+                                           ],
+                           "limitation":  null
+                       },
+                       {
+                           "name":  "storage_telemetry",
+                           "collector":  "D:\\ssd_lab\\scripts\\collect_storage_telemetry_windows.ps1",
+                           "started_at":  "2026-07-26T23:21:06.1690853+09:00",
+                           "completed_at":  "2026-07-26T23:21:12.1457565+09:00",
+                           "exit_code":  0,
+                           "status":  "limited",
+                           "latest_manifest":  "D:\\ssd_lab\\results\\telemetry\\latest\\manifest.json",
+                           "output_dir":  "D:\\ssd_lab\\results\\telemetry\\20260726_232106",
+                           "target_file":  "E:\\validation\\ssd_lab_seq_32g",
+                           "limitations":  [
+                                               "storage_reliability_counters.csv: 클라이언트에서 CIM 리소스에 대한 액세스를 사용할 수 없습니다.",
+                                               "target_volume_diskfree.txt: fsutil exit code 1",
+                                               "smartctl command not available",
+                                               "smartctl scan not available or not requested"
+                                           ],
+                           "limitation":  "storage_reliability_counters.csv: 클라이언트에서 CIM 리소스에 대한 액세스를 사용할 수 없습니다.; target_volume_diskfree.txt: fsutil exit code 1; smartctl command not available; smartctl scan not available or not requested"
+                       }
+                   ],
+    "limitations":  [
+                        "storage_telemetry: storage_reliability_counters.csv: 클라이언트에서 CIM 리소스에 대한 액세스를 사용할 수 없습니다.; target_volume_diskfree.txt: fsutil exit code 1; smartctl command not available; smartctl scan not available or not requested"
+                    ]
+}
