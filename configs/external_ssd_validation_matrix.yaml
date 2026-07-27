@@ -524,6 +524,8 @@ test_cases:
     completion_based: true
     dedicated_new_file_required: true
     synchronized_host_observer: windows_logical_disk
+    host_observer_gating: diagnostic_only
+    host_observer_complete_rule: "both phase manifests complete and each counter CSV has at least one nonzero throughput-activity sample"
     interpretation: "file_target_data_path_integrity_only"
     requirement_links:
       - REQ-DATA-009

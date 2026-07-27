@@ -205,6 +205,11 @@ def load_host_observer_statuses(result_dir: Path) -> list[dict[str, Any]]:
                 None
                 if effective_status == "complete"
                 else "no nonzero synchronized disk activity was observed"
+                if active_sample_count == 0
+                else (
+                    f"host observer producer status was {producer_status}; "
+                    "inspect observer errors and limitations"
+                )
             ),
             "manifest": relative(path),
         })

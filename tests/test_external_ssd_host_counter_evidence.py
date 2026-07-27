@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import csv
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +47,31 @@ class ExternalSsdHostCounterEvidenceTests(unittest.TestCase):
             self.write_counter_csv(path, [0, 4096, 0])
 
             self.assertEqual(analyzer.count_active_host_samples(path), 1)
+
+    def test_producer_error_is_not_mislabeled_as_zero_activity(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result_dir = Path(temp_dir)
+            host_dir = result_dir / "host_observer"
+            host_dir.mkdir()
+            csv_path = host_dir / "write.csv"
+            self.write_counter_csv(csv_path, [4096])
+            manifest_path = host_dir / "write_manifest.json"
+            manifest_path.write_text(
+                json.dumps({
+                    "phase": "write",
+                    "status": "limited",
+                    "sampling": {"sample_count": 1},
+                    "artifacts": {"counter_csv": str(csv_path)},
+                }),
+                encoding="utf-8",
+            )
+
+            with mock.patch.object(analyzer, "REPO_ROOT", result_dir):
+                statuses = analyzer.load_host_observer_statuses(result_dir)
+
+        self.assertEqual(statuses[0]["status"], "limited")
+        self.assertEqual(statuses[0]["active_sample_count"], 1)
+        self.assertIn("producer status was limited", statuses[0]["limitation"])
 
 
 if __name__ == "__main__":

@@ -126,8 +126,10 @@ Any nonzero fio or verification error, missing phase, or byte-count mismatch is
 
 Host-observer status is separate:
 
-- `complete`: both phase counter manifests exist and contain samples
-- `limited`: counter access failed, a phase is missing, or no samples exist
+- `complete`: both phase counter manifests report Complete and each linked
+  counter CSV contains at least one nonzero throughput-activity sample
+- `limited`: a phase is missing, samples are absent or zero-only, counter
+  access failed, or any sampling error was recorded
 
 A `limited` observer does not turn a valid CRC32C result into an integrity
 failure. It reduces diagnostic evidence coverage.
