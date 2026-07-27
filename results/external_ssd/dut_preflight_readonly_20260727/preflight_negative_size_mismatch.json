@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "check_id": "EXT-DUT-PREFLIGHT-READONLY-001",
+  "checked_at_utc": "2026-07-27T06:08:00.9463561Z",
+  "mode": "read_only_existing_target",
+  "workload_invoked": false,
+  "target_mutated": false,
+  "expected_file_bytes": 4294967295,
+  "status": "Fail",
+  "error": "Target size mismatch. Expected=4294967295 Actual=4294967296",
+  "test_role": "negative_control"
+}

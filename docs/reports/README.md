@@ -27,6 +27,7 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | Report | Purpose |
 |---|---|
 | `external_ssd_dut_profile.md` | DUT profile and known limitations |
+| `external_ssd_dut_preflight.md` | Read-only actual-DUT identity and target safety verification |
 | `external_ssd_requirement_matrix.md` | Product-like validation requirements |
 | `external_ssd_execution_runbook.md` | Local fio execution steps |
 | `external_ssd_product_validation.md` | Latest verdict and interpretation |

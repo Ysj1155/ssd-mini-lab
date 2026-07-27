@@ -20,6 +20,8 @@ The purpose is to make each fio run traceable to a concrete product path and env
 | Test file path | `E:\validation\ssd_lab_fio_testfile` |
 | Identity enrollment | `configs/external_ssd_dut_identity.json` |
 | Stored device fingerprint | SHA-256 only; raw serial is not stored or returned |
+| Actual read-only preflight | Pass on 2026-07-27 |
+| Preflight evidence | `results/external_ssd/dut_preflight_readonly_20260727/preflight.json` |
 
 ## Host Environment
 
@@ -77,3 +79,8 @@ Therefore, this project can support product-like black-box validation observatio
 - Collect environment snapshot.
 - Collect storage telemetry snapshot if permissions allow.
 - Record any device temperature / SMART data available before the run.
+
+The actual-DUT check is independently reproducible with
+`scripts/observers/check_external_ssd_dut_preflight.ps1`. It validates an
+existing target and emits JSON to stdout without launching fio or modifying
+the target.
