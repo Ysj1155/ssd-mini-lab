@@ -10,6 +10,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Local agent guidance
+AGENTS.md
+
 # Large fio test files
 fio_testfile
 *.tmp
