@@ -2,6 +2,8 @@
 
 Black-box SSD validation mini-lab using fio, Python, and PowerShell.
 
+Korean portfolio overview: [README.ko.md](README.ko.md)
+
 This repository treats a real SSD as a DUT (Device Under Test) and preserves a traceable validation flow:
 
 ```text
@@ -45,6 +47,8 @@ The earlier three-session conditioning study and both mixed-ratio sessions prese
 
 | Purpose | Path |
 |---|---|
+| Korean portfolio overview | `README.ko.md` |
+| Korean interview brief | `docs/reports/external_ssd_interview_brief_ko.md` |
 | DUT definition | `docs/reports/external_ssd_dut_profile.md` |
 | Requirements and verdict rules | `docs/reports/external_ssd_requirement_matrix.md` |
 | Next execution procedure | `docs/reports/external_ssd_execution_runbook.md` |

@@ -140,7 +140,7 @@ The final portfolio should be smaller than the repository:
 2. Completed: `EXT-DATA-INTEGRITY-001` passed the file-target CRC32C requirement.
 3. Completed with limitation: synchronized logical-disk evidence was produced but classified Limited.
 4. Contract complete: compact regression YAML, verdict separation, and manifest-only analyzer are defined; no workload has been run.
-5. Produce the Korean portfolio README and interview brief.
+5. Completed: Korean portfolio README and interview brief summarize the evidence, boundaries, and defensible interview narrative.
 
 Do not add another broad performance sweep unless a requirement or a specific
 debug question justifies it.
