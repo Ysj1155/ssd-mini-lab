@@ -165,6 +165,6 @@ Next targets:
 
 1. Define a compact requirement-based regression profile using stable performance and integrity conditions.
 2. Keep synchronized Windows logical-disk evidence Limited unless a provider produces nonzero workload samples.
-3. Turn the stable technical story into a concise Korean portfolio README.
+3. Create audience-specific portfolio or interview material only when requested.
 
 See `external_ssd_project_roadmap.md`.

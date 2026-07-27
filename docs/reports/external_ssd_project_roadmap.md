@@ -123,7 +123,7 @@ A useful minimal profile would contain:
 
 The final portfolio should be smaller than the repository:
 
-1. Korean README with project objective, DUT boundary, and validation flow.
+1. An on-request delivery README with project objective, DUT boundary, and validation flow.
 2. One condition table showing controlled variables.
 3. One fio JSON-to-CSV evidence flow.
 4. Three case studies:
@@ -140,7 +140,7 @@ The final portfolio should be smaller than the repository:
 2. Completed: `EXT-DATA-INTEGRITY-001` passed the file-target CRC32C requirement.
 3. Completed with limitation: synchronized logical-disk evidence was produced but classified Limited.
 4. Contract complete: compact regression YAML, verdict separation, and manifest-only analyzer are defined; no workload has been run.
-5. Completed: Korean portfolio README and interview brief summarize the evidence, boundaries, and defensible interview narrative.
+5. Deferred: create Korean portfolio and interview material only when explicitly requested.
 
 Do not add another broad performance sweep unless a requirement or a specific
 debug question justifies it.

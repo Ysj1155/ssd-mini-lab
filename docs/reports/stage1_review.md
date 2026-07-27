@@ -184,7 +184,7 @@ Recommended next tasks:
 2. Compare Windows file path and WSL path behavior where safe.
 3. Add longer sustained workload runs.
 4. Create a QoS-focused report centered on p95/p99/p99.9 latency.
-5. Write Obsidian TIL notes that explain the lessons in Korean for interview preparation.
+5. Create audience-specific interview notes only when requested.
 
 ## Stage 1 Completion Assessment
 
@@ -195,6 +195,6 @@ Recommended next tasks:
 | Visualization | Good enough for portfolio review |
 | Reproducibility | Present, but needs more repeats for stronger claims |
 | Hardware observability | Weak; telemetry is missing |
-| Documentation | Good, with room for a Korean interview-oriented version |
+| Documentation | Good, with audience-specific delivery material deferred |
 
 Overall Stage 1 status: complete enough to pause, review, and move into Stage 2.

@@ -9,7 +9,6 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | `portfolio_evidence.md` | High-level evidence map: condition -> execution -> result -> interpretation |
 | `external_ssd_product_validation.md` | Current external SSD DUT validation report |
 | `ssd_validation_competency_map.md` | Mapping from project artifacts to SSD Validation Engineer competencies |
-| `korean_interview_brief.md` | Korean interview talking points |
 | `validation_run_checklist.md` | Reusable validation checklist |
 
 ## Experiment Reports
@@ -45,5 +44,3 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | external_ssd_data_integrity_result.md | CRC32C integrity Pass and synchronized host-observer Limited verdict |
 | `windows_host_counter_observer.md` | Synchronized Windows logical-disk counter evidence model and limits |
 | `external_ssd_regression_profile.md` | Compact requirement-based regression profile and analyzer contract |
-| `../../README.ko.md` | Concise Korean portfolio overview |
-| `external_ssd_interview_brief_ko.md` | Korean interview narrative, STAR cases, and numeric reference |

@@ -290,7 +290,7 @@ The independent Session 2 did not reproduce Session 1 ratio, cycle, position, or
 
 The controlled block-size study then closed the final baseline matrix gap with independent counterbalanced read and write sessions. Bandwidth repeatability was strong and aggregate order effects were small. At QD32, 64K reached the observed throughput plateau; moving to 1M provided no bandwidth gain while increasing p99 latency by 13.77x for read and 15.69x for write. This is a condition-specific throughput knee, not a universal optimal block size.
 
-The performance-characterization phase is mature and the first correctness MVP is complete: the 4 GiB CRC32C file-target path passed. Synchronized logical-disk observation was exercised but remained Limited because it captured no nonzero workload signal. The roadmap now moves to a compact requirement-based regression profile and concise Korean portfolio delivery rather than another broad parameter sweep.
+The performance-characterization phase is mature and the first correctness MVP is complete: the 4 GiB CRC32C file-target path passed. Synchronized logical-disk observation was exercised but remained Limited because it captured no nonzero workload signal. The roadmap now moves to a compact requirement-based regression profile rather than another broad parameter sweep. Korean portfolio material is deferred until explicitly requested.
 
 Portfolio statement:
 
