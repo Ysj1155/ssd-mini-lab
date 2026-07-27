@@ -2,6 +2,11 @@
 
 Repository scripts are grouped by purpose.
 
+## `lib/`
+
+- `lib/ExternalSsdSafety.psm1` - canonical file-target containment and enrolled
+  Windows volume/disk identity preflight shared by every external SSD runner
+
 ## `analysis/`
 
 Python scripts for parsing fio JSON, building CSV summaries, and generating analysis artifacts.

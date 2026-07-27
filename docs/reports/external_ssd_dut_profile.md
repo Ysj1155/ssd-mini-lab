@@ -9,14 +9,17 @@ The purpose is to make each fio run traceable to a concrete product path and env
 | Field | Value |
 |---|---|
 | DUT label | `external_ssd_dut_01` |
-| Vendor / model | SanDisk Extreme Portable SSD, exact model to confirm |
+| Vendor / model | SanDisk Extreme SSD |
 | Capacity | About 1 TB as currently reported by Windows; earlier notes should be rechecked before public wording |
 | Serial number | Optional / do not publish if sensitive |
 | Connection | External SSD over USB path |
 | Enclosure / adapter | TBD |
 | Host port | TBD |
 | File system | exFAT |
+| Volume label | `Extreme SSD` |
 | Test file path | `E:\validation\ssd_lab_fio_testfile` |
+| Identity enrollment | `configs/external_ssd_dut_identity.json` |
+| Stored device fingerprint | SHA-256 only; raw serial is not stored or returned |
 
 ## Host Environment
 
@@ -62,8 +65,13 @@ Therefore, this project can support product-like black-box validation observatio
 
 ## Pre-Run Checklist
 
-- Confirm the external SSD drive letter.
-- Confirm the target file path is `E:\validation\ssd_lab_fio_testfile`.
+- Confirm the intended physical USB port.
+- Run only through an external SSD runner that loads `ExternalSsdSafety.psm1`.
+- Require canonical target containment under the enrolled allowed root.
+- Require volume GUID, label, filesystem, capacity, model, USB bus, and hashed
+  disk fingerprint to match `external_ssd_dut_identity.json`.
+- Refuse boot/system disks, reparse-point paths, UNC/device paths, and alternate
+  data streams.
 - Confirm free space is sufficient for the selected test size.
 - Close unrelated heavy background applications.
 - Collect environment snapshot.

@@ -46,6 +46,7 @@ The earlier three-session conditioning study and both mixed-ratio sessions prese
 | Purpose | Path |
 |---|---|
 | DUT definition | `docs/reports/external_ssd_dut_profile.md` |
+| DUT identity enrollment | `configs/external_ssd_dut_identity.json` |
 | Requirements and verdict rules | `docs/reports/external_ssd_requirement_matrix.md` |
 | Next execution procedure | `docs/reports/external_ssd_execution_runbook.md` |
 | Current result interpretation | `docs/reports/external_ssd_product_validation.md` |

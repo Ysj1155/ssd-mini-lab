@@ -28,8 +28,8 @@ class ExternalSsdIntegrityRunnerContractTests(unittest.TestCase):
         )
 
     def test_runner_refuses_an_existing_target(self) -> None:
-        self.assertIn("if (Test-Path -LiteralPath $TestFile)", self.script)
-        self.assertIn("It will not be overwritten", self.script)
+        self.assertIn("$DutPreflight = Assert-ExternalSsdTarget", self.script)
+        self.assertIn("-RequireNewTarget", self.script)
 
     def test_write_and_verify_contract_is_explicit(self) -> None:
         for option in (

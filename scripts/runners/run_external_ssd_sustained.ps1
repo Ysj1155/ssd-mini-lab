@@ -25,6 +25,9 @@
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $TestFile = if ($env:SSD_LAB_EXTERNAL_TESTFILE) { $env:SSD_LAB_EXTERNAL_TESTFILE } else { "E:\validation\ssd_lab_fio_testfile" }
 
@@ -47,8 +50,6 @@ $RunLabel = if ($env:SSD_LAB_EXTERNAL_SUSTAINED_LABEL) { $env:SSD_LAB_EXTERNAL_S
 $SafeLabel = $RunLabel -replace '[^A-Za-z0-9_.-]', '_'
 $ResultDir = Join-Path $ResultRoot $SafeLabel
 $RunnerManifestPath = Join-Path $ResultDir "runner_manifest.json"
-
-New-Item -ItemType Directory -Force $ResultDir | Out-Null
 
 function Save-RunnerManifest {
     param(
@@ -82,18 +83,12 @@ Write-Host "experiment  : $ExperimentId"
 Write-Host "state phase : $StatePhase"
 Write-Host ""
 
-if (-not ($TestFile -like "E:\validation\*")) {
-    Write-Host "[ERROR] TestFile must stay under E:\validation for this track."
-    Write-Host "Current TestFile: $TestFile"
-    exit 1
-}
-
-if (-not (Test-Path -LiteralPath $TestFile)) {
-    Write-Host "[ERROR] Test file does not exist: $TestFile"
-    Write-Host "Create it first, for example:"
-    Write-Host "  fsutil file createnew E:\validation\ssd_lab_fio_testfile 536870912"
-    exit 1
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireExistingTarget
+$TestFile = $DutPreflight.canonical_target
+New-Item -ItemType Directory -Force $ResultDir | Out-Null
 
 $fioCommand = Get-Command fio -ErrorAction SilentlyContinue
 if ($null -eq $fioCommand) {
@@ -115,7 +110,8 @@ $RunnerManifest = [ordered]@{
     completed_at = $null
     status = "started"
     runner = "scripts/runners/run_external_ssd_sustained.ps1"
-    safety = "fio file-target runner; refuses targets outside E:\validation; no raw physical-drive target"
+    safety = "canonical file-target runner on the enrolled DUT; no raw physical-drive target"
+    dut_preflight = $DutPreflight
     fio_command = $fioCommand.Source
     result_dir = $ResultDir
     test_file = $TestFile

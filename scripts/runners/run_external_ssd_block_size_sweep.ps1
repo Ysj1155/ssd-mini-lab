@@ -33,6 +33,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $ExperimentRoot = Join-Path $ResultRoot "_experiments"
 $ObserverScript = Join-Path $BaseDir "scripts\observers\collect_external_ssd_observer.ps1"
@@ -68,12 +71,12 @@ if (-not $ConfirmSamePort) {
 if ($Workload -eq "randwrite" -and -not $ConfirmDedicatedFileWrite) {
     throw "randwrite requires -ConfirmDedicatedFileWrite for the dedicated test file."
 }
-if (-not ($TestFile -like "E:\validation\*")) {
-    throw "TestFile must stay under E:\validation. Current: $TestFile"
-}
-if (-not (Test-Path -LiteralPath $TestFile)) {
-    throw "Dedicated 32 GiB test file does not exist: $TestFile"
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireExistingTarget `
+    -ExpectedFileBytes $ExpectedBytes
+$TestFile = $DutPreflight.canonical_target
 if (-not (Test-Path -LiteralPath $ObserverScript)) {
     throw "Observer script not found: $ObserverScript"
 }
@@ -152,7 +155,8 @@ $Manifest = [ordered]@{
     status = "started"
     result = "observation"
     runner = "scripts/runners/run_external_ssd_block_size_sweep.ps1"
-    safety = "existing dedicated 32 GiB file target under E:\validation; no raw physical-drive target"
+    safety = "canonical existing 32 GiB file target on the enrolled DUT; no raw physical-drive target"
+    dut_preflight = $DutPreflight
     question = "How do bandwidth, IOPS, and tail latency change across 4K, 64K, and 1M random $Operation I/O when each block size occupies each sequence position once?"
     experimental_unit = "one three-phase cycle; three Latin-square cycles form one workload session"
     interpretation_boundary = "Random file-target block-size mapping over USB, Windows, and exFAT; read and write sessions are independent observations and do not prove device-internal causes."
@@ -202,6 +206,7 @@ $RunnerManifest = [ordered]@{
     status = "started"
     runner = "scripts/runners/run_external_ssd_block_size_sweep.ps1"
     safety = "time-based fio file-target runner; no raw physical-drive target"
+    dut_preflight = $DutPreflight
     result_dir = $ResultDir
     test_file = $TestFile
     conditions = $Manifest.fixed_controls

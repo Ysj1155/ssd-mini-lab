@@ -15,6 +15,9 @@
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $RunLabel = if ($env:SSD_LAB_EXTERNAL_LABEL) { $env:SSD_LAB_EXTERNAL_LABEL } else { "qd_sweep_smoke" }
 $SafeLabel = $RunLabel -replace '[^A-Za-z0-9_.-]', '_'
@@ -45,8 +48,6 @@ $Workloads = @(
     }
 )
 
-New-Item -ItemType Directory -Force -Path $ResultDir | Out-Null
-
 Write-Host "=== External SSD QD sweep smoke ==="
 Write-Host "BaseDir    : $BaseDir"
 Write-Host "ResultRoot : $ResultRoot"
@@ -59,18 +60,12 @@ Write-Host "Repeats    : $Repeats"
 Write-Host "QD list    : $($QueueDepths -join ', ')"
 Write-Host ""
 
-if (-not ($TestFile -like "E:\validation\*")) {
-    Write-Host "[ERROR] TestFile must stay under E:\validation for this track."
-    Write-Host "Current TestFile: $TestFile"
-    exit 1
-}
-
-if (-not (Test-Path -LiteralPath $TestFile)) {
-    Write-Host "[ERROR] Test file does not exist: $TestFile"
-    Write-Host "Create it first, for example:"
-    Write-Host "  fsutil file createnew E:\validation\ssd_lab_fio_testfile 536870912"
-    exit 1
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireExistingTarget
+$TestFile = $DutPreflight.canonical_target
+New-Item -ItemType Directory -Force -Path $ResultDir | Out-Null
 
 $fioCommand = Get-Command fio -ErrorAction SilentlyContinue
 if ($null -eq $fioCommand) {

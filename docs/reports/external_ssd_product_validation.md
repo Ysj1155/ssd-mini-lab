@@ -18,6 +18,7 @@ Related evidence:
 - `docs/reports/external_ssd_block_size_sweep_result.md`
 - `docs/reports/external_ssd_project_roadmap.md`
 - `configs/external_ssd_validation_matrix.yaml`
+- `configs/external_ssd_dut_identity.json`
 - `results/external_ssd/`
 - `results/external_ssd_sustained_*.csv`
 - `results/external_ssd_state_repro_pairs.csv`
@@ -28,10 +29,11 @@ Related evidence:
 | Field | Value |
 |---|---|
 | DUT label | `external_ssd_dut_01` |
-| Vendor / family | SanDisk Extreme Portable SSD; exact model pending confirmation |
+| Vendor / model | SanDisk Extreme SSD |
 | Connection | External SSD over USB path |
 | File system | exFAT |
 | Test target | `E:\validation\ssd_lab_fio_testfile` |
+| Runner preflight | Canonical path containment plus enrolled volume/disk fingerprint |
 | fio version | `fio-3.42` |
 | QD32 evidence-complete run | `sustained_rand_write_300s_qd32_trace_repeat3_20260721` |
 | QD16 evidence-complete run | `sustained_rand_write_120s_qd16_trace_repeat3_20260722` |

@@ -42,10 +42,14 @@ E:\validation\ssd_lab_seq_32g
 
 The runner:
 
-- refuses paths outside `E:\validation\`
+-- canonicalizes the target and refuses containment escapes, prefix tricks,
+  reparse points, UNC/device paths, and alternate data streams
+- matches the enrolled volume GUID, label, filesystem, capacity, disk model,
+  USB bus, and privacy-preserving disk fingerprint
+- refuses boot and system disks
 - refuses an existing target file
 - refuses less than 40 GiB free space
-- requires E: volume `Healthy / OK`
+- requires the enrolled DUT volume to be `Healthy / OK`
 - requires explicit same-port and dedicated-write confirmations
 - never targets a raw physical drive
 - creates and verifies the exact 32 GiB file before the initial idle
@@ -172,7 +176,8 @@ One pilot is an observation. Repeat it only if the time series exposes a materia
 - Write file length not exactly 32 GiB: classify the experiment as failed.
 - Observer limitation: preserve it as `limited`; do not fabricate telemetry.
 - Interrupted setup or write: retain raw evidence and inspect the external file before deciding on cleanup.
-- Wrong drive letter or physical port: do not classify the run as valid evidence.
+- DUT identity or canonical-path mismatch: the runner stops before result
+  creation or fio; do not bypass the preflight.
 
 ## 10. Completed Mixed Read-QoS Decision
 

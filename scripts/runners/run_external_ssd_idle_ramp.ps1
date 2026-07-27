@@ -23,6 +23,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $ExperimentRoot = Join-Path $ResultRoot "_experiments"
 $ObserverScript = Join-Path $BaseDir "scripts\observers\collect_external_ssd_observer.ps1"
@@ -49,12 +52,12 @@ if (-not $ConfirmSamePort) {
 if (-not $ConfirmDedicatedFileWrite) {
     throw "Re-run with -ConfirmDedicatedFileWrite after confirming writes target the dedicated file."
 }
-if (-not ($TestFile -like "E:\validation\*")) {
-    throw "TestFile must stay under E:\validation. Current: $TestFile"
-}
-if (-not (Test-Path -LiteralPath $TestFile)) {
-    throw "Dedicated 32 GiB test file does not exist: $TestFile"
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireExistingTarget `
+    -ExpectedFileBytes $ExpectedBytes
+$TestFile = $DutPreflight.canonical_target
 if (-not (Test-Path -LiteralPath $ObserverScript)) {
     throw "Observer script not found: $ObserverScript"
 }
@@ -127,7 +130,8 @@ $Manifest = [ordered]@{
     status = "started"
     result = "observation"
     runner = "scripts/runners/run_external_ssd_idle_ramp.ps1"
-    safety = "existing dedicated 32 GiB file target under E:\validation; no raw physical-drive target"
+    safety = "canonical existing 32 GiB file target on the enrolled DUT; no raw physical-drive target"
+    dut_preflight = $DutPreflight
     question = "Does requested pre-probe idle duration change phase-start ramp presence or transition time under a fixed 70:30 random workload?"
     experimental_unit = "one 120-second 70:30 probe preceded by a requested intentional idle interval"
     primary_metric = "transition_sec: first five consecutive 1-second total-bandwidth samples at or above 80% of the last-third mean"
@@ -183,6 +187,7 @@ $RunnerManifest = [ordered]@{
     status = "started"
     runner = "scripts/runners/run_external_ssd_idle_ramp.ps1"
     safety = "time-based fio file-target runner; no raw physical-drive target"
+    dut_preflight = $DutPreflight
     result_dir = $ResultDir
     test_file = $TestFile
     conditions = $Manifest.fixed_controls

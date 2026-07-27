@@ -29,6 +29,7 @@ The values below are intentionally framed as tracking and review requirements fi
 | REQ-DATA-009 | A new dedicated 4 GiB file shall be written with CRC32C metadata and completely verified by readback. | fio write/verify JSON, integrity summary, verdict CSV | Pass if both phases process exactly 4 GiB with zero fio and verification errors |
 | REQ-HOST-OBS-010 | Host-visible storage counters shall be sampled on the same time axis as each integrity fio phase when Windows exposes them. | phase counter CSVs and host-observer manifests | Pass if both phases contain samples; Limited if access or sampling is unavailable with explicit errors |
 | REQ-REG-011 | A compact regression profile shall aggregate stable performance, QoS, integrity, and evidence conditions without conflating their verdicts. | profile YAML, component manifests, evidence index, component summary, aggregate verdict | Pass when all required components are present and mature gates pass; Observation while performance bands are immature; integrity failure is Fail |
+| REQ-DUT-ID-012 | Every external SSD runner shall prove canonical file-target containment and match the enrolled volume/disk identity before creating result artifacts or invoking fio. | DUT identity JSON, shared safety module, runner `dut_preflight` evidence | Pass only when path containment, fingerprint, volume metadata, USB bus, and non-boot/non-system checks all match |
 | REQ-ENV-001 | Each validation run shall include environment and path context. | env snapshot, DUT profile | Pass if snapshot and DUT profile are linked |
 | REQ-TEL-001 | Telemetry shall be collected when available without destructive access. | telemetry snapshot | Pass if collected, Limited if permissions/tooling block device-level data |
 | REQ-OBS-001 | fio execution and read-only observation shall be recorded as separate evidence producers. | `runner_manifest.json`, `observer_manifest_<phase>.json` | Pass if both are linked, Limited if one side is missing with an explicit anomaly |
@@ -36,6 +37,9 @@ The values below are intentionally framed as tracking and review requirements fi
 | REQ-LIMIT-001 | The report shall state what the evidence cannot prove. | final report limitation section | Pass if interpretation boundary is explicit |
 
 ## Requirement-to-Test Mapping
+
+`REQ-DUT-ID-012` is a mandatory precondition inherited by every
+`run_external_ssd*.ps1` test path; it is not a workload-specific test case.
 
 | Test case | Requirements |
 |---|---|

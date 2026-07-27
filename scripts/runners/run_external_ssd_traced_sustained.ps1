@@ -33,18 +33,19 @@ param(
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $SafeLabel = $RunLabel -replace '[^A-Za-z0-9_.-]', '_'
 $ResultDir = Join-Path $ResultRoot $SafeLabel
 $Workload = if ($Rw -eq "randread") { "rand_read" } else { "rand_write" }
 
-if (-not ($TestFile -like "E:\validation\*")) {
-    throw "TestFile must stay under E:\validation. Current: $TestFile"
-}
-
-if (-not (Test-Path -LiteralPath $TestFile)) {
-    throw "Test file does not exist: $TestFile"
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireExistingTarget
+$TestFile = $DutPreflight.canonical_target
 
 if (Test-Path -LiteralPath $ResultDir) {
     $existingRuns = @(Get-ChildItem -LiteralPath $ResultDir -Filter "*_run*.json" -ErrorAction SilentlyContinue)

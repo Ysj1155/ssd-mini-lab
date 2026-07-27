@@ -26,6 +26,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $ExperimentRoot = Join-Path $ResultRoot "_experiments"
 $ObserverScript = Join-Path $BaseDir "scripts\observers\collect_external_ssd_observer.ps1"
@@ -48,15 +51,12 @@ if (-not $ConfirmSamePort) {
 if (-not $ConfirmDedicatedFileWrite) {
     throw "Re-run with -ConfirmDedicatedFileWrite after confirming that the dedicated 32 GiB file may be created."
 }
-if (-not ($TestFile -like "E:\validation\*")) {
-    throw "TestFile must stay under E:\validation. Current: $TestFile"
-}
-if (Test-Path -LiteralPath $TestFile) {
-    throw "Dedicated test file already exists. Do not overwrite it automatically: $TestFile"
-}
-if (-not (Test-Path -LiteralPath (Split-Path -Parent $TestFile))) {
-    throw "Target directory does not exist: $(Split-Path -Parent $TestFile)"
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireNewTarget `
+    -RequiredFreeBytes $RequiredFreeBytes
+$TestFile = $DutPreflight.canonical_target
 if (-not (Test-Path -LiteralPath $ObserverScript)) {
     throw "Observer script not found: $ObserverScript"
 }
@@ -65,14 +65,6 @@ if ($null -eq (Get-Command fio -ErrorAction SilentlyContinue)) {
 }
 if (Test-Path -LiteralPath $ExperimentManifestPath) {
     throw "Experiment manifest already exists. Use a new ExperimentLabel: $ExperimentManifestPath"
-}
-
-$Volume = Get-Volume -DriveLetter E -ErrorAction Stop
-if ($Volume.HealthStatus -ne "Healthy" -or $Volume.OperationalStatus -notcontains "OK") {
-    throw "E: volume is not Healthy/OK. Health=$($Volume.HealthStatus), Operational=$($Volume.OperationalStatus)"
-}
-if ($Volume.SizeRemaining -lt $RequiredFreeBytes) {
-    throw "At least 40 GiB free is required. Current free bytes: $($Volume.SizeRemaining)"
 }
 
 foreach ($runLabel in @($WriteRun, $ReadRun)) {
@@ -117,7 +109,8 @@ $Manifest = [ordered]@{
     status = "started"
     result = "observation"
     runner = "scripts/runners/run_external_ssd_large_ws_seq.ps1"
-    safety = "dedicated file target under E:\validation; refuses existing target and raw physical-drive access"
+    safety = "canonical new file target on the enrolled DUT; refuses existing targets and raw physical-drive access"
+    dut_preflight = $DutPreflight
     question = "Does sequential throughput remain stable while completing one 32 GiB write and one 32 GiB read?"
     interpretation_boundary = "USB, Windows, exFAT file-target result; any transition is externally observed and is not proof of cache, FTL, or garbage collection."
     fixed_controls = [ordered]@{
@@ -126,7 +119,7 @@ $Manifest = [ordered]@{
         test_file = $TestFile
         expected_file_bytes = $ExpectedBytes
         required_free_bytes = $RequiredFreeBytes
-        initial_free_bytes = $Volume.SizeRemaining
+        initial_free_bytes = $DutPreflight.size_remaining_bytes
         initial_idle_sec = $InitialIdleMinutes * 60
         read_idle_sec = $ReadIdleSec
         ioengine = "windowsaio"
@@ -238,6 +231,7 @@ function Invoke-SequentialPhase {
         status = "started"
         runner = "scripts/runners/run_external_ssd_large_ws_seq.ps1"
         safety = "completion-based fio file-target runner; no raw physical-drive target"
+        dut_preflight = $DutPreflight
         result_dir = $ResultDir
         test_file = $TestFile
         conditions = [ordered]@{
@@ -329,7 +323,7 @@ Save-ExperimentManifest
 Write-Host "=== External SSD 32 GiB sequential pilot ==="
 Write-Host "Experiment : $SafeExperiment"
 Write-Host "Test file  : $TestFile"
-Write-Host "Free GiB   : $([math]::Round($Volume.SizeRemaining / 1GB, 2))"
+Write-Host "Free GiB   : $([math]::Round($DutPreflight.size_remaining_bytes / 1GB, 2))"
 Write-Host "Sequence   : prepare 32G file -> 5m idle -> 32G seqwrite -> 60s idle -> 32G seqread"
 Write-Host "Manifest   : $ExperimentManifestPath"
 Write-Host ""

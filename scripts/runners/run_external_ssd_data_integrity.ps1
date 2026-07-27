@@ -22,6 +22,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $ExperimentRoot = Join-Path $ResultRoot "_experiments"
 $ObserverScript = Join-Path $BaseDir "scripts\observers\collect_external_ssd_observer.ps1"
@@ -47,15 +50,12 @@ if (-not $ConfirmSamePort) {
 if (-not $ConfirmDedicatedVerificationFileWrite) {
     throw "Re-run with -ConfirmDedicatedVerificationFileWrite after confirming that a new dedicated 4 GiB verification file may be written."
 }
-if (-not ($TestFile -like "E:\validation\*")) {
-    throw "TestFile must stay under E:\validation. Current: $TestFile"
-}
-if (Test-Path -LiteralPath $TestFile) {
-    throw "Verification target already exists. It will not be overwritten: $TestFile"
-}
-if (-not (Test-Path -LiteralPath (Split-Path -Parent $TestFile))) {
-    throw "Target directory does not exist: $(Split-Path -Parent $TestFile)"
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireNewTarget `
+    -RequiredFreeBytes $RequiredFreeBytes
+$TestFile = $DutPreflight.canonical_target
 foreach ($RequiredScript in @($ObserverScript, $HostObserverScript)) {
     if (-not (Test-Path -LiteralPath $RequiredScript)) {
         throw "Required observer script not found: $RequiredScript"
@@ -72,14 +72,6 @@ if (Test-Path -LiteralPath $ResultDir) {
     if ($ExistingEvidence.Count -gt 0) {
         throw "Result directory already contains evidence. Use a new ExperimentLabel: $ResultDir"
     }
-}
-
-$Volume = Get-Volume -DriveLetter E -ErrorAction Stop
-if ($Volume.HealthStatus -ne "Healthy" -or $Volume.OperationalStatus -notcontains "OK") {
-    throw "E: volume is not Healthy/OK. Health=$($Volume.HealthStatus), Operational=$($Volume.OperationalStatus)"
-}
-if ($Volume.SizeRemaining -lt $RequiredFreeBytes) {
-    throw "At least 8 GiB free is required. Current free bytes: $($Volume.SizeRemaining)"
 }
 
 New-Item -ItemType Directory -Force $ExperimentDir, $ResultDir, $HostObserverDir | Out-Null
@@ -109,21 +101,22 @@ $ExperimentManifest = [ordered]@{
     schema_version = "1.0"
     experiment_id = $SafeExperiment
     test_protocol_id = "EXT-DATA-INTEGRITY-001"
-    requirement_ids = @("REQ-DATA-009", "REQ-HOST-OBS-010", "REQ-ENV-001", "REQ-OBS-001", "REQ-TRACE-001", "REQ-LIMIT-001")
+    requirement_ids = @("REQ-DATA-009", "REQ-HOST-OBS-010", "REQ-DUT-ID-012", "REQ-ENV-001", "REQ-OBS-001", "REQ-TRACE-001", "REQ-LIMIT-001")
     started_at = (Get-Date).ToString("o")
     completed_at = $null
     status = "started"
     result = "observation"
     runner = "scripts/runners/run_external_ssd_data_integrity.ps1"
     question = "Can a newly written 4 GiB file be read back completely with no CRC32C verification error?"
-    safety = "new dedicated file under E:\validation; existing targets and raw physical drives are refused; target is retained after execution"
+    safety = "canonical new file target on the enrolled DUT; existing targets and raw physical drives are refused; target is retained after execution"
+    dut_preflight = $DutPreflight
     interpretation_boundary = "This verifies one Windows/USB/exFAT file-target data path. It does not prove power-loss protection, media endurance, NAND behavior, or internal error-correction coverage."
     fixed_controls = [ordered]@{
         same_physical_usb_port_confirmed = [bool]$ConfirmSamePort
         dedicated_verification_file_write_confirmed = [bool]$ConfirmDedicatedVerificationFileWrite
         test_file = $TestFile
         expected_file_bytes = $ExpectedBytes
-        initial_free_bytes = [long]$Volume.SizeRemaining
+        initial_free_bytes = [long]$DutPreflight.size_remaining_bytes
         ioengine = "windowsaio"
         block_size = "1M"
         iodepth = 4
@@ -157,6 +150,7 @@ $RunnerManifest = [ordered]@{
     result = "observation"
     runner = "scripts/runners/run_external_ssd_data_integrity.ps1"
     safety = $ExperimentManifest.safety
+    dut_preflight = $DutPreflight
     result_dir = $ResultDir
     test_file = $TestFile
     conditions = [ordered]@{
@@ -245,7 +239,7 @@ function Start-HostObserver {
         "-File", "`"$HostObserverScript`"",
         "-RunId", "`"$RunId`"",
         "-Phase", "`"$Phase`"",
-        "-TargetDrive", "E",
+        "-TargetDrive", "$($DutPreflight.identity.drive_letter)",
         "-OutputDir", "`"$HostObserverDir`"",
         "-StopFile", "`"$StopFile`"",
         "-SampleIntervalMs", "$ObserverSampleIntervalMs",

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "dut_id": "external_ssd_dut_01",
+  "allowed_root": "E:\\validation",
+  "expected": {
+    "drive_letter": "E",
+    "file_system": "exFAT",
+    "volume_label": "Extreme SSD",
+    "volume_unique_id": "\\\\?\\Volume{0156e03b-0000-0000-0000-100000000000}\\",
+    "size_bytes": 1000197849088,
+    "disk_friendly_name": "SanDisk Extreme SSD",
+    "bus_type": "USB",
+    "disk_fingerprint_sha256": "f100d75d0d2c6809c96dbfdd3c8cd2344b6575c63a1c2a332c85b9e12fe4a193",
+    "require_not_boot": true,
+    "require_not_system": true
+  },
+  "fingerprint_material": "uppercase(trim(friendly_name|serial_number|disk_unique_id|bus_type))",
+  "privacy": "Raw serial number is used only in-memory and is not stored or returned."
+}

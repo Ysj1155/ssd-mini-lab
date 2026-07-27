@@ -34,6 +34,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $BaseDir = "D:\ssd_lab"
+$SafetyModule = Join-Path $BaseDir "scripts\lib\ExternalSsdSafety.psm1"
+$DutIdentityConfig = Join-Path $BaseDir "configs\external_ssd_dut_identity.json"
+Import-Module $SafetyModule -Force
 $ResultRoot = Join-Path $BaseDir "results\external_ssd"
 $ExperimentRoot = Join-Path $ResultRoot "_experiments"
 $TracedRunner = Join-Path $BaseDir "scripts\runners\run_external_ssd_traced_sustained.ps1"
@@ -57,12 +60,11 @@ if (-not $ConfirmReconnectStart) {
 if (-not $ConfirmSamePort) {
     throw "Re-run with -ConfirmSamePort after confirming the same physical USB port."
 }
-if (-not ($TestFile -like "E:\validation\*")) {
-    throw "TestFile must stay under E:\validation. Current: $TestFile"
-}
-if (-not (Test-Path -LiteralPath $TestFile)) {
-    throw "Test file does not exist: $TestFile"
-}
+$DutPreflight = Assert-ExternalSsdTarget `
+    -TestFile $TestFile `
+    -IdentityConfigPath $DutIdentityConfig `
+    -RequireExistingTarget
+$TestFile = $DutPreflight.canonical_target
 if (-not (Test-Path -LiteralPath $TracedRunner)) {
     throw "Traced runner not found: $TracedRunner"
 }
@@ -126,7 +128,8 @@ $Manifest = [ordered]@{
     status = "started"
     result = "observation"
     runner = "scripts/runners/run_external_ssd_state_repro_session.ps1"
-    safety = "fio file target under E:\validation; no raw physical-drive writes"
+    safety = "canonical file target on the enrolled DUT; no raw physical-drive writes"
+    dut_preflight = $DutPreflight
     hypothesis = "The direction of the QD16 post-write delta may reproduce across independently initiated paired sessions."
     experimental_unit = "one complete reconnect-start baseline-conditioning-post session"
     interpretation_boundary = "Reconnect-start is externally controlled but is not proof of an internally reset or cold SSD state."

@@ -11,8 +11,10 @@
 dut:
   label: external_ssd_dut_01
   target_file: "E:\\validation\\ssd_lab_fio_testfile"
+  identity_config: "configs/external_ssd_dut_identity.json"
   notes:
-    - "Target path is the dedicated validation folder on the external SSD."
+    - "Target path must be canonically contained by the enrolled allowed root."
+    - "All external SSD runners must match enrolled volume and disk identity before fio."
     - "This is black-box file-based validation, not raw NAND/FTL evidence."
 
 common:
