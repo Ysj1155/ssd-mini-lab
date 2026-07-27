@@ -25,10 +25,17 @@ Interpretation boundary: results include the USB path, Windows, exFAT, and fio f
 | Does sustained behavior differ from the short sweep? | Read/write QD16/QD32, 120s, repeat=3 |
 | Does longer runtime expose write-side QoS risk? | Random write QD32, 120s vs 300s, repeat=3 |
 | Can every result be traced to its conditions and evidence? | Run manifest plus separate runner/observer manifests |
+| How does random-I/O response scale with block size? | Completed 4K/64K/1M, QD32, repeat=3 read/write sessions; 64K was the observed throughput knee |
+| Can a newly written file be read back without data-path corruption? | Completed 4 GiB CRC32C write/readback: integrity Pass |
+| Can transient fio behavior be correlated with host-visible storage activity? | First synchronized run produced only zero-valued counters: Limited |
 
 Latest finding: two independent counterbalanced mixed-ratio sessions disagreed on bandwidth and read-p99 ratio rank, cycle rank, position rank, and Phase 5 direction. The automated verdict is `not_reproduced_across_independent_counterbalanced_sessions`.
 
 The completed `EXT-IDLE-RAMP-001` protocol isolated requested pre-probe idle at 0/60/300 seconds under one fixed 70:30 workload. All mirrored pairs agreed that the prior 37-53 second ramp was absent, while average bandwidth remained unstable across the 0-second and 300-second pairs. The verdict is `no_clear_idle_duration_association`.
+
+The completed controlled block-size protocol closed the remaining baseline roadmap item with independent random-read and random-write sessions. At QD32, 64K reached the observed throughput plateau while 1M added no bandwidth and increased p99 latency by more than 13x versus 64K. The next project phase moves from broader performance sweeps to file-target integrity, synchronized observation, and requirement-based regression.
+
+`EXT-DATA-INTEGRITY-001` is now complete. A new 4 GiB target was written and fully read back with CRC32C under fio 3.42: both phases processed exactly 4,294,967,296 bytes with job error 0, so integrity passed. The synchronized Windows logical-disk observer produced timestamped samples but no nonzero workload signal, so host-observer evidence is explicitly Limited rather than treated as complete.
 
 The earlier three-session conditioning study and both mixed-ratio sessions preserve reconnect and same-port confirmations, complete manifests, matching observer/runner evidence, and automated comparison CSVs. Requirements pass when their evidence plans complete even when the performance direction does not reproduce.
 
@@ -42,6 +49,10 @@ The earlier three-session conditioning study and both mixed-ratio sessions prese
 | Requirements and verdict rules | `docs/reports/external_ssd_requirement_matrix.md` |
 | Next execution procedure | `docs/reports/external_ssd_execution_runbook.md` |
 | Current result interpretation | `docs/reports/external_ssd_product_validation.md` |
+| Next-stage roadmap | `docs/reports/external_ssd_project_roadmap.md` |
+| File-integrity execution | `docs/reports/external_ssd_data_integrity_runbook.md` |
+| File-integrity result | `docs/reports/external_ssd_data_integrity_result.md` |
+| Synchronized host observer | `docs/reports/windows_host_counter_observer.md` |
 | Machine-readable test matrix | `configs/external_ssd_validation_matrix.yaml` |
 | Raw fio JSON and logs | `results/external_ssd/` |
 | Parsed sustained CSVs | `results/external_ssd_sustained_*.csv` |

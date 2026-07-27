@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-27T03:45:29.569482+00:00",
+  "generator": "scripts/analysis/build_external_ssd_run_manifest.py",
+  "run_id": "sustained_data_integrity_4g_20260727_retry1",
+  "result_set": "sustained_data_integrity_4g_20260727_retry1",
+  "test_case_id": "EXT-DATA-INTEGRITY-001",
+  "experiment_id": "data_integrity_4g_20260727_retry1",
+  "state_phase": null,
+  "requirement_ids": [
+    "REQ-DATA-009",
+    "REQ-HOST-OBS-010",
+    "REQ-ENV-001",
+    "REQ-OBS-001",
+    "REQ-TRACE-001",
+    "REQ-LIMIT-001"
+  ],
+  "dut_id": "external_ssd_dut_01",
+  "status": "limited",
+  "result": "observation",
+  "tool_versions": {
+    "fio": [
+      "fio-3.42"
+    ],
+    "python": "3.12.1"
+  },
+  "conditions": {
+    "operation": "write",
+    "rw": "write",
+    "bs": "1M",
+    "iodepth": 4,
+    "runtime_sec": 9,
+    "size": "4G",
+    "direct": 1,
+    "numjobs": 1
+  },
+  "evidence_links": {
+    "dut_profile": "docs/reports/external_ssd_dut_profile.md",
+    "requirement_matrix": "docs/reports/external_ssd_requirement_matrix.md",
+    "validation_matrix": "configs/external_ssd_validation_matrix.yaml",
+    "product_report": "docs/reports/external_ssd_product_validation.md",
+    "runner_manifest": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/runner_manifest.json",
+    "experiment_manifest": "results/external_ssd/_experiments/data_integrity_4g_20260727_retry1/experiment_manifest.json",
+    "analysis_manifest": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/analysis_manifest.json",
+    "observer_manifests": [
+      "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/observer_manifest_post.json",
+      "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/observer_manifest_pre.json"
+    ],
+    "host_observer_manifests": [
+      "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/host_observer/verify_crc32c_manifest.json",
+      "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/host_observer/write_crc32c_manifest.json"
+    ],
+    "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests"
+  },
+  "execution_model": {
+    "runner_observer_separation": "fio runner and read-only observer evidence are recorded as separate artifacts and connected by run_id",
+    "runner_status": "present",
+    "observer_status": "complete",
+    "synchronized_host_observer_status": "limited"
+  },
+  "artifacts": {
+    "raw_dir": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1",
+    "summary_csv": "results/external_ssd_sustained_summary.csv",
+    "timeseries_csv": "results/external_ssd_sustained_timeseries.csv",
+    "window_summary_csv": "results/external_ssd_sustained_window_summary.csv",
+    "repeatability_csv": "results/external_ssd_sustained_repeatability.csv",
+    "analysis_csvs": [
+      "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/integrity_summary.csv",
+      "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/integrity_verdict.csv"
+    ]
+  },
+  "runs": [
+    {
+      "run": 1,
+      "fio_json": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase1_write.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase1_write_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase1_write_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase1_write_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase1_write_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase1_write_slat.1.log"
+      }
+    },
+    {
+      "run": 2,
+      "fio_json": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase2_verify.json",
+      "error": 0,
+      "artifacts": {
+        "bw_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase2_verify_bw.1.log",
+        "iops_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase2_verify_iops.1.log",
+        "clat_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase2_verify_clat.1.log",
+        "lat_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase2_verify_lat.1.log",
+        "slat_log": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/sustained_data_integrity_4g_20260727_retry1_phase2_verify_slat.1.log"
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "type": "limited_analysis_evidence",
+      "details": "The analyzer found linked evidence that was present but not usable for its intended diagnostic purpose."
+    }
+  ],
+  "interpretation_boundary": "USB, Windows, exFAT file-target result; not internal FTL/GC proof"
+}

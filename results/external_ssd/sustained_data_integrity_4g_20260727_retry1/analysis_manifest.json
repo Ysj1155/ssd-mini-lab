@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "analysis_id": "data_integrity_4g_20260727_retry1_integrity",
+  "experiment_id": "data_integrity_4g_20260727_retry1",
+  "test_protocol_id": "EXT-DATA-INTEGRITY-001",
+  "generated_at": "2026-07-27T03:45:29.423707+00:00",
+  "analyzer": "scripts/analysis/analyze_external_ssd_data_integrity.py",
+  "status": "complete",
+  "integrity_verdict": "Pass",
+  "evidence_status": "limited",
+  "failures": [],
+  "host_observers": [
+    {
+      "phase": "verify_crc32c",
+      "status": "limited",
+      "producer_status": "complete",
+      "sample_count": 7,
+      "active_sample_count": 0,
+      "limitation": "no nonzero synchronized disk activity was observed",
+      "manifest": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/host_observer/verify_crc32c_manifest.json"
+    },
+    {
+      "phase": "write_crc32c",
+      "status": "limited",
+      "producer_status": "complete",
+      "sample_count": 16,
+      "active_sample_count": 0,
+      "limitation": "no nonzero synchronized disk activity was observed",
+      "manifest": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/host_observer/write_crc32c_manifest.json"
+    }
+  ],
+  "artifacts": {
+    "integrity_summary_csv": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/integrity_summary.csv",
+    "integrity_verdict_csv": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/integrity_verdict.csv",
+    "runner_manifest": "results/external_ssd/sustained_data_integrity_4g_20260727_retry1/runner_manifest.json",
+    "experiment_manifest": "results/external_ssd/_experiments/data_integrity_4g_20260727_retry1/experiment_manifest.json"
+  },
+  "interpretation_boundary": "One file-target write/readback observation; internal SSD mechanisms and power-loss behavior are outside this evidence."
+}

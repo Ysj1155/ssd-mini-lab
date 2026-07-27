@@ -134,10 +134,10 @@ This lab currently does not prove internal NAND, controller, FTL, SLC cache, the
 Reasons:
 
 - tests are file-based
-- results include filesystem and OS effects
-- external-drive results can include USB/enclosure behavior
-- SMART/NVMe telemetry is not collected yet
-- sustained testing has only one smoke run so far
+- results include filesystem, Windows, and USB/enclosure effects
+- SMART and reliability telemetry remain limited through the current access path
+- no direct power measurement or firmware/NAND trace is available
+- no external product specification defines hard performance thresholds
 
 This is not a weakness if stated clearly. For a validation engineer, knowing what a test cannot prove is part of the skill.
 
@@ -145,18 +145,26 @@ This is not a weakness if stated clearly. For a validation engineer, knowing wha
 
 The strongest story from this repo is:
 
-1. I built a repeatable fio result pipeline.
-2. I expanded the test matrix one variable at a time.
-3. I compared performance, tail latency, and variation.
-4. I documented path/cache/environment limitations.
-5. I moved from short benchmark runs toward sustained stability analysis.
+1. I built a repeatable fio result and evidence pipeline.
+2. I expanded the matrix one controlled variable at a time.
+3. I separated throughput, tail latency, repeatability, and order effects.
+4. I challenged attractive hypotheses with independent counterbalanced sessions.
+5. I preserved negative results and explicit interpretation boundaries.
+6. I linked requirements, runners, observers, raw data, analyzers, and verdicts through manifests.
 
 ## Next Skill Targets
 
-The next useful skill targets are:
+Completed foundations:
 
-1. Repeat the sustained smoke run three times and compare variation.
-2. Add a longer sustained profile after the smoke test is stable.
-3. Add environment snapshots beside each major run.
-4. Add telemetry if a safe, non-destructive path becomes available.
-5. Turn the project into a concise Korean portfolio README after the technical story is stable.
+- repeated and longer sustained profiles
+- environment snapshots and permission-aware telemetry
+- counterbalanced mixed, idle, and block-size studies
+- automated parser/analyzer regression tests
+
+Next targets:
+
+1. Define a compact requirement-based regression profile using stable performance and integrity conditions.
+2. Keep synchronized Windows logical-disk evidence Limited unless a provider produces nonzero workload samples.
+3. Turn the stable technical story into a concise Korean portfolio README.
+
+See `external_ssd_project_roadmap.md`.

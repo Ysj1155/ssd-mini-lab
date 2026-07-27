@@ -241,3 +241,39 @@ prior 37-53 second ramp. The automated verdict is
 `no_clear_idle_duration_association`.
 
 See [external_ssd_idle_ramp_result.md](external_ssd_idle_ramp_result.md).
+## 14. Completed Controlled Block-Size Sweep
+
+The completed protocol closed the original 4K/64K/1M block-size roadmap item
+without comparing random and sequential workloads as if block size were the
+only variable.
+
+```text
+independent sessions: randread, randwrite
+fixed controls: QD32, 32 GiB, 30s, direct=1
+block sizes: 4K, 64K, 1M
+sequence: 4K/64K/1M -> 64K/1M/4K -> 1M/4K/64K
+```
+
+Each block size occupied each sequence position once. Both nine-phase sessions
+completed. At QD32, 64K reached the observed throughput plateau while 1M added
+no bandwidth and sharply increased p99 latency.
+
+See [external_ssd_block_size_sweep_result.md](external_ssd_block_size_sweep_result.md).
+## 15. Completed File-Target Integrity Run
+
+`EXT-DATA-INTEGRITY-001` completed with the retry1 evidence unit. The new 4 GiB
+file passed the complete fio CRC32C write/readback requirement. Synchronized
+Windows E: logical-disk collectors ran during both phases, but all samples were
+zero and their diagnostic evidence is Limited.
+
+See [external_ssd_data_integrity_result.md](external_ssd_data_integrity_result.md)
+and the reusable procedure in
+[external_ssd_data_integrity_runbook.md](external_ssd_data_integrity_runbook.md).
+
+The required confirmations are:
+
+- same physical USB port
+- new file under `E:\validation`
+- permission to write only the dedicated 4 GiB verification file
+
+The runner refuses an existing target and retains the file after execution.

@@ -38,3 +38,9 @@ These reports are the main portfolio-facing evidence for the SSD Mini Lab.
 | `external_ssd_mixed_ratio_cross_session_result.md` | Automated Session 1/2 reproduction verdict |
 | `external_ssd_idle_ramp_runbook.md` | Completed mirrored idle-duration ramp procedure |
 | `external_ssd_idle_ramp_result.md` | Idle-duration association verdict and evidence |
+| `external_ssd_block_size_sweep_runbook.md` | Completed counterbalanced 4K/64K/1M read/write procedure |
+| `external_ssd_block_size_sweep_result.md` | Block-size throughput knee, QoS, and repeatability verdict |
+| `external_ssd_project_roadmap.md` | Next-stage integrity, observability, regression, and portfolio roadmap |
+| `external_ssd_data_integrity_runbook.md` | Prepared 4 GiB CRC32C write/readback execution and verdict procedure |
+| external_ssd_data_integrity_result.md | CRC32C integrity Pass and synchronized host-observer Limited verdict |
+| `windows_host_counter_observer.md` | Synchronized Windows logical-disk counter evidence model and limits |

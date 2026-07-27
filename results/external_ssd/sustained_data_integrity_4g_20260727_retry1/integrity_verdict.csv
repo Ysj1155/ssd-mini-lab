@@ -1,0 +1,2 @@
+experiment_id,test_protocol_id,integrity_verdict,evidence_status,expected_bytes_per_phase,verification_method,failure_count,failures,interpretation_boundary
+data_integrity_4g_20260727_retry1,EXT-DATA-INTEGRITY-001,Pass,limited,4294967296,crc32c,0,,"Windows/USB/exFAT file-target path only; not power-loss, endurance, NAND, FTL, or internal ECC validation"

@@ -200,9 +200,27 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
     )
     runner_manifest_path = result_dir / "runner_manifest.json"
     analysis_dir = result_dir / "analysis"
-    analysis_manifest_path = analysis_dir / "analysis_manifest.json"
-    analysis_csv_paths = sorted(analysis_dir.glob("*.csv"))
+    root_analysis_manifest_path = result_dir / "analysis_manifest.json"
+    analysis_manifest_path = (
+        root_analysis_manifest_path
+        if root_analysis_manifest_path.exists()
+        else analysis_dir / "analysis_manifest.json"
+    )
+    analysis_csv_paths = sorted(
+        set(analysis_dir.glob("*.csv"))
+        | set(result_dir.glob("*_summary.csv"))
+        | set(result_dir.glob("*_verdict.csv"))
+    )
     observer_manifest_paths = sorted(result_dir.glob("observer_manifest_*.json"))
+    host_observer_manifest_paths = sorted(
+        (result_dir / "host_observer").glob("*_manifest.json")
+    )
+    analysis_manifest: dict[str, Any] = {}
+    if analysis_manifest_path.exists():
+        analysis_manifest = json.loads(
+            analysis_manifest_path.read_text(encoding="utf-8-sig")
+        )
+    analysis_evidence_status = analysis_manifest.get("evidence_status")
     observer_phases = {
         path.stem.removeprefix("observer_manifest_")
         for path in observer_manifest_paths
@@ -277,7 +295,13 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
     status = "complete"
     if expected_repeats and len(json_paths) < expected_repeats:
         status = "incomplete"
-    elif errors or missing_artifacts or test_case is None or traceability_gaps:
+    elif (
+        errors
+        or missing_artifacts
+        or test_case is None
+        or traceability_gaps
+        or analysis_evidence_status == "limited"
+    ):
         status = "limited"
 
     anomalies: list[dict[str, Any]] = []
@@ -294,6 +318,11 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
         anomalies.append({"type": "unmatched_test_case", "details": details})
     if traceability_gaps:
         anomalies.append({"type": "missing_execution_evidence", "details": traceability_gaps})
+    if analysis_evidence_status == "limited":
+        anomalies.append({
+            "type": "limited_analysis_evidence",
+            "details": "The analyzer found linked evidence that was present but not usable for its intended diagnostic purpose.",
+        })
 
     manifest = {
         "schema_version": "1.0",
@@ -331,6 +360,9 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
             "experiment_manifest": rel(experiment_manifest_path) if experiment_manifest_path and experiment_manifest_path.exists() else None,
             "analysis_manifest": rel(analysis_manifest_path) if analysis_manifest_path.exists() else None,
             "observer_manifests": [rel(path) for path in observer_manifest_paths],
+            "host_observer_manifests": [
+                rel(path) for path in host_observer_manifest_paths
+            ],
             "snapshot_scope": "run-specific environment and telemetry outputs are referenced by observer manifests",
         },
         "execution_model": {
@@ -340,6 +372,11 @@ def build_manifest(result_dir: Path, test_cases: list[dict[str, Any]]) -> dict[s
                 "complete"
                 if {"pre", "post"}.issubset(observer_phases)
                 else "incomplete"
+            ),
+            "synchronized_host_observer_status": (
+                analysis_evidence_status
+                if analysis_evidence_status in {"complete", "limited"}
+                else "present" if host_observer_manifest_paths else "not_produced"
             ),
         },
         "artifacts": {

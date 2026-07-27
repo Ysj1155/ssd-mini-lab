@@ -1,0 +1,73 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "runner",
+    "run_id":  "sustained_data_integrity_4g_20260727_retry1",
+    "experiment_id":  "data_integrity_4g_20260727_retry1",
+    "test_case_id":  "EXT-DATA-INTEGRITY-001",
+    "requirement_ids":  [
+                            "REQ-DATA-009",
+                            "REQ-HOST-OBS-010",
+                            "REQ-ENV-001",
+                            "REQ-OBS-001",
+                            "REQ-TRACE-001",
+                            "REQ-LIMIT-001"
+                        ],
+    "started_at":  "2026-07-27T12:32:14.8666762+09:00",
+    "completed_at":  "2026-07-27T12:34:08.2655257+09:00",
+    "status":  "complete",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_data_integrity.ps1",
+    "safety":  "new dedicated file under E:\\validation; existing targets and raw physical drives are refused; target is retained after execution",
+    "result_dir":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1",
+    "test_file":  "E:\\validation\\ssd_lab_verify_4g_20260727_retry1",
+    "conditions":  {
+                       "size":  "4G",
+                       "planned_bytes":  4294967296,
+                       "bs":  "1M",
+                       "iodepth":  4,
+                       "direct":  1,
+                       "numjobs":  1,
+                       "ioengine":  "windowsaio",
+                       "verify":  "crc32c",
+                       "verify_fatal":  1,
+                       "time_based":  false
+                   },
+    "runs":  [
+                 {
+                     "phase_order":  1,
+                     "phase_name":  "write_crc32c",
+                     "operation":  "write",
+                     "started_at":  "2026-07-27T12:33:16.0757261+09:00",
+                     "completed_at":  "2026-07-27T12:33:40.0716329+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\sustained_data_integrity_4g_20260727_retry1_phase1_write.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\sustained_data_integrity_4g_20260727_retry1_phase1_write"
+                 },
+                 {
+                     "phase_order":  2,
+                     "phase_name":  "verify_crc32c",
+                     "operation":  "read_verify",
+                     "started_at":  "2026-07-27T12:33:40.1607220+09:00",
+                     "completed_at":  "2026-07-27T12:33:51.7168206+09:00",
+                     "status":  "complete",
+                     "exit_code":  0,
+                     "fio_json":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\sustained_data_integrity_4g_20260727_retry1_phase2_verify.json",
+                     "log_prefix":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\sustained_data_integrity_4g_20260727_retry1_phase2_verify"
+                 }
+             ],
+    "host_observer":  [
+                          {
+                              "phase":  "write_crc32c",
+                              "status":  "complete",
+                              "manifest":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\host_observer\\write_crc32c_manifest.json",
+                              "stop_file":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\host_observer\\write_crc32c.stop"
+                          },
+                          {
+                              "phase":  "verify_crc32c",
+                              "status":  "complete",
+                              "manifest":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\host_observer\\verify_crc32c_manifest.json",
+                              "stop_file":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727_retry1\\host_observer\\verify_crc32c.stop"
+                          }
+                      ]
+}

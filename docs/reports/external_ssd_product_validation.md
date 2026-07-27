@@ -1,6 +1,6 @@
 # External SSD Product Validation Report
 
-Status: QD sweep, sustained QD16/QD32 studies, state-reproducibility sessions, a 32 GiB sequential pilot, and controlled mixed-workload ABBA/BAAB sequences completed. Evidence requirements and performance-hypothesis verdicts are tracked separately.
+Status: QD sweep, sustained QD16/QD32 studies, state-reproducibility sessions, a 32 GiB sequential pilot, controlled mixed-workload sequences, idle-ramp challenge, and counterbalanced block-size mapping completed. Evidence requirements and performance-hypothesis verdicts are tracked separately.
 
 ## 1. Scope
 
@@ -14,6 +14,9 @@ Related evidence:
 - `docs/reports/external_ssd_requirement_matrix.md`
 - `docs/reports/external_ssd_execution_runbook.md`
 - `docs/reports/external_ssd_mixed_abba_baab_result.md`
+- `docs/reports/external_ssd_idle_ramp_result.md`
+- `docs/reports/external_ssd_block_size_sweep_result.md`
+- `docs/reports/external_ssd_project_roadmap.md`
 - `configs/external_ssd_validation_matrix.yaml`
 - `results/external_ssd/`
 - `results/external_ssd_sustained_*.csv`
@@ -54,6 +57,8 @@ The QD32 evidence-complete run predates target-aware telemetry and therefore ret
 | `EXT-MIXED-READ-QOS-BAAB-002` | Reconnect-start 70:30 vs pure read, B-A-A-B | 4 phases | Complete; read-tail hypothesis not reproduced |
 | `EXT-MIXED-RATIO-SWEEP-001` | Counterbalanced 90:10 / 70:30 / 50:50, 4K QD16 | 9 phases | Complete; descriptive mapping |
 | `EXT-IDLE-RAMP-001` | Fixed 70:30, 4K QD16; mirrored 300/60/0/0/60/300-second pre-probe idle | 6 phases | Complete; no clear idle-duration association |
+| `EXT-BS-RANDREAD-001` | 4K/64K/1M random read, QD32, Latin-square positions | 9 phases | Complete |
+| `EXT-BS-RANDWRITE-002` | 4K/64K/1M random write, QD32, Latin-square positions | 9 phases | Complete; 64K observed throughput knee |
 
 The sustained analyzer retains 40 earlier fio JSON jobs. The dedicated mixed-ratio analyzer covers two nine-phase sessions and generates phase, ratio, cycle/position, window, transition, anomaly, cross-session comparison, and verdict CSVs with linked analysis manifests.
 
@@ -248,6 +253,9 @@ These limitations are propagated through the observer manifests instead of being
 | `REQ-MIXED-RATIO-005` | Pass | Nine counterbalanced phases and linked ratio/cycle/position/window/anomaly evidence are complete |
 | `REQ-MIXED-RATIO-REPRO-006` | Pass | Two complete counterbalanced sessions preserve controls; ratio, cycle, position, Phase 5, and ramp directions were not reproduced |
 | `REQ-IDLE-RAMP-007` | Pass | Six phases, all mirrored pairs, transition/QoS CSVs, observer evidence, and integrated traceability are complete; the performance hypothesis was not supported |
+| `REQ-BS-008` | Pass | Both nine-phase sessions, counterbalanced placements, variation/QoS summaries, paired comparison, observer evidence, and integrated manifests are complete |
+| `REQ-DATA-009` | Pass | Retry1 wrote and verified exactly 4 GiB with CRC32C and fio error 0 in both phases |
+| `REQ-HOST-OBS-010` | Limited | Both phase collectors ran, but all 23 logical-disk samples were zero while fio was active |
 | `REQ-ENV-001` | Pass for traced runs | Pre/post environment collectors are linked by run ID |
 | `REQ-TEL-001` | Limited | Target metadata is correct; SMART, reliability counters, and fsutil remain limited |
 | `REQ-OBS-001` | Pass for traced runs | Pre observer, runner, and post observer are linked |
@@ -279,6 +287,10 @@ The subsequent ABBA/BAAB study reached the same kind of disciplined negative res
 The independent Session 2 did not reproduce Session 1 ratio, cycle, position, or Phase 5 directions. Session 2 instead showed a systematic 37-53 second ramp in nearly every phase. The automated cross-session verdict is `not_reproduced_across_independent_counterbalanced_sessions`; the next useful question is idle-duration sensitivity, not a third full ratio sweep.
 
 `EXT-IDLE-RAMP-001` completed that question. The prior 37-53 second ramp did not recur in any phase, and all three mirrored pairs consistently classified as no ramp. Average bandwidth still differed by +14.9% for the 0-second pair and +55.8% for the 300-second pair, so ramp classification consistency did not imply performance reproducibility. The verdict is `no_clear_idle_duration_association`; pre-probe idle length did not explain the session-level state variation.
+
+The controlled block-size study then closed the final baseline matrix gap with independent counterbalanced read and write sessions. Bandwidth repeatability was strong and aggregate order effects were small. At QD32, 64K reached the observed throughput plateau; moving to 1M provided no bandwidth gain while increasing p99 latency by 13.77x for read and 15.69x for write. This is a condition-specific throughput knee, not a universal optimal block size.
+
+The performance-characterization phase is mature and the first correctness MVP is complete: the 4 GiB CRC32C file-target path passed. Synchronized logical-disk observation was exercised but remained Limited because it captured no nonzero workload signal. The roadmap now moves to a compact requirement-based regression profile and concise Korean portfolio delivery rather than another broad parameter sweep.
 
 Portfolio statement:
 

@@ -456,3 +456,77 @@ test_cases:
       - REQ-ENV-001
       - REQ-OBS-001
       - REQ-TRACE-001
+  - id: EXT-BS-RANDREAD-001
+    purpose: "Map controlled random-read response across 4K, 64K, and 1M while counterbalancing block size across cycle and position."
+    rw: randread
+    bs: [4k, 64k, 1m]
+    size: 32G
+    runtime_sec: 30
+    cycles: 3
+    phases: 9
+    repeats_per_block_size: 3
+    initial_idle_sec: 300
+    inter_phase_idle_sec: 60
+    iodepth: [32]
+    direct: 1
+    randrepeat: 1
+    sequence:
+      - [4k, 64k, 1m]
+      - [64k, 1m, 4k]
+      - [1m, 4k, 64k]
+    interpretation: "counterbalanced_random_read_block_size_mapping"
+    requirement_links:
+      - REQ-BS-008
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+
+  - id: EXT-BS-RANDWRITE-002
+    purpose: "Map controlled random-write response across 4K, 64K, and 1M while counterbalancing block size across cycle and position."
+    rw: randwrite
+    bs: [4k, 64k, 1m]
+    size: 32G
+    runtime_sec: 30
+    cycles: 3
+    phases: 9
+    repeats_per_block_size: 3
+    initial_idle_sec: 300
+    inter_phase_idle_sec: 60
+    iodepth: [32]
+    direct: 1
+    randrepeat: 1
+    sequence:
+      - [4k, 64k, 1m]
+      - [64k, 1m, 4k]
+      - [1m, 4k, 64k]
+    interpretation: "counterbalanced_random_write_block_size_mapping"
+    requirement_links:
+      - REQ-BS-008
+      - REQ-QOS-001
+      - REQ-REPRO-001
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+  - id: EXT-DATA-INTEGRITY-001
+    purpose: "Verify one newly written 4 GiB file with fio CRC32C and preserve machine-readable Pass/Fail evidence."
+    phases: [write_crc32c, verify_crc32c]
+    rw: write
+    bs: 1m
+    size: 4G
+    iodepth: [4]
+    direct: 1
+    numjobs: 1
+    verify: crc32c
+    completion_based: true
+    dedicated_new_file_required: true
+    synchronized_host_observer: windows_logical_disk
+    interpretation: "file_target_data_path_integrity_only"
+    requirement_links:
+      - REQ-DATA-009
+      - REQ-HOST-OBS-010
+      - REQ-ENV-001
+      - REQ-OBS-001
+      - REQ-TRACE-001
+      - REQ-LIMIT-001

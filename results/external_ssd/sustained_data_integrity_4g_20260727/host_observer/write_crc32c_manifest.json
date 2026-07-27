@@ -1,0 +1,39 @@
+﻿{
+    "schema_version":  "1.0",
+    "role":  "host_observer",
+    "run_id":  "sustained_data_integrity_4g_20260727",
+    "phase":  "write_crc32c",
+    "started_at":  "2026-07-27T12:26:59.8138946+09:00",
+    "completed_at":  "2026-07-27T12:27:13.5794876+09:00",
+    "status":  "complete",
+    "observer":  "scripts/observers/collect_windows_storage_counters.ps1",
+    "safety":  "read-only Windows logical-disk counter collection; no fio execution and no storage writes",
+    "target":  {
+                   "drive_letter":  "E",
+                   "friendly_name":  null,
+                   "file_system_type":  "Unknown",
+                   "health_status":  "Healthy",
+                   "operational_status":  [
+                                              "OK"
+                                          ],
+                   "size_bytes":  1000197849088,
+                   "size_remaining_bytes":  945145511936
+               },
+    "sampling":  {
+                     "requested_interval_ms":  1000,
+                     "maximum_duration_sec":  900,
+                     "observed_duration_sec":  10.105,
+                     "sample_count":  7,
+                     "stop_reason":  "stop_file"
+                 },
+    "artifacts":  {
+                      "counter_csv":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727\\host_observer\\write_crc32c_windows_storage_counters.csv",
+                      "stop_file":  "D:\\ssd_lab\\results\\external_ssd\\sustained_data_integrity_4g_20260727\\host_observer\\write_crc32c.stop"
+                  },
+    "limitations":  [
+                        "Host-visible logical-disk counters do not identify SSD firmware, NAND, FTL, or USB bridge root causes."
+                    ],
+    "errors":  [
+
+               ]
+}

@@ -1,0 +1,59 @@
+﻿{
+    "schema_version":  "1.0",
+    "experiment_id":  "data_integrity_4g_20260727",
+    "test_protocol_id":  "EXT-DATA-INTEGRITY-001",
+    "requirement_ids":  [
+                            "REQ-DATA-009",
+                            "REQ-HOST-OBS-010",
+                            "REQ-ENV-001",
+                            "REQ-OBS-001",
+                            "REQ-TRACE-001",
+                            "REQ-LIMIT-001"
+                        ],
+    "started_at":  "2026-07-27T12:26:13.0635356+09:00",
+    "completed_at":  "2026-07-27T12:27:14.3606307+09:00",
+    "status":  "failed",
+    "result":  "observation",
+    "runner":  "scripts/runners/run_external_ssd_data_integrity.ps1",
+    "question":  "Can a newly written 4 GiB file be read back completely with no CRC32C verification error?",
+    "safety":  "new dedicated file under E:\\validation; existing targets and raw physical drives are refused; target is retained after execution",
+    "interpretation_boundary":  "This verifies one Windows/USB/exFAT file-target data path. It does not prove power-loss protection, media endurance, NAND behavior, or internal error-correction coverage.",
+    "fixed_controls":  {
+                           "same_physical_usb_port_confirmed":  true,
+                           "dedicated_verification_file_write_confirmed":  true,
+                           "test_file":  "E:\\validation\\ssd_lab_verify_4g_20260727",
+                           "expected_file_bytes":  4294967296,
+                           "initial_free_bytes":  945145511936,
+                           "ioengine":  "windowsaio",
+                           "block_size":  "1M",
+                           "iodepth":  4,
+                           "direct":  1,
+                           "numjobs":  1,
+                           "verify":  "crc32c",
+                           "host_observer_interval_ms":  1000
+                       },
+    "phases":  [
+                   {
+                       "order":  1,
+                       "name":  "write_crc32c",
+                       "operation":  "write",
+                       "status":  "complete",
+                       "fio_json":  "sustained_data_integrity_4g_20260727_phase1_write.json",
+                       "started_at":  "2026-07-27T12:26:59.0108020+09:00",
+                       "completed_at":  "2026-07-27T12:27:14.2993444+09:00"
+                   },
+                   {
+                       "order":  2,
+                       "name":  "verify_crc32c",
+                       "operation":  "read_verify",
+                       "status":  "planned",
+                       "fio_json":  "sustained_data_integrity_4g_20260727_phase2_verify.json",
+                       "started_at":  null,
+                       "completed_at":  null
+                   }
+               ],
+    "analysis_evidence":  [
+
+                          ],
+    "error":  "Verification target is missing after phase write_crc32c: E:\\validation\\ssd_lab_verify_4g_20260727"
+}
