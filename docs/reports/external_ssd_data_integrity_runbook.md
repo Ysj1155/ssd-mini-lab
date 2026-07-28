@@ -129,7 +129,8 @@ Host-observer status is separate:
 - `complete`: both phase counter manifests report Complete and each linked
   counter CSV contains at least one nonzero throughput-activity sample
 - `limited`: a phase is missing, samples are absent or zero-only, counter
-  access failed, or any sampling error was recorded
+  access failed, any sampling error was recorded, or an artifact path is
+  missing, unreadable, or outside the result-local host-observer directory
 
 A `limited` observer does not turn a valid CRC32C result into an integrity
 failure. It reduces diagnostic evidence coverage.

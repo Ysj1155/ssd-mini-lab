@@ -38,6 +38,17 @@ For each fio phase, the runner:
 The observer CSV and fio one-second logs therefore overlap in wall-clock time.
 They remain separate evidence producers linked by `run_id` and phase name.
 
+## Artifact Path Contract
+
+New manifests store `counter_csv` and `stop_file` as filenames relative to the
+manifest directory. The analyzer treats `host_observer` as the allowed root:
+
+- manifest-relative paths are canonicalized below that directory
+- legacy absolute paths are mapped to a same-name local artifact only
+- the analyzer never reads the legacy absolute location
+- traversal, alternate data streams, non-CSV targets, and resolved escapes are rejected
+- missing, rejected, or unreadable counter CSVs produce explicit `limited` evidence
+
 ## Failure Behavior
 
 Counter or CIM access can vary with Windows configuration and permissions. The

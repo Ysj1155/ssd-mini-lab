@@ -138,8 +138,14 @@ $Manifest = [ordered]@{
         stop_reason = $StopReason
     }
     artifacts = [ordered]@{
-        counter_csv = if ($Samples.Count -gt 0) { $CsvPath } else { $null }
-        stop_file = $StopFile
+        path_base = "manifest_directory"
+        counter_csv = if ($Samples.Count -gt 0) {
+            [System.IO.Path]::GetFileName($CsvPath)
+        }
+        else {
+            $null
+        }
+        stop_file = [System.IO.Path]::GetFileName($StopFile)
     }
     limitations = @(
         "Host-visible logical-disk counters do not identify SSD firmware, NAND, FTL, or USB bridge root causes."

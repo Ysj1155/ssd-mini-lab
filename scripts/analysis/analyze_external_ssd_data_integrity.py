@@ -177,22 +177,68 @@ def count_active_host_samples(path: Path) -> int:
         )
 
 
+def resolve_host_observer_artifact(
+    value: Any,
+    *,
+    manifest_path: Path,
+    host_dir: Path,
+) -> tuple[Path | None, str | None, str | None]:
+    text = str(value or "").strip()
+    if not text:
+        return None, None, "counter CSV artifact is not declared"
+
+    declared = Path(text)
+    if declared.is_absolute():
+        candidate = manifest_path.parent / declared.name
+        path_mode = "legacy_absolute_basename"
+    else:
+        candidate = manifest_path.parent / declared
+        path_mode = "manifest_relative"
+
+    if ":" in candidate.name:
+        return None, path_mode, "counter CSV artifact uses an alternate data stream"
+    if candidate.suffix.lower() != ".csv":
+        return None, path_mode, "counter CSV artifact must name a .csv file"
+
+    allowed_root = host_dir.resolve()
+    resolved = candidate.resolve()
+    try:
+        resolved.relative_to(allowed_root)
+    except ValueError:
+        return None, path_mode, "counter CSV artifact escapes the host-observer directory"
+    if not resolved.is_file():
+        return None, path_mode, "counter CSV artifact is missing from the host-observer directory"
+    return resolved, path_mode, None
+
+
 def load_host_observer_statuses(result_dir: Path) -> list[dict[str, Any]]:
     statuses: list[dict[str, Any]] = []
-    for path in sorted((result_dir / "host_observer").glob("*_manifest.json")):
+    host_dir = result_dir / "host_observer"
+    for path in sorted(host_dir.glob("*_manifest.json")):
         manifest = read_json(path)
         sampling = manifest.get("sampling") or {}
         csv_value = (manifest.get("artifacts") or {}).get("counter_csv")
-        csv_path = Path(csv_value) if csv_value else None
-        active_sample_count = (
-            count_active_host_samples(csv_path)
-            if csv_path is not None
-            else 0
+        csv_path, artifact_path_mode, artifact_limitation = (
+            resolve_host_observer_artifact(
+                csv_value,
+                manifest_path=path,
+                host_dir=host_dir,
+            )
         )
+        active_sample_count = 0
+        if csv_path is not None:
+            try:
+                active_sample_count = count_active_host_samples(csv_path)
+            except (OSError, csv.Error, TypeError, ValueError) as exc:
+                artifact_limitation = f"counter CSV artifact is unreadable: {exc}"
         producer_status = manifest.get("status", "limited")
         effective_status = (
             "complete"
-            if producer_status == "complete" and active_sample_count > 0
+            if (
+                producer_status == "complete"
+                and artifact_limitation is None
+                and active_sample_count > 0
+            )
             else "limited"
         )
         statuses.append({
@@ -201,9 +247,13 @@ def load_host_observer_statuses(result_dir: Path) -> list[dict[str, Any]]:
             "producer_status": producer_status,
             "sample_count": sampling.get("sample_count", 0),
             "active_sample_count": active_sample_count,
+            "counter_csv": relative(csv_path) if csv_path is not None else None,
+            "artifact_path_mode": artifact_path_mode,
             "limitation": (
                 None
                 if effective_status == "complete"
+                else artifact_limitation
+                if artifact_limitation is not None
                 else "no nonzero synchronized disk activity was observed"
                 if active_sample_count == 0
                 else (
